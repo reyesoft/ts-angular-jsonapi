@@ -1,0 +1,13 @@
+/node_modules/
+/typings/
+/build/
+/dist/
+/dist-demo/
+**/bower_packages
+.DS_Store
+npm-debug.log
+
+# all generated JS
+src/js
+src/app/**/*.js
+src/app/**/*.js.map

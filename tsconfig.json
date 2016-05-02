@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "amd",
+        "outDir": "build/tsconfig.outDir",
+        "sourceMap": true
+    },
+    "exclude": [
+        "bower_components",
+        "node_modules"
+    ]
+}
