@@ -1,9 +1,10 @@
 /// <reference path="../_all.ts" />
 
 module demoApp {
-    export class AuthorsService extends Jsonapi.Resource {
-        public type: 'authors';
+    export class AuthorsService {
+    // export class AuthorsService extends Jsonapi.Resource {
         public schema = {
+            type: 'authors',
             attributes: {
                 name: { presence: true, length: {maximum: 96} },
                 stock_desired: { numericality: { onlyInteger: true } }
@@ -12,8 +13,14 @@ module demoApp {
                 pricelist_products: { }
             }
         };
-    }
 
-    angular.module('demoApp')
-        .service('demoApp.AuthorsService', AuthorsService);
+        public constructor() {
+            console.log('AuthorsService constructed');
+        }
+
+        public getType() {
+            return this.schema.type;
+        }
+    }
+    angular.module('demoApp').service('AuthorsService', AuthorsService);
 }

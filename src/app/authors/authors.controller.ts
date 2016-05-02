@@ -5,11 +5,11 @@ module demoApp {
         // customers: ICustomer[] = null;
         customers: any = null;
 
-        // static $inject = ['demoApp.AuthorsService'];
         /** @ngInject */
         constructor(
-            // protected AuthorsService
+            protected AuthorsService
         ) {
+            console.log('testing injection', AuthorsService.getType());
             //let authors = AuthorsService.all();
             // this.customers = authors.data;
 
@@ -28,8 +28,6 @@ module demoApp {
         }
     }
 
-    // angular.module('demoApp')
-    //        .controller('demoApp.AuthorsController', ['demoApp.AuthorsService', AuthorsController]);
     angular.module('demoApp')
-           .controller('demoApp.AuthorsController', AuthorsController);
+           .controller('AuthorsController', AuthorsController);
 }

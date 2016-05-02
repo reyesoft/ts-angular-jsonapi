@@ -1,5 +1,5 @@
 /// <reference path="./../_all.ts" />
-console.log('xxx');
+
 module Jsonapi {
     export class Services {
         private static instance: Services;
