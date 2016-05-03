@@ -6,8 +6,7 @@ module Jsonapi {
         /** @ngInject */
         public constructor(
             protected $http,
-            // protected AppSettings,
-            protected store,
+            protected JsonapiConfig,
             protected $q
         ) {
 
@@ -16,15 +15,13 @@ module Jsonapi {
         public get(path: string) {
             let promise = this.$http({
                 method: 'GET',
-                // url: this.AppSettings.APIURL + path
-                url: path
+                url: this.JsonapiConfig.url + path
             });
 
             let deferred = this.$q.defer();
             let xthis = this;
             promise.then(
                 success => {
-                    xthis.store.set('xxx', 2);
                     deferred.resolve(success);
                 },
                 error => {

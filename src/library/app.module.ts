@@ -3,8 +3,9 @@
 (function (angular) {
     // Config
     angular.module('Jsonapi.config', [])
-        .value('Jsonapi.config', {
-            debug: true
+        .value('JsonapiConfig', {
+            debug: true,
+            url: 'http://localhost:8080/v1/'
         });
 
     angular.module('Jsonapi.services', []);

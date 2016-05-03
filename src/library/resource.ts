@@ -6,6 +6,7 @@ module Jsonapi {
         protected promise: any;
 
         public id: String;
+        public type: String;
         public attributes: Object;
 
         public register() {
@@ -18,11 +19,21 @@ module Jsonapi {
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
                 fc_success = params;
+                params = null;
             }
 
             // pedido http
+
+            // make url path
+            let path = this.type;
+            if (params) {
+                if (params.include) {
+                    path += '/?include=' + params.include.join(',');
+                }
+            }
+
             let response = [];
-            let promise = Jsonapi.Core.Services.JsonapiHttp.get('http://localhost:8080/v1/authors');
+            let promise = Jsonapi.Core.Services.JsonapiHttp.get(path);
             promise.then(
                 success => {
                     angular.forEach(success.data.data, function (value) {

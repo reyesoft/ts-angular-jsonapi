@@ -10,6 +10,7 @@ module demoApp {
             protected AuthorsService
         ) {
             this.authors = AuthorsService.all(
+                { include: ['books', 'photos'] },
                 success => {
                     console.log('successxxxxxxxxxxxxx authors controll', success);
                 },

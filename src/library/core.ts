@@ -10,6 +10,7 @@ module Jsonapi {
 
         /** @ngInject */
         public constructor(
+            protected JsonapiConfig,
             protected JsonapiCoreServices
         ) {
             Jsonapi.Core.Me = this;
