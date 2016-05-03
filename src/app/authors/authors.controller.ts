@@ -9,9 +9,9 @@ module demoApp {
         constructor(
             protected AuthorsService
         ) {
-            console.log('testing injection', AuthorsService.getType());
-            //let authors = AuthorsService.all();
-            // this.customers = authors.data;
+            //console.log('testing injection', AuthorsService.getType());
+            let authors = AuthorsService.all();
+            this.customers = authors.data;
 
             /* authors.promise.then(
                 success => {

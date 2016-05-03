@@ -1,7 +1,7 @@
 /// <reference path="./../_all.ts" />
 
 module Jsonapi {
-    export class JsonapiHttp {
+    export class Http {
 
         /** @ngInject */
         public constructor(

@@ -1,7 +1,7 @@
 /// <reference path="./_all.ts" />
 
 ((): void => {
-    var app = angular.module('demoApp', ['ngRoute']);
+    var app = angular.module('demoApp', ['ngRoute', 'Jsonapi']);
 
     app.config(['$routeProvider', ($routeProvider) => {
         $routeProvider.when('/', {

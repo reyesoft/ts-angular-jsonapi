@@ -1,21 +1,32 @@
 /// <reference path="../_all.ts" />
 
 module demoApp {
-    export class AuthorsService {
-    // export class AuthorsService extends Jsonapi.Resource {
+    export class AuthorsService extends Jsonapi.Resource {
+    // export class AuthorsService {
+        // export class AuthorsService extends Jsonapi.Resource {
         public schema = {
             type: 'authors',
             attributes: {
                 name: { presence: true, length: {maximum: 96} },
-                stock_desired: { numericality: { onlyInteger: true } }
+                date_of_birth: { },
+                date_of_death: { },
+                created_at: { },
+                updated_at: { }
             },
             relationships: {
-                pricelist_products: { }
+                books: { },
+                photos: { }
             }
         };
 
-        public constructor() {
-            console.log('AuthorsService constructed');
+        /** @ngInject */
+        public constructor(
+            JsonapiCore
+        ) {
+            super();
+            // console.log('AuthorsService');
+            // console.log('AuthorsService constructed >', this.ServiceXXX);
+            // console.log('AuthorsService constructed >', Jsonapi.Services.nato);
         }
 
         public getType() {

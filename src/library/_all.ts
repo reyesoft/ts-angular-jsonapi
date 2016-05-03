@@ -1,3 +1,5 @@
+/// <reference path="../../typings/main.d.ts" />
+
 // Jsonapi interfaces part of top level
 /// <reference path="./interfaces/document.d.ts"/>
 /// <reference path="./interfaces/data-collection.d.ts"/>
@@ -13,6 +15,8 @@
 /// <reference path="./interfaces/resource.d.ts"/>
 
 // TS-Jsonapi classes
-//// <reference path="./services/services.service.ts"/>
-/// <reference path="./service.ts"/>
+/// <reference path="./app.module.ts"/>
+//// <reference path="./services/core-services.service.ts"/>
+//// <reference path="./services/http.service.ts"/>
+/// <reference path="./core.ts"/>
 /// <reference path="./resource.ts"/>
