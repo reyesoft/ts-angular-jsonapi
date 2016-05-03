@@ -11,12 +11,12 @@
 /// <reference path="./interfaces/schema.d.ts"/>
 
 // TS-Jsonapi Classes Interfaces
-/// <reference path="./interfaces/service.d.ts"/>
+/// <reference path="./interfaces/core.d.ts"/>
 /// <reference path="./interfaces/resource.d.ts"/>
 
 // TS-Jsonapi classes
 /// <reference path="./app.module.ts"/>
+/// <reference path="./services/http.service.ts"/>
 //// <reference path="./services/core-services.service.ts"/>
-//// <reference path="./services/http.service.ts"/>
 /// <reference path="./core.ts"/>
 /// <reference path="./resource.ts"/>

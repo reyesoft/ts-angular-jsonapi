@@ -6,12 +6,14 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Total</th>
+                <th>Date of birth</th>
+                <th>Date of dead</th>
             </tr>
         </thead>
-        <tr ng-repeat="cust in vm.customers |  filter:vm.filter | orderBy:'name'">
-            <td><a href="#/orders/{{ cust.id }}">{{ cust.name  }}</a></td>
-            <td>{{ cust.total | currency }}</td>
+        <tr ng-repeat="cust in vm.authors |  filter:vm.filter | orderBy:'name'">
+            <td><a href="#/orders/{{ cust.id }}">{{ cust.attributes.name  }}</a></td>
+            <td>{{ cust.attributes.date_of_birth | date }}</td>
+            <td>{{ cust.attributes.date_of_death | date }}</td>
         </tr>
     </table>
 </div>

@@ -2,6 +2,6 @@
 
 declare module Jsonapi {
     interface ICore {
-        addResourceSchema: Function;
+        register: Function;
     }
 }

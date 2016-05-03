@@ -69,7 +69,7 @@ gulp.task('clean-ts', function (cb) {
 });
 
 gulp.task('watch', function() {
-    gulp.watch([config.allTypeScript], ['lib', 'demo']);
+    gulp.watch(['./src/**/*.ts'], ['lib', 'demo']);
 });
 
 

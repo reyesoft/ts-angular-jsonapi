@@ -6,11 +6,12 @@
         .value('Jsonapi.config', {
             debug: true
         });
+
     angular.module('Jsonapi.services', []);
 
-    console.log('app.ts from library initiated');
     angular.module('Jsonapi',
     [
+        'angular-storage',
         'Jsonapi.config',
         'Jsonapi.services'
     ]);

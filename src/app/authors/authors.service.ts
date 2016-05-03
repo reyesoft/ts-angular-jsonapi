@@ -2,10 +2,8 @@
 
 module demoApp {
     export class AuthorsService extends Jsonapi.Resource {
-    // export class AuthorsService {
-        // export class AuthorsService extends Jsonapi.Resource {
-        public schema = {
-            type: 'authors',
+        type = 'authors';
+        protected schema: Jsonapi.ISchema = {
             attributes: {
                 name: { presence: true, length: {maximum: 96} },
                 date_of_birth: { },
@@ -24,14 +22,9 @@ module demoApp {
             JsonapiCore
         ) {
             super();
-            // console.log('AuthorsService');
-            // console.log('AuthorsService constructed >', this.ServiceXXX);
-            // console.log('AuthorsService constructed >', Jsonapi.Services.nato);
-        }
-
-        public getType() {
-            return this.schema.type;
+            this.register();
         }
     }
+
     angular.module('demoApp').service('AuthorsService', AuthorsService);
 }

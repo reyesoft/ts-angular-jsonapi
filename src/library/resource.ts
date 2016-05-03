@@ -2,26 +2,42 @@
 
 module Jsonapi {
     export class Resource {
-        public schema: Jsonapi.ISchema;
-        public data: any;
-        public promise: any;
-        // public Services: any;
+        protected schema: Jsonapi.ISchema;
+        protected promise: any;
 
-        /** @ngInject */
-        /* public constructor(
-        ) {
-        } */
+        public id: String;
+        public attributes: Object;
 
-        public all() {
-            // this.promise = Jsonapi.Core.JsonapiHttp.get('http://localhost:8080/v1/authors');
-            // this.data = [new Resource()];
-            return this;
+        public register() {
+            return Jsonapi.Core.Me.register(this);
         }
 
-        /* public get(params: IRealJsonapiParams): IJsonapiDataObject {
-        let resource = new JsonapiDocument(this.RealJsonapiServices);
-        return resource;
-        } */
+        public all(params, fc_success, fc_error) {
+
+            // makes `params` optional
+            if (angular.isFunction(params)) {
+                fc_error = fc_success;
+                fc_success = params;
+            }
+
+            // pedido http
+            let response = [];
+            let promise = Jsonapi.Core.Services.JsonapiHttp.get('http://localhost:8080/v1/authors');
+            promise.then(
+                success => {
+                    angular.forEach(success.data.data, function (value) {
+                        let resource = new Resource();
+                        resource.id = value.id;
+                        resource.attributes = value.attributes;
+                        response.push(resource);
+                    });
+                    fc_success ? fc_success(response) : null;
+                },
+                error => {
+                    fc_error(response);
+                }
+            );
+            return response;
+        }
     }
-    // angular.module('Jsonapi.services').service('JsonapiResource', Resource);
 }

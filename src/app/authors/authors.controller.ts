@@ -3,31 +3,22 @@ module demoApp {
 
     export class AuthorsController {
         // customers: ICustomer[] = null;
-        customers: any = null;
+        public authors: any = null;
 
         /** @ngInject */
         constructor(
             protected AuthorsService
         ) {
-            //console.log('testing injection', AuthorsService.getType());
-            let authors = AuthorsService.all();
-            this.customers = authors.data;
-
-            /* authors.promise.then(
+            this.authors = AuthorsService.all(
                 success => {
-                    console.log('success', success);
+                    console.log('successxxxxxxxxxxxxx authors controll', success);
                 },
-                errors => {
-                    console.log('errors', errors);
+                error => {
+                    console.log('error authors controll', error);
                 }
-            ); */
-
-              /*.then((custs: ICustomer[]) => {
-                 this.customers = custs;
-             })*/;
+            );
         }
     }
 
-    angular.module('demoApp')
-           .controller('AuthorsController', AuthorsController);
+    angular.module('demoApp').controller('AuthorsController', AuthorsController);
 }

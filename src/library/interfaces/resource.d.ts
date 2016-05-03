@@ -9,6 +9,7 @@ declare module Jsonapi {
         links?: Jsonapi.ILinks;
         meta?: any;
 
+        schema?: any;
         save? (): PromiseConstructorLike;
 
         // static functions. Used when is a service

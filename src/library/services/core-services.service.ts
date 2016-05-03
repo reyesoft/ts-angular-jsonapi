@@ -8,10 +8,9 @@ module Jsonapi {
 
         /** @ngInject */
         public constructor(
-            // JsonapiHttp
+            protected JsonapiHttp
         ) {
-            console.error('Services DONE!!!!!!!!! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-            // console.error('Services DONE!!!!!!!!! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', JsonapiHttp);
+
         }
 
         /* public constructor(
