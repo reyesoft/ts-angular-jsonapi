@@ -5,15 +5,15 @@ module demoApp {
         type = 'authors';
         protected schema: Jsonapi.ISchema = {
             attributes: {
-                name: { presence: true, length: {maximum: 96} },
-                date_of_birth: { },
-                date_of_death: { },
-                created_at: { },
-                updated_at: { }
+                name: { presence: true, length: { maximum: 96 } },
+                date_of_birth: {},
+                date_of_death: {},
+                created_at: {},
+                updated_at: {}
             },
             relationships: {
-                books: { },
-                photos: { }
+                books: {},
+                photos: {}
             }
         };
 

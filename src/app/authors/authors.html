@@ -1,7 +1,7 @@
 <div>
     <filter-textbox filter="vm.filter"></filter-textbox>
-    <br />
-    <h3>Authors:</h3>
+    <br/>
+    <h3>Authors</h3>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -10,10 +10,12 @@
                 <th>Date of dead</th>
             </tr>
         </thead>
-        <tr ng-repeat="cust in vm.authors |  filter:vm.filter | orderBy:'name'">
-            <td><a href="#/orders/{{ cust.id }}">{{ cust.attributes.name  }}</a></td>
-            <td>{{ cust.attributes.date_of_birth | date }}</td>
-            <td>{{ cust.attributes.date_of_death | date }}</td>
+        <tr ng-repeat="author in vm.authors |  filter:vm.filter | orderBy:'name'">
+            <td>
+                <a href="#/authors/author/{{ author.id }}">{{ author.attributes.name  }}</a>
+            </td>
+            <td>{{ author.attributes.date_of_birth | date }}</td>
+            <td>{{ author.attributes.date_of_death | date }}</td>
         </tr>
     </table>
 </div>

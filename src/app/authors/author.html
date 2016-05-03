@@ -1,0 +1,13 @@
+<div>
+    <filter-textbox filter="vm.filter"></filter-textbox>
+    <br/>
+    <h3>Author {{ vm.id }}</h3>
+    <ul>
+        <li>Name: {{ vm.author.attributes.name }}</li>
+        <li>Date of birth: {{ vm.author.attributes.date_of_birth | date }}</li>
+        <li>Date of dead: {{ vm.author.attributes.date_of_death | date }}</li>
+    </ul>
+    <p>
+        <a href="#/">Volver</a>
+    </p>
+</div>

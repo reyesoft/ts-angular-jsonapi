@@ -22,7 +22,7 @@ module Jsonapi {
                 params = null;
             }
 
-            // pedido http
+            // http request
 
             // make url path
             let path = this.type;
@@ -32,6 +32,7 @@ module Jsonapi {
                 }
             }
 
+            // make request
             let response = [];
             let promise = Jsonapi.Core.Services.JsonapiHttp.get(path);
             promise.then(

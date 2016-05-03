@@ -1,7 +1,7 @@
 module demoApp {
     'use strict';
 
-    export class AuthorsController {
+    export class AuthorController {
         public authors: any = null;
 
         /** @ngInject */
@@ -20,5 +20,5 @@ module demoApp {
         }
     }
 
-    angular.module('demoApp').controller('AuthorsController', AuthorsController);
+    angular.module('demoApp').controller('AuthorController', AuthorController);
 }
