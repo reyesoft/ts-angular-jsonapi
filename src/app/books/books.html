@@ -1,18 +1,21 @@
-<h3>Orders</h3>
-<br />
-CustomerID: {{ vm.customerId }}
-<br /><br />
-<table class="table table-striped">
-    <tr>
-        <th>Product</th>
-        <th>Total</th>
-    </tr>
-    <tr ng-repeat="order in vm.orders">
-        <td>{{order.product}}</td>
-        <td>{{order.total}}</td>
-    </tr>
-</table>
-
-<br />
-
-<a href="#/">Customers</a>
+<div>
+    <filter-textbox filter="vm.filter"></filter-textbox>
+    <br/>
+    <h3>Books</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date Published</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="book in vm.books |  filter:vm.filter | orderBy:'title'">
+            <td>{{ book.id }}</td>
+            <td>
+                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+            </td>
+            <td>{{ book.attributes.date_published | date }}</td>
+        </tr>
+    </table>
+</div>

@@ -15,13 +15,13 @@
             controllerAs: 'vm'
         })
         .when('/books/', {
-            controller: 'demoApp.BooksController',
-            templateUrl: 'app/authors/books.html',
+            controller: 'BooksController',
+            templateUrl: 'app/books/books.html',
             controllerAs: 'vm'
         })
         .when('/books/book/:bookId', {
-            controller: 'demoApp.BookController',
-            templateUrl: 'app/authors/book.html',
+            controller: 'BookController',
+            templateUrl: 'app/books/book.html',
             controllerAs: 'vm'
         });
     }]);

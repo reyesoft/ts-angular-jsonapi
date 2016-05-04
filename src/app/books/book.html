@@ -1,0 +1,12 @@
+<div>
+    <filter-textbox filter="vm.filter"></filter-textbox>
+    <br/>
+    <h3>Book {{ vm.id }}</h3>
+    <ul>
+        <li>Title: <strong>{{ vm.book.attributes.title }}</strong></li>
+        <li>Date Published: <strong>{{ vm.book.attributes.date_published | date }}</strong></li>
+    </ul>
+    <p>
+        <a href="#/books/">Volver</a>
+    </p>
+</div>

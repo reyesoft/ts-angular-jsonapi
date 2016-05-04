@@ -3,3 +3,4 @@
 
 /// <reference path="./app.module.ts" />
 /// <reference path="./authors/authors.service.ts" />
+/// <reference path="./books/books.service.ts" />
