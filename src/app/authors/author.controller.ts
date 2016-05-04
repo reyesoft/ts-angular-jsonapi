@@ -2,13 +2,15 @@ module demoApp {
     'use strict';
 
     export class AuthorController {
-        public authors: any = null;
+        public author: any = null;
 
         /** @ngInject */
         constructor(
-            protected AuthorsService
+            protected AuthorsService,
+            protected $routeParams
         ) {
-            this.authors = AuthorsService.all(
+            this.author = AuthorsService.get(
+                $routeParams.authorId,
                 { include: ['books', 'photos'] },
                 success => {
                     console.log('successxxxxxxxxxxxxx authors controll', success);

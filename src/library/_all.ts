@@ -17,6 +17,7 @@
 // TS-Jsonapi classes
 /// <reference path="./app.module.ts"/>
 /// <reference path="./services/http.service.ts"/>
+/// <reference path="./services/path-maker.service.ts"/>
 //// <reference path="./services/core-services.service.ts"/>
 /// <reference path="./core.ts"/>
 /// <reference path="./resource.ts"/>

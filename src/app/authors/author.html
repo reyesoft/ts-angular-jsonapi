@@ -3,9 +3,9 @@
     <br/>
     <h3>Author {{ vm.id }}</h3>
     <ul>
-        <li>Name: {{ vm.author.attributes.name }}</li>
-        <li>Date of birth: {{ vm.author.attributes.date_of_birth | date }}</li>
-        <li>Date of dead: {{ vm.author.attributes.date_of_death | date }}</li>
+        <li>Name: <strong>{{ vm.author.attributes.name }}</strong></li>
+        <li>Date of birth: <strong>{{ vm.author.attributes.date_of_birth | date }}</strong></li>
+        <li>Date of dead: <strong>{{ vm.author.attributes.date_of_death | date }}</strong></li>
     </ul>
     <p>
         <a href="#/">Volver</a>

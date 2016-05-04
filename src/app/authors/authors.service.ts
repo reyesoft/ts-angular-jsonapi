@@ -3,7 +3,7 @@
 module demoApp {
     export class AuthorsService extends Jsonapi.Resource {
         type = 'authors';
-        protected schema: Jsonapi.ISchema = {
+        public schema: Jsonapi.ISchema = {
             attributes: {
                 name: { presence: true, length: { maximum: 96 } },
                 date_of_birth: {},
