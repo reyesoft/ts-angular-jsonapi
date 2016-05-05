@@ -6,9 +6,33 @@ First of all, you need read, read and read [Jsonapi specification](http://jsonap
 
 - Get resource and collection of resources
 
+## Installation
+
+```
+bower install ts-angular-jsonapi --save
+```
+
+Or throw npm
+
+```
+npm install ts-angular-jsonapi --save
+```
+
+### Customization
+
+```javascript
+var app = angular.module('yourAppName', ['Jsonapi']);
+
+app.config(['JsonapiConfig', (JsonapiConfig) => {
+    angular.extend(JsonapiConfig, {
+        url: 'http://localhost:8080/v1/'
+    });
+}]);
+```
+
 ## Examples
 
-Based on [official examples](http://jsonapi.org/examples/).
+Based on [endpoints example library](https://github.com/endpoints/endpoints-example/).
 
 ### Defining a resource
 
@@ -41,15 +65,24 @@ For demo purposes you can run local server and test this library:
 
 ### Run jsonapi endpoints example server
 
-- `git clone git@github.com:endpoints/endpoints-example.git`
-- `cd endpoints-example`
-- `npm install`
-- `npm start`
+```bash
+git clone git@github.com:endpoints/endpoints-example.git
+cd endpoints-example
+npm install
+npm start
+```
 
 More information in <https://github.com/endpoints/endpoints-example>.
 
 Now, you have jsonapi endpoints like `http://localhost:8080/v1/authors`.
 
-asdfasdf
+### Run TS Angular Jsonapi Demo App
+
+```bash
+git clone git@github.com:reyesoft/ts-angular-jsonapi.git
+cd ts-angular-jsonapi
+npm install
+gulp serve
+```
 
 IJsonapiDocument (top level/abstract) | IJsonapiDataResource (one resource) | IJsonapiDataCollection (various resources) | IJsonapiErrors (errores)

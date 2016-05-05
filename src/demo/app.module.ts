@@ -3,6 +3,12 @@
 ((): void => {
     var app = angular.module('demoApp', ['ngRoute', 'Jsonapi']);
 
+    app.config(['JsonapiConfig', (JsonapiConfig) => {
+        angular.extend(JsonapiConfig, {
+            url: 'http://localhost:8080/v1/'
+        });
+    }]);
+
     app.config(['$routeProvider', ($routeProvider) => {
         $routeProvider.when('/', {
             controller: 'AuthorsController',
