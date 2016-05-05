@@ -77,11 +77,36 @@ gulp.task('lib', function() {
 });
 
 gulp.task('dist', function() {
+
+
+    // var tsResult = gulp.src(['src/library/*/**/*.ts', 'src/library/core.ts', 'src/library/resource.ts'])
+    var tsResult = gulp.src(['src/library/**/*.ts', 'src/library/**/*.d.ts', 'typings/browser/**/*.d.ts'])
+    .pipe(ts({
+        declarationFiles: true,
+        declaration: true,
+        noExternalResolve: true,
+        noImplicitAny: false,
+        removeComments: false,
+        target: 'ES5',
+        emitDecoratorMetadata: false
+    }));
+    tsResult.dts
+    .pipe(concat('definitions.d.ts'))
+    .pipe(gulp.dest('dist'))
+    // tsResult.js.pipe(gulp.dest('release/js'))
+
+    /*merge([
+        tsResult.dts.pipe(gulp.dest('release/definitions')),
+        tsResult.js.pipe(gulp.dest('release/js'))
+    ]);*/
+    
     var tsResult = gulp.src(['src/library/**/*.d.ts'])
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(concat('ts-angular-jsonapi.d.ts')) // You can use other plugins that also support gulp-sourcemaps
     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('dist'));
+
+
 
     var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated

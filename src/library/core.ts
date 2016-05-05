@@ -1,5 +1,3 @@
-/// <reference path="./_all.ts" />
-
 module Jsonapi {
     export class Core implements Jsonapi.ICore {
         public rootPath: string = 'http://reyesoft.ddns.net:9999/api/v1/companies/2';

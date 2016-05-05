@@ -1,5 +1,3 @@
-/// <reference path="./_all.ts" />
-
 module Jsonapi {
     export class Resource implements IResource {
         public schema: ISchema;

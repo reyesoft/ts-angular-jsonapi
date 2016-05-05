@@ -75,10 +75,6 @@ declare module Jsonapi {
     }
 }
 
-interface IRealJsonapiParams {
-    include?: string;
-}
-
 declare module Jsonapi {
     interface IResource extends IDataResource {
         schema?: ISchema;
