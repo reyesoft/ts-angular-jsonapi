@@ -1,10 +1,11 @@
 {
-  "name": "angularjs-typescript-in20",
-  "version": "1.0.0",
-  "description": "AngularJS and TypeScript",
+  "name": "ts-angular-jsonapi",
+  "version": "0.0.1",
+  "description": "ts-angular-jsonapi",
   "contributors": [
     {
-      "name": "Dan Wahlin"
+      "name": "Pablo Reyes",
+      "email": "pablo@reyesoft.com"
     }
   ],
   "repository": {
@@ -33,6 +34,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^5.0.0",
     "gulp-typescript": "^2.13.0",
+    "gulp-uglify": "^1.5.3",
     "superstatic": "^4.0.2",
     "tslint": "^3.8.1",
     "typescript": "^1.8.10",

@@ -1,7 +1,6 @@
 /node_modules/
 /typings/
 /build/
-/dist/
 /dist-demo/
 **/bower_packages
 .DS_Store
