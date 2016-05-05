@@ -1,5 +1,3 @@
-/// <reference path="./../_all.ts" />
-
 // http://jsonapi.org/format/#document-top-level
 declare module Jsonapi {
     interface IDocument {

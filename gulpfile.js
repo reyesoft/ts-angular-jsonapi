@@ -76,7 +76,13 @@ gulp.task('lib', function() {
     .pipe(gulp.dest('build'));
 });
 
-gulp.task('lib-dist', function() {
+gulp.task('dist', function() {
+    var tsResult = gulp.src(['src/library/**/*.d.ts'])
+    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
+    .pipe(concat('ts-angular-jsonapi.d.ts')) // You can use other plugins that also support gulp-sourcemaps
+    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
+    .pipe(gulp.dest('dist'));
+
     var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(ts({
@@ -109,8 +115,6 @@ gulp.task('demo', function() {
     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('build'));
 });
-
-gulp.task('dist', ['lib-dist']);
 
 gulp.task('serve', ['lib', 'demo', 'watch'], function() {
     process.stdout.write('Starting browserSync and superstatic...\n');
