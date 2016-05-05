@@ -60,10 +60,10 @@ var concat = require('gulp-concat');
 var ts = require('gulp-typescript');
 var sourcemaps = require('gulp-sourcemaps');
 var ngAnnotate = require('gulp-ng-annotate');
+var uglify = require('gulp-uglify');
 
 gulp.task('lib', function() {
     var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
-    //.pipe(ngAnnotate())
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(ts({
         sortOutput: true,
@@ -74,6 +74,26 @@ gulp.task('lib', function() {
     .pipe(concat('ts-angular-jsonapi.js')) // You can use other plugins that also support gulp-sourcemaps
     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('build'));
+});
+
+gulp.task('lib-dist', function() {
+    var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
+    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
+    .pipe(ts({
+        sortOutput: true,
+    }));
+
+    var ready = tsResult.js
+    .pipe(ngAnnotate())
+    .pipe(concat('ts-angular-jsonapi.js')) // You can use other plugins that also support gulp-sourcemaps
+    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
+    .pipe(gulp.dest('dist'));
+
+    return tsResult.js
+    .pipe(ngAnnotate())
+    .pipe(uglify())
+    .pipe(concat('ts-angular-jsonapi.min.js')) // You can use other plugins that also support gulp-sourcemaps
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('demo', function() {
@@ -90,7 +110,7 @@ gulp.task('demo', function() {
     .pipe(gulp.dest('build'));
 });
 
-
+gulp.task('dist', ['lib-dist']);
 
 gulp.task('serve', ['lib', 'demo', 'watch'], function() {
     process.stdout.write('Starting browserSync and superstatic...\n');
@@ -110,4 +130,4 @@ gulp.task('serve', ['lib', 'demo', 'watch'], function() {
     });
 });
 
-gulp.task('default', ['ts-lint', 'compile-ts']);
+gulp.task('default', ['dist']);
