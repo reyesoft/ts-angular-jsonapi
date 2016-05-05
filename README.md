@@ -21,6 +21,8 @@ npm install ts-angular-jsonapi --save
 ### Customization
 
 ```javascript
+/// <reference path="../../bower_components/ts-angular-jsonapi/dist/ts-angular-jsonapi.d.ts"/>
+
 var app = angular.module('yourAppName', ['Jsonapi']);
 
 app.config(['JsonapiConfig', (JsonapiConfig) => {

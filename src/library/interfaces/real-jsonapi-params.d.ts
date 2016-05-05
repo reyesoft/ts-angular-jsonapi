@@ -1,3 +1,0 @@
-interface IRealJsonapiParams {
-    include?: string;
-}
