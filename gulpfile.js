@@ -15,30 +15,12 @@ superstatic = require( 'superstatic' );
 var config = new Config();
 
 /**
-* Generates the app.d.ts references file dynamically from all application *.ts files.
-*/
-// gulp.task('gen-ts-refs', function () {
-//     var target = gulp.src(config.appTypeScriptReferences);
-//     var sources = gulp.src([config.allTypeScript], {read: false});
-//     return target.pipe(inject(sources, {
-//         starttag: '//{',
-//         endtag: '//}',
-//         transform: function (filepath) {
-//             return '/// <reference path="../..' + filepath + '" />';
-//         }
-//     })).pipe(gulp.dest(config.typings));
-// });
-
-/**
 * Lint all custom TypeScript files.
 */
 gulp.task('ts-lint', function () {
     return gulp.src(config.allTypeScript).pipe(tslint()).pipe(tslint.report('prose'));
 });
 
-/**
-* Compile TypeScript and include references to library and app .d.ts files.
-*/
 gulp.task('compile-ts', function () {
     var sourceTsFiles = [config.allTypeScript,                //path to typescript files
         config.libraryTypeScriptDefinitions
@@ -95,7 +77,7 @@ gulp.task('lib', function() {
 });
 
 gulp.task('demo', function() {
-    var tsResult = gulp.src('src/app/**/*.ts')
+    var tsResult = gulp.src('src/demo/**/*.ts')
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(ts({
         sortOutput: true,
@@ -122,7 +104,7 @@ gulp.task('serve', ['lib', 'demo', 'watch'], function() {
         notify: true,
         reloadDelay: 0,
         server: {
-            baseDir: './src',
+            baseDir: './src/demo',
             middleware: superstatic({ debug: false})
         }
     });
