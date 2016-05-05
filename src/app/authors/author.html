@@ -1,12 +1,30 @@
 <div>
-    <filter-textbox filter="vm.filter"></filter-textbox>
-    <br/>
     <h3>Author {{ vm.id }}</h3>
     <ul>
         <li>Name: <strong>{{ vm.author.attributes.name }}</strong></li>
         <li>Date of birth: <strong>{{ vm.author.attributes.date_of_birth | date }}</strong></li>
         <li>Date of dead: <strong>{{ vm.author.attributes.date_of_death | date }}</strong></li>
     </ul>
+
+    <h4>Books</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date Published</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="book in vm.books">
+            <td>{{ book.id }}</td>
+            <td>
+                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+            </td>
+            <td>{{ book.attributes.date_published | date }}</td>
+        </tr>
+    </table>
+
+
     <p>
         <a href="#/">Volver</a>
     </p>

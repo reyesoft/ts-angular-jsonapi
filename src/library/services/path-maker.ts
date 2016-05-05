@@ -17,7 +17,7 @@ module Jsonapi {
             let get_params: Array<String> = [];
 
             if (this.includes.length > 0) {
-                get_params.push('include=', this.includes.join(','));
+                get_params.push('include=' + this.includes.join(','));
             }
 
             return this.paths.join('/') +

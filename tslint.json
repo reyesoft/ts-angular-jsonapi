@@ -1,7 +1,7 @@
 {
   "rules": {
     "class-name": true,
-    "curly": true,
+    "curly": false,
     "eofline": false,
     "forin": true,
     "indent": [true, 4],
@@ -21,7 +21,7 @@
     "no-debugger": true,
     "no-duplicate-key": true,
     "no-duplicate-variable": true,
-    "no-empty": true,
+    "no-empty": false,
     "no-eval": true,
     "no-string-literal": false,
     "no-trailing-whitespace": true,

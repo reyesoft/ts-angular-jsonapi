@@ -5,6 +5,7 @@ module Jsonapi {
         public rootPath: string = 'http://reyesoft.ddns.net:9999/api/v1/companies/2';
         public resources: Array<Jsonapi.IResource> = [];
 
+        // public static Me: Jsonapi.ICore = null;
         public static Me: Jsonapi.ICore = null;
         public static Services: any = null;
 
