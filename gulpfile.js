@@ -76,10 +76,10 @@ gulp.task('lib', function() {
     .pipe(gulp.dest('build'));
 });
 
+var merge = require('merge-stream');
 gulp.task('dist', function() {
 
-
-    // var tsResult = gulp.src(['src/library/*/**/*.ts', 'src/library/core.ts', 'src/library/resource.ts'])
+    // get ts interfaces
     var tsResult = gulp.src(['src/library/**/*.ts', 'src/library/**/*.d.ts', 'typings/browser/**/*.d.ts'])
     .pipe(ts({
         declarationFiles: true,
@@ -90,36 +90,36 @@ gulp.task('dist', function() {
         target: 'ES5',
         emitDecoratorMetadata: false
     }));
-    tsResult.dts
-    .pipe(concat('definitions.d.ts'))
-    .pipe(gulp.dest('dist'))
-    // tsResult.js.pipe(gulp.dest('release/js'))
+    var content1 = tsResult.dts;
 
-    /*merge([
-        tsResult.dts.pipe(gulp.dest('release/definitions')),
-        tsResult.js.pipe(gulp.dest('release/js'))
-    ]);*/
-    
-    var tsResult = gulp.src(['src/library/**/*.d.ts'])
+    // get ts definitions
+    var content2 = gulp.src(['src/library/**/*.d.ts'])
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(concat('ts-angular-jsonapi.d.ts')) // You can use other plugins that also support gulp-sourcemaps
     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('dist'));
+    ;
 
+    // put all ts information
+    var final_content = merge(content1, content2);
+    final_content
+        .pipe(concat('tsd.d.ts'))
+        .pipe(gulp.dest('dist'))
 
-
+    // get all ts information for compression
     var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
     .pipe(sourcemaps.init()) // This means sourcemaps will be generated
     .pipe(ts({
         sortOutput: true,
     }));
 
-    var ready = tsResult.js
+    // library
+    tsResult.js
     .pipe(ngAnnotate())
     .pipe(concat('ts-angular-jsonapi.js')) // You can use other plugins that also support gulp-sourcemaps
     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
     .pipe(gulp.dest('dist'));
 
+    // mifified library
     return tsResult.js
     .pipe(ngAnnotate())
     .pipe(uglify())
