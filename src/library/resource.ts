@@ -1,7 +1,7 @@
 module Jsonapi {
     export class Resource implements IResource {
         public schema: ISchema;
-        public path: string = null;   // without slashes
+        protected path: string = null;   // without slashes
 
         public type: string;
         public id: string;
@@ -26,6 +26,10 @@ module Jsonapi {
         // register schema on Jsonapi.Core
         public register() {
             Jsonapi.Core.Me.register(this);
+        }
+
+        public getPath() {
+            return this.path ? this.path : this.type;
         }
 
         // empty self object
@@ -71,7 +75,7 @@ module Jsonapi {
         public _get(id: String, params, fc_success, fc_error): IResource {
             // http request
             let path = new Jsonapi.PathMaker();
-            path.addPath(this.path ? this.path : this.type);
+            path.addPath(this.getPath());
             path.addPath(id);
             params.include ? path.setInclude(params.include) : null;
 
@@ -132,7 +136,7 @@ module Jsonapi {
 
             // http request
             let path = new Jsonapi.PathMaker();
-            path.addPath(this.path ? this.path : this.type);
+            path.addPath(this.getPath());
             params.include ? path.setInclude(params.include) : null;
 
             // make request

@@ -6,9 +6,12 @@ declare module Jsonapi {
         Me?: Jsonapi.ICore;
         Services?: any;
 
+        loadingsStart?: Function;
+        loadingsDone?: Function;
+
         register?(clase: Jsonapi.IResource): void;
         getResource?(type: string): Jsonapi.IResource;
-        refreshLoadings?(factor: number): void;
+        // refreshLoadings?(factor: number): void;
     }
 }
 
@@ -157,7 +160,7 @@ declare module Jsonapi {
 declare module Jsonapi {
     class Resource implements IResource {
         schema: ISchema;
-        path: string;
+        protected path: string;
         type: string;
         id: string;
         attributes: any;
@@ -165,6 +168,7 @@ declare module Jsonapi {
         private params_base;
         clone(): any;
         register(): void;
+        getPath(): string;
         new(): void;
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;

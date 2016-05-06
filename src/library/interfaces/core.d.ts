@@ -6,8 +6,11 @@ declare module Jsonapi {
         Me?: Jsonapi.ICore;
         Services?: any;
 
+        loadingsStart?: Function;
+        loadingsDone?: Function;
+
         register?(clase: Jsonapi.IResource): void;
         getResource?(type: string): Jsonapi.IResource;
-        refreshLoadings?(factor: number): void;
+        // refreshLoadings?(factor: number): void;
     }
 }
