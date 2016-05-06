@@ -9,9 +9,9 @@ module Jsonapi {
         public relationships: any = [];
 
         private params_base: Jsonapi.IParams = {
-                id: '',
-                include: []
-            };
+            id: '',
+            include: []
+        };
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
@@ -103,8 +103,15 @@ module Jsonapi {
                         }
                     });
 
-                    // recorro los relationships types
+                    // recorro los relationships levanto el service correspondiente
                     angular.forEach(value.relationships, (relation_value, relation_key) => {
+
+                        // relation is in schema?
+                        if (!(relation_key in resource.relationships)) {
+                            console.warn('data.' + relation_key + 'received, but is not defined on schema');
+                            resource.relationships[relation_key] = { data: [] };
+                        }
+
                         let resource_service = Jsonapi.ResourceMaker.getService(relation_key);
                         if (resource_service) {
                             // recorro los resources del relation type
