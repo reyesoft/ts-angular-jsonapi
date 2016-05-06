@@ -11,7 +11,7 @@ declare module Jsonapi {
 
         register?(clase: Jsonapi.IResource): void;
         getResource?(type: string): Jsonapi.IResource;
-        // refreshLoadings?(factor: number): void;
+        refreshLoadings?(factor: number): void;
     }
 }
 
