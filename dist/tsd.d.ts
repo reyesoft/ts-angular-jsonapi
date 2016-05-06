@@ -8,6 +8,7 @@ declare module Jsonapi {
 
         register?(clase: Jsonapi.IResource): void;
         getResource?(type: string): Jsonapi.IResource;
+        refreshLoadings?(factor: number): void;
     }
 }
 
@@ -76,6 +77,13 @@ declare module Jsonapi {
 }
 
 declare module Jsonapi {
+    interface IParams {
+        id?: String;
+        include?: Array<String>;
+    }
+}
+
+declare module Jsonapi {
     interface IResource extends IDataResource {
         schema?: ISchema;
 
@@ -101,10 +109,10 @@ declare module Jsonapi {
 declare module Jsonapi {
     class Http {
         protected $http: any;
-        protected JsonapiConfig: any;
+        protected rsJsonapiConfig: any;
         protected $q: any;
         /** @ngInject */
-        constructor($http: any, JsonapiConfig: any, $q: any);
+        constructor($http: any, rsJsonapiConfig: any, $q: any);
         get(path: string): any;
     }
 }
@@ -129,16 +137,20 @@ declare module Jsonapi {
 
 declare module Jsonapi {
     class Core implements Jsonapi.ICore {
-        protected JsonapiConfig: any;
+        protected rsJsonapiConfig: any;
         protected JsonapiCoreServices: any;
         rootPath: string;
         resources: Array<Jsonapi.IResource>;
+        loadingsCounter: number;
+        loadingsStart: () => void;
+        loadingsDone: () => void;
         static Me: Jsonapi.ICore;
         static Services: any;
         /** @ngInject */
-        constructor(JsonapiConfig: any, JsonapiCoreServices: any);
+        constructor(rsJsonapiConfig: any, JsonapiCoreServices: any);
         register(clase: Jsonapi.IResource): void;
         getResource(type: string): any;
+        refreshLoadings(factor: number): void;
     }
 }
 
@@ -150,12 +162,13 @@ declare module Jsonapi {
         id: string;
         attributes: any;
         relationships: any;
+        private params_base;
         clone(): any;
         register(): void;
         new(): void;
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
-        exec(id: String, params: any, fc_success: any, fc_error: any): any;
+        exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any): any;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
     }
@@ -165,6 +178,7 @@ declare module Jsonapi {
 /// <reference path="interfaces/data-collection.d.ts" />
 /// <reference path="interfaces/data-object.d.ts" />
 /// <reference path="interfaces/data-resource.d.ts" />
+/// <reference path="interfaces/params.d.ts" />
 /// <reference path="interfaces/errors.d.ts" />
 /// <reference path="interfaces/links.d.ts" />
 /// <reference path="interfaces/schema.d.ts" />

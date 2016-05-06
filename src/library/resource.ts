@@ -8,6 +8,11 @@ module Jsonapi {
         public attributes: any ;
         public relationships: any = [];
 
+        private params_base: Jsonapi.IParams = {
+                id: '',
+                include: []
+            };
+
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
             for (var attribut in this) {
@@ -42,19 +47,15 @@ module Jsonapi {
 
         public exec(id: String, params: Jsonapi.IParams, fc_success, fc_error): any {
             // makes `params` optional
-            let params_base: Jsonapi.IParams = {
-                    id: '',
-                    include: []
-                };
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
                 fc_success = params;
-                params = params_base;
+                params = this.params_base;
             } else {
                 if (angular.isUndefined(params)) {
-                    params = params_base;
+                    params = this.params_base;
                 } else {
-                    params = angular.extend({}, params_base, params);
+                    params = angular.extend({}, this.params_base, params);
                 }
             }
 
