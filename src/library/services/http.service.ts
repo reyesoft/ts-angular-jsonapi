@@ -10,11 +10,25 @@ module Jsonapi {
 
         }
 
+        public delete(path: string) {
+
+        }
+
         public get(path: string) {
-            let promise = this.$http({
-                method: 'GET',
-                url: this.rsJsonapiConfig.url + path
-            });
+            return this.exec(path, 'GET');
+        }
+
+        protected exec(path: string, method: string, data?: Jsonapi.IDataObject) {
+            let req = {
+                method: method,
+                url: this.rsJsonapiConfig.url + path,
+                headers: {
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            };
+            data && (req['data'] = data);
+            console.log('req', req);
+            let promise = this.$http(req);
 
             let deferred = this.$q.defer();
             let xthis = this;

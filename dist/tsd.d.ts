@@ -23,7 +23,8 @@ declare module Jsonapi {
 
 declare module Jsonapi {
     interface IDataObject extends IDocument {
-        data: IResource;
+        data: Jsonapi.IDataResource;
+        include?: Object;
     }
 }
 
@@ -48,7 +49,7 @@ declare module Jsonapi {
         included?: Object;
         meta?: Object;
 
-        promise: any;
+        promise?: any;
     }
 }
 
@@ -116,7 +117,9 @@ declare module Jsonapi {
         protected $q: any;
         /** @ngInject */
         constructor($http: any, rsJsonapiConfig: any, $q: any);
+        delete(path: string): void;
         get(path: string): any;
+        protected exec(path: string, method: string, data?: Jsonapi.IDataObject): any;
     }
 }
 
@@ -169,10 +172,14 @@ declare module Jsonapi {
         clone(): any;
         register(): void;
         getPath(): string;
-        new(): void;
+        new(): IResource;
+        reset(): void;
+        toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
-        exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any): any;
+        save(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
+        exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
+        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
     }
@@ -198,7 +205,6 @@ declare module Jsonapi {
 declare module Jsonapi {
     class CoreServices {
         protected JsonapiHttp: any;
-        cadena: string;
         /** @ngInject */
         constructor(JsonapiHttp: any);
     }

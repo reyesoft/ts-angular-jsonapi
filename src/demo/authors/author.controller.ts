@@ -23,6 +23,21 @@ module demoApp {
             );
             this.books = this.author.relationships.books.data;
         }
+
+        public new() {
+            let author = this.AuthorsService.new();
+            author.attributes.name = 'Pablo Reyes';
+            author.attributes.date_of_birth = '2030-12-10';
+
+            author.save();
+            console.log('new save', author.toObject());
+        }
+
+        public update() {
+            this.author.attributes.name += 'o';
+            this.author.save();
+            console.log('update save', this.author.toObject());
+        }
     }
 
     angular.module('demoApp').controller('AuthorController', AuthorController);

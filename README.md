@@ -4,7 +4,10 @@ First of all, you need read, read and read [Jsonapi specification](http://jsonap
 
 ## Supported features
 
-- Get resource and collection of resources
+- [x] TS Definitions for autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
+- [x] Get resource and collection of resources
+- [ ] Caché
+- [ ] Pagination
 
 ## Installation
 

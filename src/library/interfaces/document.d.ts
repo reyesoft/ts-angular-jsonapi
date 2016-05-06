@@ -8,6 +8,6 @@ declare module Jsonapi {
         included?: Object;
         meta?: Object;
 
-        promise: any;
+        promise?: any;
     }
 }
