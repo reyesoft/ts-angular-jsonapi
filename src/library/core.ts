@@ -3,13 +3,16 @@ module Jsonapi {
         public rootPath: string = 'http://reyesoft.ddns.net:9999/api/v1/companies/2';
         public resources: Array<Jsonapi.IResource> = [];
 
-        // public static Me: Jsonapi.ICore = null;
+        public loadingsCounter: number = 0;
+        public loadingsStart = () => {};
+        public loadingsDone = () => {};
+
         public static Me: Jsonapi.ICore = null;
         public static Services: any = null;
 
         /** @ngInject */
         public constructor(
-            protected JsonapiConfig,
+            protected rsJsonapiConfig,
             protected JsonapiCoreServices
         ) {
             Jsonapi.Core.Me = this;
@@ -22,6 +25,15 @@ module Jsonapi {
 
         public getResource(type: string) {
             return this.resources[type];
+        }
+
+        public refreshLoadings(factor: number): void {
+            this.loadingsCounter += factor;
+            if (this.loadingsCounter === 0) {
+                this.loadingsDone();
+            } else if (this.loadingsCounter === 1) {
+                this.loadingsStart();
+            }
         }
     }
     angular.module('Jsonapi.services').service('JsonapiCore', Core);

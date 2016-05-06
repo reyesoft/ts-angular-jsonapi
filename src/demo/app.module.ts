@@ -1,10 +1,10 @@
 /// <reference path="./_all.ts" />
 
 ((): void => {
-    var app = angular.module('demoApp', ['ngRoute', 'Jsonapi']);
+    var app = angular.module('demoApp', ['ngRoute', 'rsJsonapi']);
 
-    app.config(['JsonapiConfig', (JsonapiConfig) => {
-        angular.extend(JsonapiConfig, {
+    app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
+        angular.extend(rsJsonapiConfig, {
             url: 'http://localhost:8080/v1/'
         });
     }]);

@@ -40,12 +40,15 @@ module Jsonapi {
             return this.exec(null, params, fc_success, fc_error);
         }
 
-        public exec(id: String, params, fc_success, fc_error): any {
+        public exec(id: String, params: Jsonapi.IParams, fc_success, fc_error): any {
             // makes `params` optional
-            let params_base = { include: null };
+            let params_base: Jsonapi.IParams = {
+                    id: '',
+                    include: []
+                };
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
-                fc_success = fc_success;
+                fc_success = params;
                 params = params_base;
             } else {
                 if (angular.isUndefined(params)) {

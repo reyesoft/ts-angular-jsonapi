@@ -87,4 +87,12 @@ npm install
 gulp serve
 ```
 
-IJsonapiDocument (top level/abstract) | IJsonapiDataResource (one resource) | IJsonapiDataCollection (various resources) | IJsonapiErrors (errores)
+## Colaborate
+
+First you need run the demo. Next, when you made new features on your fork, please run
+
+```bash
+gulp dist
+```
+
+And commit! Don't forget your pull request :)
