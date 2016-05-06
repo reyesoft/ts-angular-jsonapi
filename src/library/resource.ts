@@ -25,7 +25,7 @@ module Jsonapi {
 
         // register schema on Jsonapi.Core
         public register() {
-            Jsonapi.Core.Me.register(this);
+            Jsonapi.Core.Me._register(this);
         }
 
         public getPath() {
@@ -51,12 +51,21 @@ module Jsonapi {
         }
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
+            let relationships = { };
+            angular.forEach(this.relationships, (relationship, relation_alias) => {
+                relationships[relation_alias] = { data: [] };
+                angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
+                    let reational_object = { id: resource.id, tpe: resource.type };
+                    relationships[relation_alias]['data'].push(reational_object);
+                });
+            });
+
             return {
                 data: {
                     type: this.type,
                     id: this.id,
                     attributes: this.attributes,
-                    relationships: this.relationships
+                    relationships: relationships
                 },
                 include: {
 
@@ -145,102 +154,114 @@ module Jsonapi {
                 }
             );
 
-                return resource;
-            }
+            return resource;
+        }
 
-            public _get(id: String, params, fc_success, fc_error): IResource {
-                // http request
-                let path = new Jsonapi.PathMaker();
-                path.addPath(this.getPath());
-                path.addPath(id);
-                params.include ? path.setInclude(params.include) : null;
+        public _get(id: String, params, fc_success, fc_error): IResource {
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            path.addPath(id);
+            params.include ? path.setInclude(params.include) : null;
 
-                //let resource = new Resource();
-                let resource = this.new();
+            //let resource = new Resource();
+            let resource = this.new();
 
-                let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
-                promise.then(
-                    success => {
-                        let value = success.data.data;
-                        resource.attributes = value.attributes;
-                        resource.id = value.id;
+            let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
+            promise.then(
+                success => {
+                    let value = success.data.data;
+                    resource.attributes = value.attributes;
+                    resource.id = value.id;
 
-                        // instancio los include y los guardo en included arrary
-                        let included = [];
-                        angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
-                            let resource = Jsonapi.ResourceMaker.make(data);
-                            if (resource) {
-                                // guardamos en el array de includes
-                                if (!(data.type in included)) {
-                                    included[data.type] = [];
+                    // instancio los include y los guardo en included arrary
+                    let included = [];
+                    angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
+                        let resource = Jsonapi.ResourceMaker.make(data);
+                        if (resource) {
+                            // guardamos en el array de includes
+                            if (!(data.type in included)) {
+                                included[data.type] = [];
+                            }
+                            included[data.type][data.id] = resource;
+                        }
+                    });
+
+                    // recorro los relationships levanto el service correspondiente
+                    angular.forEach(value.relationships, (relation_value, relation_key) => {
+
+                        // relation is in schema?
+                        if (!(relation_key in resource.relationships)) {
+                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema');
+                            resource.relationships[relation_key] = { data: [] };
+                        }
+
+                        let resource_service = Jsonapi.ResourceMaker.getService(relation_key);
+                        if (resource_service) {
+                            // recorro los resources del relation type
+                            let relationship_resources = [];
+                            angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
+                                // está en el included?
+                                let tmp_resource;
+                                if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
+                                    tmp_resource = included[resource_value.type][resource_value.id];
+                                } else {
+                                    tmp_resource = Jsonapi.ResourceMaker.procreate(resource_service, resource_value);
                                 }
-                                included[data.type][data.id] = resource;
-                            }
-                        });
+                                resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
+                            });
+                        }
+                    });
 
-                        // recorro los relationships levanto el service correspondiente
-                        angular.forEach(value.relationships, (relation_value, relation_key) => {
+                    fc_success(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
 
-                            // relation is in schema?
-                            if (!(relation_key in resource.relationships)) {
-                                console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema');
-                                resource.relationships[relation_key] = { data: [] };
-                            }
+            return resource;
+        }
 
-                            let resource_service = Jsonapi.ResourceMaker.getService(relation_key);
-                            if (resource_service) {
-                                // recorro los resources del relation type
-                                let relationship_resources = [];
-                                angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
-                                    // está en el included?
-                                    let tmp_resource;
-                                    if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
-                                        tmp_resource = included[resource_value.type][resource_value.id];
-                                    } else {
-                                        tmp_resource = Jsonapi.ResourceMaker.procreate(resource_service, resource_value);
-                                    }
-                                    resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
-                                });
-                            }
-                        });
+        public _all(params, fc_success, fc_error): Array<IResource> {
 
-                        fc_success(success);
-                    },
-                    error => {
-                        fc_error(error);
-                    }
-                );
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            params.include ? path.setInclude(params.include) : null;
 
-                return resource;
+            // make request
+            let response = [];
+            let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
+            promise.then(
+                success => {
+                    angular.forEach(success.data.data, function (value) {
+                        let resource = new Resource();
+                        resource.id = value.id;
+                        resource.attributes = value.attributes;
+
+                        response.push(resource);
+                    });
+                    fc_success(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
+            return response;
+        }
+
+        public addRelationship(resource: Jsonapi.IResource, type_alias?: string) {
+            type_alias = (type_alias ? type_alias : resource.type);
+            if (!(type_alias in this.relationships)) {
+                this.relationships[type_alias] = { data: { } };
             }
 
-            public _all(params, fc_success, fc_error): Array<IResource> {
-
-                // http request
-                let path = new Jsonapi.PathMaker();
-                path.addPath(this.getPath());
-                params.include ? path.setInclude(params.include) : null;
-
-                // make request
-                let response = [];
-                let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
-                promise.then(
-                    success => {
-                        angular.forEach(success.data.data, function (value) {
-                            let resource = new Resource();
-                            resource.id = value.id;
-                            resource.attributes = value.attributes;
-
-
-                            response.push(resource);
-                        });
-                        fc_success(success);
-                    },
-                    error => {
-                        fc_error(error);
-                    }
-                );
-                return response;
+            if (!resource.id) {
+                resource.id = 'new_' + (Math.floor(Math.random() * 100000));
             }
+
+            this.relationships[type_alias]['data'][resource.id] = resource;
         }
     }
+}

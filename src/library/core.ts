@@ -19,7 +19,7 @@ module Jsonapi {
             Jsonapi.Core.Services = JsonapiCoreServices;
         }
 
-        public register(clase: Jsonapi.IResource) {
+        public _register(clase) {
             this.resources[clase.type] = clase;
         }
 

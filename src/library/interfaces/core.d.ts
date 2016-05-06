@@ -9,8 +9,9 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
 
-        register?(clase: Jsonapi.IResource): void;
-        getResource?(type: string): Jsonapi.IResource;
+        // _register?(clase: Jsonapi.IResource): void;
+        _register? (clase: any): void;    // Jsonapi.IResource fail on resourse.ts
+        getResource? (type: string): Jsonapi.IResource;
         refreshLoadings?(factor: number): void;
     }
 }

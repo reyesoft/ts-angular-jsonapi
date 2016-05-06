@@ -24,15 +24,23 @@ module demoApp {
             this.books = this.author.relationships.books.data;
         }
 
+        /**
+        Add a new author
+        **/
         public new() {
             let author = this.AuthorsService.new();
             author.attributes.name = 'Pablo Reyes';
             author.attributes.date_of_birth = '2030-12-10';
-
-            author.save();
+            angular.forEach(this.books, (book: Jsonapi.IResource) => {
+                author.addRelationship(book /* , 'handbook' */);
+            });
             console.log('new save', author.toObject());
+            author.save();
         }
 
+        /**
+        Update name for actual author
+        **/
         public update() {
             this.author.attributes.name += 'o';
             this.author.save();

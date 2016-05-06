@@ -9,8 +9,9 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
 
-        register?(clase: Jsonapi.IResource): void;
-        getResource?(type: string): Jsonapi.IResource;
+        // _register?(clase: Jsonapi.IResource): void;
+        _register? (clase: any): void;    // Jsonapi.IResource fail on resourse.ts
+        getResource? (type: string): Jsonapi.IResource;
         refreshLoadings?(factor: number): void;
     }
 }
@@ -91,7 +92,10 @@ declare module Jsonapi {
     interface IResource extends IDataResource {
         schema?: ISchema;
 
-        register (): void;
+        clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
+        addRelationship? (resource: IResource, type_alias?: string): void;
+        toObject? (params: Jsonapi.IParams): Jsonapi.IDataObject;
+        register? (): void;
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
@@ -154,7 +158,7 @@ declare module Jsonapi {
         static Services: any;
         /** @ngInject */
         constructor(rsJsonapiConfig: any, JsonapiCoreServices: any);
-        register(clase: Jsonapi.IResource): void;
+        _register(clase: any): void;
         getResource(type: string): any;
         refreshLoadings(factor: number): void;
     }
@@ -182,6 +186,7 @@ declare module Jsonapi {
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
+        addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
     }
 }
 
