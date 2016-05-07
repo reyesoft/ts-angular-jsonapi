@@ -10,6 +10,9 @@
         <button ng-click="vm.update()">Update author</button>
     </p>
 
+    <h4>Photos</h4>
+    <img ng-repeat="photo in vm.author.relationships.photos.data" ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em" />
+
     <h4>Books</h4>
     <table class="table table-striped">
         <thead>

@@ -190,9 +190,9 @@ module Jsonapi {
                     // recorro los relationships levanto el service correspondiente
                     angular.forEach(value.relationships, (relation_value, relation_key) => {
 
-                        // relation is in schema?
-                        if (!(relation_key in resource.relationships)) {
-                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema');
+                        // relation is in schema? have data or just links?
+                        if (!(relation_key in resource.relationships) && ('data' in relation_value)) {
+                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema.');
                             resource.relationships[relation_key] = { data: [] };
                         }
 
