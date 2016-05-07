@@ -27,7 +27,6 @@ module Jsonapi {
                 }
             };
             data && (req['data'] = data);
-            console.log('req', req);
             let promise = this.$http(req);
 
             let deferred = this.$q.defer();

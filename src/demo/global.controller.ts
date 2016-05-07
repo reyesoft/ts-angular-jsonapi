@@ -4,8 +4,8 @@ module demoApp {
     export class GlobalController {
         /** @ngInject */
         public constructor(
-            protected $scope,
-            protected JsonapiCore
+            protected JsonapiCore,
+            protected $scope
         ) {
             let self = this;
             $scope.loading  = false;
