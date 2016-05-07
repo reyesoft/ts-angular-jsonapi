@@ -1,5 +1,3 @@
-/// <reference path="./../_all.ts" />
-
 // http://jsonapi.org/format/#document-links
 declare module Jsonapi {
     interface ILinks {

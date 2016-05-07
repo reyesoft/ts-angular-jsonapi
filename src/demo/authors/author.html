@@ -1,10 +1,14 @@
 <div>
-    <h3>Author {{ vm.id }}</h3>
+    <h3>Author {{ vm.author.id }}</h3>
     <ul>
         <li>Name: <strong>{{ vm.author.attributes.name }}</strong></li>
         <li>Date of birth: <strong>{{ vm.author.attributes.date_of_birth | date }}</strong></li>
         <li>Date of dead: <strong>{{ vm.author.attributes.date_of_death | date }}</strong></li>
     </ul>
+    <p>
+        <button ng-click="vm.new()">New author</button>
+        <button ng-click="vm.update()">Update author</button>
+    </p>
 
     <h4>Books</h4>
     <table class="table table-striped">
@@ -23,7 +27,6 @@
             <td>{{ book.attributes.date_published | date }}</td>
         </tr>
     </table>
-
 
     <p>
         <a href="#/">Volver</a>

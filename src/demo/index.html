@@ -12,7 +12,7 @@ http://github.com/pablorsk
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body class="container">
-    <h1>TS Angular Jsonapi Example</h1>
+    <h1 ng-controller="GlobalController">TS Angular Jsonapi Example <small ng-animate="" ng-if="loading">Loading</small></h1>
 
     <nav>
         <ul class="nav nav-pills pull-xs-right">
@@ -30,9 +30,7 @@ http://github.com/pablorsk
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
     <script src="//cdn.rawgit.com/auth0/angular-storage/master/dist/angular-storage.js"></script>
-    <!--
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
--->
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script> -->
 <script src="build/ts-angular-jsonapi.js"></script>
 <script src="build/demo.js"></script>
 </body>

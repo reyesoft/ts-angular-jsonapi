@@ -17,13 +17,10 @@ module demoApp {
             }
         };
 
-        /** @ngInject */
-        public constructor(
-            JsonapiCore
-        ) {
-            super();
-            this.register();
-        }
+        // public constructor() {
+        //     super();
+        //     this.register();
+        // }
     }
 
     angular.module('demoApp').service('AuthorsService', AuthorsService);
