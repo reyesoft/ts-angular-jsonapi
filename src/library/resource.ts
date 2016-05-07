@@ -75,18 +75,21 @@ module Jsonapi {
         }
 
         public get(id: String, params?, fc_success?, fc_error?): IResource {
-            return this.exec(id, params, fc_success, fc_error, 'get');
+            return this.__exec(id, params, fc_success, fc_error, 'get');
         }
 
         public all(params?, fc_success?, fc_error?): Array<IResource> {
-            return this.exec(null, params, fc_success, fc_error, 'all');
+            return this.__exec(null, params, fc_success, fc_error, 'all');
         }
 
         public save(params?, fc_success?, fc_error?): Array<IResource> {
-            return this.exec(null, params, fc_success, fc_error, 'save');
+            return this.__exec(null, params, fc_success, fc_error, 'save');
         }
 
-        public exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
+        /**
+        This method sort params for new(), get() and update()
+        */
+        public __exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
             // makes `params` optional
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
@@ -111,8 +114,6 @@ module Jsonapi {
                 case 'save':
                 return this._save(params, fc_success, fc_error);
             }
-
-            return false;
         }
 
         public _save(params?, fc_success?, fc_error?): IResource {
