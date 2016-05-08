@@ -23,9 +23,12 @@ module Jsonapi {
             return cloneObj;
         }
 
-        // register schema on Jsonapi.Core
-        public register() {
-            Jsonapi.Core.Me._register(this);
+        /**
+        Register schema on Jsonapi.Core
+        @return true if the resource don't exist and registered ok
+        **/
+        public register(): boolean {
+            return Jsonapi.Core.Me._register(this);
         }
 
         public getPath() {

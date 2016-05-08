@@ -7,6 +7,8 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
 - [x] Get resource and collection of resources
 - [x] Include support (also, when you save)
+- [ ] Iqual requests, return a same ResourceObject
+- [ ] Declaration file published on [DefinitelyTyped repository](https://github.com/borisyankov/DefinitelyTyped).
 - [ ] Caché
 - [ ] Pagination
 

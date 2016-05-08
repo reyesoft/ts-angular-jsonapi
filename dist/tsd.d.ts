@@ -9,8 +9,7 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
 
-        // _register?(clase: Jsonapi.IResource): void;
-        _register? (clase: any): void;    // Jsonapi.IResource fail on resourse.ts
+        _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
         refreshLoadings?(factor: number): void;
     }
@@ -95,7 +94,7 @@ declare module Jsonapi {
         clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
         addRelationship? (resource: IResource, type_alias?: string): void;
         toObject? (params: Jsonapi.IParams): Jsonapi.IDataObject;
-        register? (): void;
+        register? (): boolean;
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
@@ -166,7 +165,7 @@ declare module Jsonapi {
         static Services: any;
         /** @ngInject */
         constructor(rsJsonapiConfig: any, JsonapiCoreServices: any);
-        _register(clase: any): void;
+        _register(clase: any): boolean;
         getResource(type: string): any;
         refreshLoadings(factor: number): void;
     }
@@ -182,7 +181,11 @@ declare module Jsonapi {
         relationships: any;
         private params_base;
         clone(): any;
-        register(): void;
+        /**
+        Register schema on Jsonapi.Core
+        @return true if the resource don't exist and registered ok
+        **/
+        register(): boolean;
         getPath(): string;
         new(): IResource;
         reset(): void;
