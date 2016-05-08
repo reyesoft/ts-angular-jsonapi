@@ -138,9 +138,17 @@ declare module Jsonapi {
 }
 
 declare module Jsonapi {
-    class ResourceMaker {
+    class Converter {
+        /**
+        Convert json arrays (like included) to an Resources arrays without [keys]
+        **/
+        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Array<Jsonapi.IResource>): Array<Jsonapi.IResource>;
+        /**
+        Convert json arrays (like included) to an indexed Resources array by [type][id]
+        **/
+        static json_array2resources_array_by_type(json_array: [Jsonapi.IDataResource], instance_relationships: boolean): Array<Jsonapi.IResource>;
+        static json2resource(json_resource: Jsonapi.IDataResource, instance_relationships: any): Jsonapi.IResource;
         static getService(type: string): Jsonapi.IResource;
-        static make(data: Jsonapi.IDataResource): Jsonapi.IResource;
         static procreate(resource_service: Jsonapi.IResource, data: Jsonapi.IDataResource): Jsonapi.IResource;
     }
 }
@@ -182,7 +190,10 @@ declare module Jsonapi {
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
         save(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
-        exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
+        /**
+        This method sort params for new(), get() and update()
+        */
+        __exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
@@ -203,7 +214,7 @@ declare module Jsonapi {
 /// <reference path="app.module.d.ts" />
 /// <reference path="services/http.service.d.ts" />
 /// <reference path="services/path-maker.d.ts" />
-/// <reference path="services/resource-maker.d.ts" />
+/// <reference path="services/resource-converter.d.ts" />
 /// <reference path="core.d.ts" />
 /// <reference path="resource.d.ts" />
 

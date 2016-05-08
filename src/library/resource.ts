@@ -137,17 +137,8 @@ module Jsonapi {
                     resource.id = value.id;
 
                     // instancio los include y los guardo en included arrary
-                    let included = [];
-                    angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
-                        let resource = Jsonapi.ResourceMaker.make(data);
-                        if (resource) {
-                            // guardamos en el array de includes
-                            if (!(data.type in included)) {
-                                included[data.type] = [];
-                            }
-                            included[data.type][data.id] = resource;
-                        }
-                    });
+                    // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
+
                     fc_error(success);
                 },
                 error => {
@@ -176,17 +167,7 @@ module Jsonapi {
                     resource.id = value.id;
 
                     // instancio los include y los guardo en included arrary
-                    let included = [];
-                    angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
-                        let resource = Jsonapi.ResourceMaker.make(data);
-                        if (resource) {
-                            // guardamos en el array de includes
-                            if (!(data.type in included)) {
-                                included[data.type] = [];
-                            }
-                            included[data.type][data.id] = resource;
-                        }
-                    });
+                    let included = Converter.json_array2resources_array_by_type(success.data.included, false);
 
                     // recorro los relationships levanto el service correspondiente
                     angular.forEach(value.relationships, (relation_value, relation_key) => {
@@ -197,7 +178,7 @@ module Jsonapi {
                             resource.relationships[relation_key] = { data: [] };
                         }
 
-                        let resource_service = Jsonapi.ResourceMaker.getService(relation_key);
+                        let resource_service = Jsonapi.Converter.getService(relation_key);
                         if (resource_service) {
                             // recorro los resources del relation type
                             let relationship_resources = [];
@@ -207,7 +188,7 @@ module Jsonapi {
                                 if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
                                     tmp_resource = included[resource_value.type][resource_value.id];
                                 } else {
-                                    tmp_resource = Jsonapi.ResourceMaker.procreate(resource_service, resource_value);
+                                    tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
                                 }
                                 resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
                             });
@@ -236,13 +217,7 @@ module Jsonapi {
             let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
             promise.then(
                 success => {
-                    angular.forEach(success.data.data, function (value) {
-                        let resource = new Resource();
-                        resource.id = value.id;
-                        resource.attributes = value.attributes;
-
-                        response.push(resource);
-                    });
+                    Converter.json_array2resources_array(success.data.data, response);
                     fc_success(success);
                 },
                 error => {
