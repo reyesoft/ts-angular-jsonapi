@@ -22,7 +22,6 @@ module Jsonapi {
                     // destination_array.push(resource.id + resource.type);
                 }
             }
-            console.log('todos', destination_array);
             return destination_array;
         }
 
@@ -42,8 +41,6 @@ module Jsonapi {
                 }
                 resources[resource.type][resource.id] = resource;
             });
-
-            console.log('resources', resources);
             return resources;
         }
 
