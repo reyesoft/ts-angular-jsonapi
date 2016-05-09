@@ -119,39 +119,6 @@ module Jsonapi {
             }
         }
 
-        public _save(params?, fc_success?, fc_error?): IResource {
-            let object = this.toObject(params);
-
-            // http request
-            let path = new Jsonapi.PathMaker();
-            path.addPath(this.getPath());
-            this.id && path.addPath(this.id);
-            params.include ? path.setInclude(params.include) : null;
-
-            //let resource = new Resource();
-            let resource = this.new();
-
-            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object);
-
-            promise.then(
-                success => {
-                    let value = success.data.data;
-                    resource.attributes = value.attributes;
-                    resource.id = value.id;
-
-                    // instancio los include y los guardo en included arrary
-                    // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
-
-                    fc_error(success);
-                },
-                error => {
-                    fc_error(error);
-                }
-            );
-
-            return resource;
-        }
-
         public _get(id: String, params, fc_success, fc_error): IResource {
             // http request
             let path = new Jsonapi.PathMaker();
@@ -220,7 +187,7 @@ module Jsonapi {
             let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
             promise.then(
                 success => {
-                    Converter.json_array2resources_array(success.data.data, response);
+                    Converter.json_array2resources_array(success.data.data, response, true);
                     fc_success(success);
                 },
                 error => {
@@ -228,6 +195,38 @@ module Jsonapi {
                 }
             );
             return response;
+        }
+
+        public _save(params?, fc_success?, fc_error?): IResource {
+            let object = this.toObject(params);
+
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            this.id && path.addPath(this.id);
+            params.include ? path.setInclude(params.include) : null;
+
+            let resource = this.new();
+
+            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object);
+
+            promise.then(
+                success => {
+                    let value = success.data.data;
+                    resource.attributes = value.attributes;
+                    resource.id = value.id;
+
+                    // instancio los include y los guardo en included arrary
+                    // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
+
+                    fc_error(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
+
+            return resource;
         }
 
         public addRelationship(resource: Jsonapi.IResource, type_alias?: string) {

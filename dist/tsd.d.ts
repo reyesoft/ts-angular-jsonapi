@@ -141,7 +141,7 @@ declare module Jsonapi {
         /**
         Convert json arrays (like included) to an Resources arrays without [keys]
         **/
-        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Array<Jsonapi.IResource>): Array<Jsonapi.IResource>;
+        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Array<Jsonapi.IResource>, use_id_for_key?: boolean): Array<Jsonapi.IResource>;
         /**
         Convert json arrays (like included) to an indexed Resources array by [type][id]
         **/
@@ -197,9 +197,9 @@ declare module Jsonapi {
         This method sort params for new(), get() and update()
         */
         __exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
-        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
+        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
     }
 }
