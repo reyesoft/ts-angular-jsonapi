@@ -6,9 +6,9 @@ module Jsonapi {
         **/
         static json_array2resources_array(
             json_array: [Jsonapi.IDataResource],
-            destination_array?: Array<Jsonapi.IResource>,
+            destination_array?: Object, // Array<Jsonapi.IResource>,
             use_id_for_key = false
-        ):  Array<Jsonapi.IResource> {
+        ): Object { // Array<Jsonapi.IResource> {
             if (!destination_array) {
                 destination_array = [];
             }
@@ -17,9 +17,12 @@ module Jsonapi {
                 if (use_id_for_key) {
                     destination_array[resource.id] = resource;
                 } else {
-                    destination_array.push(resource);
+                    // included for example need a extra parameter
+                    destination_array[resource.type + '_' + resource.id] = resource;
+                    // destination_array.push(resource.id + resource.type);
                 }
             }
+            console.log('todos', destination_array);
             return destination_array;
         }
 
@@ -29,17 +32,18 @@ module Jsonapi {
         static json_array2resources_array_by_type (
             json_array: [Jsonapi.IDataResource],
             instance_relationships: boolean
-        ):  Array<Jsonapi.IResource> {
-            let all_resources = [];
+        ): Object { // Array<Jsonapi.IResource> {
+            let all_resources:any = { } ;
             Converter.json_array2resources_array(json_array, all_resources, false);
-            let resources = [];
+            let resources = { };
             angular.forEach(all_resources, (resource) => {
                 if (!(resource.type in resources)) {
-                    resources[resource.type] = [];
+                    resources[resource.type] = { };
                 }
                 resources[resource.type][resource.id] = resource;
             });
 
+            console.log('resources', resources);
             return resources;
         }
 

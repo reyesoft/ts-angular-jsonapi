@@ -141,11 +141,11 @@ declare module Jsonapi {
         /**
         Convert json arrays (like included) to an Resources arrays without [keys]
         **/
-        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Array<Jsonapi.IResource>, use_id_for_key?: boolean): Array<Jsonapi.IResource>;
+        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Object, use_id_for_key?: boolean): Object;
         /**
         Convert json arrays (like included) to an indexed Resources array by [type][id]
         **/
-        static json_array2resources_array_by_type(json_array: [Jsonapi.IDataResource], instance_relationships: boolean): Array<Jsonapi.IResource>;
+        static json_array2resources_array_by_type(json_array: [Jsonapi.IDataResource], instance_relationships: boolean): Object;
         static json2resource(json_resource: Jsonapi.IDataResource, instance_relationships: any): Jsonapi.IResource;
         static getService(type: string): Jsonapi.IResource;
         static procreate(resource_service: Jsonapi.IResource, data: Jsonapi.IDataResource): Jsonapi.IResource;
@@ -198,7 +198,7 @@ declare module Jsonapi {
         */
         __exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
-        _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
+        _all(params: any, fc_success: any, fc_error: any): Object;
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
     }

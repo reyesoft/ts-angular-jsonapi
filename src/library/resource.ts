@@ -175,7 +175,7 @@ module Jsonapi {
             return resource;
         }
 
-        public _all(params, fc_success, fc_error): Array<IResource> {
+        public _all(params, fc_success, fc_error): Object { // Array<IResource> {
 
             // http request
             let path = new Jsonapi.PathMaker();
@@ -183,7 +183,7 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let response = [];
+            let response = {};  // if you use [], key like id is not possible
             let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
             promise.then(
                 success => {
