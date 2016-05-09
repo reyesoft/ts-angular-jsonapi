@@ -54,7 +54,7 @@ module Jsonapi {
         static getService(type: string): Jsonapi.IResource {
             let resource_service = Jsonapi.Core.Me.getResource(type);
             if (angular.isUndefined(resource_service)) {
-                console.warn('Jsonapi Resource type `' + type + '` is not definded.');
+                console.warn('Jsonapi Resource type `' + type + '` is not registered.');
             }
             return resource_service;
         }

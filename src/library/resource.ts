@@ -151,20 +151,23 @@ module Jsonapi {
                             resource.relationships[relation_key] = { data: [] };
                         }
 
-                        let resource_service = Jsonapi.Converter.getService(relation_key);
-                        if (resource_service) {
-                            // recorro los resources del relation type
-                            let relationship_resources = [];
-                            angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
-                                // está en el included?
-                                let tmp_resource;
-                                if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
-                                    tmp_resource = included[resource_value.type][resource_value.id];
-                                } else {
-                                    tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
-                                }
-                                resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
-                            });
+                        if (relation_value.data.length > 0) {
+                            // we use relation_value.data[0].type, becouse maybe is polymophic
+                            let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
+                            if (resource_service) {
+                                // recorro los resources del relation type
+                                let relationship_resources = [];
+                                angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
+                                    // está en el included?
+                                    let tmp_resource;
+                                    if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
+                                        tmp_resource = included[resource_value.type][resource_value.id];
+                                    } else {
+                                        tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
+                                    }
+                                    resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
+                                });
+                            }
                         }
                     });
 
