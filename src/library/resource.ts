@@ -151,7 +151,8 @@ module Jsonapi {
                             resource.relationships[relation_key] = { data: [] };
                         }
 
-                        if (relation_value.data.length > 0) {
+                        // sometime data=null or simple { }
+                        if (relation_value.data && relation_value.data.length > 0) {
                             // we use relation_value.data[0].type, becouse maybe is polymophic
                             let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
                             if (resource_service) {
