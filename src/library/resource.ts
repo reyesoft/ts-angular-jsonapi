@@ -215,7 +215,7 @@ module Jsonapi {
 
             let resource = this.new();
 
-            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object);
+            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PUT' : 'POST', object);
 
             promise.then(
                 success => {
@@ -229,7 +229,7 @@ module Jsonapi {
                     fc_error(success);
                 },
                 error => {
-                    fc_error(error);
+                    fc_error('data' in error ? error.data : error);
                 }
             );
 
