@@ -137,7 +137,10 @@ module Jsonapi {
                     resource.id = value.id;
 
                     // instancio los include y los guardo en included arrary
-                    let included = Converter.json_array2resources_array_by_type(success.data.included, false);
+                    let included = {};
+                    if ('included' in success.data) {
+                        included = Converter.json_array2resources_array_by_type(success.data.included, false);
+                    }
 
                     // recorro los relationships levanto el service correspondiente
                     angular.forEach(value.relationships, (relation_value, relation_key) => {
