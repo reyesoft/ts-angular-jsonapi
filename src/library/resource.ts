@@ -58,7 +58,7 @@ module Jsonapi {
             angular.forEach(this.relationships, (relationship, relation_alias) => {
                 relationships[relation_alias] = { data: [] };
                 angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
-                    let reational_object = { id: resource.id, tpe: resource.type };
+                    let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias]['data'].push(reational_object);
                 });
             });

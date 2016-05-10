@@ -143,10 +143,15 @@ author.save();
 let author = this.AuthorsService.new();
 author.attributes.name = 'Pablo Reyes';
 author.attributes.date_of_birth = '2030-12-10';
-// book is an another resource like author
-author.addRelationship(book);
-// editorial is a polymorphic resource named company on this case
-author.addRelationship(editorial, 'company');
+
+// some_book is an another resource like author
+let some_book = this.BooksService.get(1);
+author.addRelationship(some_book);
+
+// some_publisher is a polymorphic resource named company on this case
+let some_publisher = this.PublishersService.get(1);
+author.addRelationship(some_publisher, 'company');
+
 // this library can send include information to server, for atomicity
 author.save( { include: ['book'] });
 ```
