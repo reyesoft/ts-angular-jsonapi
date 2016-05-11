@@ -2,16 +2,16 @@ module Jsonapi {
     export class Resource implements IResource {
         public schema: ISchema;
         protected path: string = null;   // without slashes
-
-        public type: string;
-        public id: string;
-        public attributes: any ;
-        public relationships: any = [];
-
         private params_base: Jsonapi.IParams = {
             id: '',
             include: []
         };
+
+        public is_new = true;
+        public type: string;
+        public id: string;
+        public attributes: any ;
+        public relationships: any = [];
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
@@ -51,6 +51,7 @@ module Jsonapi {
                 xthis.relationships[key] = {};
                 xthis.relationships[key]['data'] = {};
             });
+            this.is_new = true;
         }
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
@@ -135,6 +136,7 @@ module Jsonapi {
                     let value = success.data.data;
                     resource.attributes = value.attributes;
                     resource.id = value.id;
+                    resource.is_new = false;
 
                     // instancio los include y los guardo en included arrary
                     let included = {};
@@ -242,11 +244,12 @@ module Jsonapi {
                 this.relationships[type_alias] = { data: { } };
             }
 
-            if (!resource.id) {
-                resource.id = 'new_' + (Math.floor(Math.random() * 100000));
+            let object_key = resource.id;
+            if (!object_key) {
+                object_key = 'new_' + (Math.floor(Math.random() * 100000));
             }
 
-            this.relationships[type_alias]['data'][resource.id] = resource;
+            this.relationships[type_alias]['data'][object_key] = resource;
         }
     }
 }

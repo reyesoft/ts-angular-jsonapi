@@ -67,6 +67,7 @@ module Jsonapi {
             resource.new();
             resource.id = data.id;
             resource.attributes = data.attributes;
+            resource.is_new = false;
             return resource;
         }
 
