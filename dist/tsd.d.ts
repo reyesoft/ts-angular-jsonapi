@@ -196,7 +196,7 @@ declare module Jsonapi {
         /**
         This method sort params for new(), get() and update()
         */
-        __exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
+        private __exec(id, params, fc_success, fc_error, exec_type);
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Object;
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;

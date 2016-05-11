@@ -92,7 +92,7 @@ module Jsonapi {
         /**
         This method sort params for new(), get() and update()
         */
-        public __exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
+        private __exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
             // makes `params` optional
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
@@ -226,7 +226,7 @@ module Jsonapi {
                     // instancio los include y los guardo en included arrary
                     // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
 
-                    fc_error(success);
+                    fc_success(success);
                 },
                 error => {
                     fc_error('data' in error ? error.data : error);
