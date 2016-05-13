@@ -1,5 +1,3 @@
-/// <reference path="./../_all.ts" />
-
 // http://jsonapi.org/format/#document-top-level
 declare module Jsonapi {
     interface IDocument {
@@ -10,6 +8,6 @@ declare module Jsonapi {
         included?: Object;
         meta?: Object;
 
-        promise: any;
+        promise?: any;
     }
 }

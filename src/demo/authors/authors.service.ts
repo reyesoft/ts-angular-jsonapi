@@ -16,14 +16,6 @@ module demoApp {
                 photos: {}
             }
         };
-
-        /** @ngInject */
-        public constructor(
-            JsonapiCore
-        ) {
-            super();
-            this.register();
-        }
     }
 
     angular.module('demoApp').service('AuthorsService', AuthorsService);

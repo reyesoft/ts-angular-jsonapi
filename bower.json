@@ -1,29 +1,32 @@
 {
-  "name": "angular-typescript-gulp-seed",
-  "version": "0.0.1",
-  "authors": [
-      {
-          "name": "Pablo Reyes",
-          "email": "pablo@reyesoft.com"
-      }
-  ],
-  "main": ["dist/ts-angular-jsonapi.js"],
-  "ignore": [
-    "src",
-    "test",
-    "gulpfile.js",
-    "karma-*.conf.js"
-  ],
-  "dependencies": {
-    "bootstrap": "~3.1.1",
-    "jquery": "~1.11.0",
-    "angular": "~1.3.4"
-  },
-  "devDependencies": {
-    "DefinitelyTyped": "*",
-    "mocha": "~2.0.1",
-    "chai": "~1.10.0",
-    "sinon-chai": "~2.6.0",
-    "angular-mocks": "~1.3.4"
-  }
+    "name": "ts-angular-jsonapi",
+    "version": "0.0.1",
+    "authors": [
+        {
+            "name": "Pablo Reyes",
+            "email": "pablo@reyesoft.com"
+        }
+    ],
+    "main": ["dist/ts-angular-jsonapi.js"],
+    "ignore": [
+        "src",
+        "test",
+        "gulpfile*.js",
+        "karma-*.conf.js",
+        "superstatic.json",
+        "tslint.json"
+    ],
+    "dependencies": {
+    },
+    "devDependencies": {
+        "bootstrap": "~3.1.1",
+        "jquery": "~1.11.0",
+        "angular": "~1.3.4",
+
+        "DefinitelyTyped": "*",
+        "mocha": "~2.0.1",
+        "chai": "~1.10.0",
+        "sinon-chai": "~2.6.0",
+        "angular-mocks": "~1.3.4"
+    }
 }

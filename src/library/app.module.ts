@@ -3,13 +3,13 @@
 (function (angular) {
     // Config
     angular.module('Jsonapi.config', [])
-    .constant('JsonapiConfig', {
+    .constant('rsJsonapiConfig', {
         url: 'http://yourdomain/api/v1/'
     });
 
     angular.module('Jsonapi.services', []);
 
-    angular.module('Jsonapi',
+    angular.module('rsJsonapi',
     [
         'angular-storage',
         'Jsonapi.config',

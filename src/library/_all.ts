@@ -5,6 +5,7 @@
 /// <reference path="./interfaces/data-collection.d.ts"/>
 /// <reference path="./interfaces/data-object.d.ts"/>
 /// <reference path="./interfaces/data-resource.d.ts"/>
+/// <reference path="./interfaces/params.d.ts"/>
 /// <reference path="./interfaces/errors.d.ts"/>
 /// <reference path="./interfaces/links.d.ts"/>
 
@@ -19,7 +20,7 @@
 /// <reference path="./app.module.ts"/>
 /// <reference path="./services/http.service.ts"/>
 /// <reference path="./services/path-maker.ts"/>
-/// <reference path="./services/resource-maker.ts"/>
+/// <reference path="./services/resource-converter.ts"/>
 //// <reference path="./services/core-services.service.ts"/>
 /// <reference path="./core.ts"/>
 /// <reference path="./resource.ts"/>

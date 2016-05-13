@@ -10,7 +10,7 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in vm.books |  filter:vm.filter | orderBy:'title'">
+        <tr ng-repeat="book in vm.books | orderBy:'title'">
             <td>{{ book.id }}</td>
             <td>
                 <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>

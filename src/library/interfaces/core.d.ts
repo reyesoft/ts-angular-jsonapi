@@ -1,5 +1,3 @@
-/// <reference path="./../_all.ts" />
-
 declare module Jsonapi {
     interface ICore {
         rootPath?: string;
@@ -8,7 +6,11 @@ declare module Jsonapi {
         Me?: Jsonapi.ICore;
         Services?: any;
 
-        register?(clase: Jsonapi.IResource): void;
-        getResource?(type: string): Jsonapi.IResource;
+        loadingsStart?: Function;
+        loadingsDone?: Function;
+
+        _register? (clase: any): boolean;
+        getResource? (type: string): Jsonapi.IResource;
+        refreshLoadings?(factor: number): void;
     }
 }
