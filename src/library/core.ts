@@ -19,8 +19,12 @@ module Jsonapi {
             Jsonapi.Core.Services = JsonapiCoreServices;
         }
 
-        public _register(clase) {
+        public _register(clase): boolean {
+            if (clase.type in this.resources) {
+                return false;
+            }
             this.resources[clase.type] = clase;
+            return true;
         }
 
         public getResource(type: string) {

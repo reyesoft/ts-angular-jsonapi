@@ -16,11 +16,6 @@ module demoApp {
                 photos: {}
             }
         };
-
-        // public constructor() {
-        //     super();
-        //     this.register();
-        // }
     }
 
     angular.module('demoApp').service('AuthorsService', AuthorsService);

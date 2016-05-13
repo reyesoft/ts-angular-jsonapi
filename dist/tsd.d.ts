@@ -9,8 +9,7 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
 
-        // _register?(clase: Jsonapi.IResource): void;
-        _register? (clase: any): void;    // Jsonapi.IResource fail on resourse.ts
+        _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
         refreshLoadings?(factor: number): void;
     }
@@ -92,13 +91,16 @@ declare module Jsonapi {
     interface IResource extends IDataResource {
         schema?: ISchema;
 
+        is_new: boolean;
+
         clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
         addRelationship? (resource: IResource, type_alias?: string): void;
         toObject? (params: Jsonapi.IParams): Jsonapi.IDataObject;
-        register? (): void;
+        register? (): boolean;
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
+        getService? (): any;
     }
 }
 
@@ -121,7 +123,7 @@ declare module Jsonapi {
         protected $q: any;
         /** @ngInject */
         constructor($http: any, rsJsonapiConfig: any, $q: any);
-        delete(path: string): void;
+        delete(path: string): any;
         get(path: string): any;
         protected exec(path: string, method: string, data?: Jsonapi.IDataObject): any;
     }
@@ -138,9 +140,17 @@ declare module Jsonapi {
 }
 
 declare module Jsonapi {
-    class ResourceMaker {
+    class Converter {
+        /**
+        Convert json arrays (like included) to an Resources arrays without [keys]
+        **/
+        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Object, use_id_for_key?: boolean): Object;
+        /**
+        Convert json arrays (like included) to an indexed Resources array by [type][id]
+        **/
+        static json_array2resources_array_by_type(json_array: [Jsonapi.IDataResource], instance_relationships: boolean): Object;
+        static json2resource(json_resource: Jsonapi.IDataResource, instance_relationships: any): Jsonapi.IResource;
         static getService(type: string): Jsonapi.IResource;
-        static make(data: Jsonapi.IDataResource): Jsonapi.IResource;
         static procreate(resource_service: Jsonapi.IResource, data: Jsonapi.IDataResource): Jsonapi.IResource;
     }
 }
@@ -158,7 +168,7 @@ declare module Jsonapi {
         static Services: any;
         /** @ngInject */
         constructor(rsJsonapiConfig: any, JsonapiCoreServices: any);
-        _register(clase: any): void;
+        _register(clase: any): boolean;
         getResource(type: string): any;
         refreshLoadings(factor: number): void;
     }
@@ -168,25 +178,39 @@ declare module Jsonapi {
     class Resource implements IResource {
         schema: ISchema;
         protected path: string;
+        private params_base;
+        is_new: boolean;
         type: string;
         id: string;
         attributes: any;
         relationships: any;
-        private params_base;
         clone(): any;
-        register(): void;
+        /**
+        Register schema on Jsonapi.Core
+        @return true if the resource don't exist and registered ok
+        **/
+        register(): boolean;
         getPath(): string;
         new(): IResource;
         reset(): void;
         toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
+        delete(id: String, params?: any, fc_success?: any, fc_error?: any): void;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
         save(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
-        exec(id: String, params: Jsonapi.IParams, fc_success: any, fc_error: any, exec_type: string): any;
-        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
+        /**
+        This method sort params for new(), get() and update()
+        */
+        private __exec(id, params, fc_success, fc_error, exec_type);
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
-        _all(params: any, fc_success: any, fc_error: any): Array<IResource>;
+        _delete(id: String, params: any, fc_success: any, fc_error: any): void;
+        _all(params: any, fc_success: any, fc_error: any): Object;
+        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
+        /**
+        @return This resource like a service
+        **/
+        getService(): any;
     }
 }
 
@@ -203,7 +227,7 @@ declare module Jsonapi {
 /// <reference path="app.module.d.ts" />
 /// <reference path="services/http.service.d.ts" />
 /// <reference path="services/path-maker.d.ts" />
-/// <reference path="services/resource-maker.d.ts" />
+/// <reference path="services/resource-converter.d.ts" />
 /// <reference path="core.d.ts" />
 /// <reference path="resource.d.ts" />
 

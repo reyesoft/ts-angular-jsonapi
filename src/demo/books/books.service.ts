@@ -14,14 +14,6 @@ module demoApp {
                 authors: {}
             }
         };
-
-        /** @ngInject */
-        public constructor(
-            JsonapiCore
-        ) {
-            super();
-            this.register();
-        }
     }
 
     angular.module('demoApp').service('BooksService', BooksService);

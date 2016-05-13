@@ -2,16 +2,16 @@ module Jsonapi {
     export class Resource implements IResource {
         public schema: ISchema;
         protected path: string = null;   // without slashes
-
-        public type: string;
-        public id: string;
-        public attributes: any ;
-        public relationships: any = [];
-
         private params_base: Jsonapi.IParams = {
             id: '',
             include: []
         };
+
+        public is_new = true;
+        public type: string;
+        public id: string;
+        public attributes: any ;
+        public relationships: any = [];
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
@@ -23,9 +23,15 @@ module Jsonapi {
             return cloneObj;
         }
 
-        // register schema on Jsonapi.Core
-        public register() {
-            Jsonapi.Core.Me._register(this);
+        /**
+        Register schema on Jsonapi.Core
+        @return true if the resource don't exist and registered ok
+        **/
+        public register(): boolean {
+            if (Jsonapi.Core.Me === null) {
+                throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
+            }
+            return Jsonapi.Core.Me._register(this);
         }
 
         public getPath() {
@@ -48,6 +54,7 @@ module Jsonapi {
                 xthis.relationships[key] = {};
                 xthis.relationships[key]['data'] = {};
             });
+            this.is_new = true;
         }
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
@@ -55,7 +62,7 @@ module Jsonapi {
             angular.forEach(this.relationships, (relationship, relation_alias) => {
                 relationships[relation_alias] = { data: [] };
                 angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
-                    let reational_object = { id: resource.id, tpe: resource.type };
+                    let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias]['data'].push(reational_object);
                 });
             });
@@ -75,18 +82,25 @@ module Jsonapi {
         }
 
         public get(id: String, params?, fc_success?, fc_error?): IResource {
-            return this.exec(id, params, fc_success, fc_error, 'get');
+            return this.__exec(id, params, fc_success, fc_error, 'get');
+        }
+
+        public delete(id: String, params?, fc_success?, fc_error?): void {
+            this.__exec(id, params, fc_success, fc_error, 'delete');
         }
 
         public all(params?, fc_success?, fc_error?): Array<IResource> {
-            return this.exec(null, params, fc_success, fc_error, 'all');
+            return this.__exec(null, params, fc_success, fc_error, 'all');
         }
 
         public save(params?, fc_success?, fc_error?): Array<IResource> {
-            return this.exec(null, params, fc_success, fc_error, 'save');
+            return this.__exec(null, params, fc_success, fc_error, 'save');
         }
 
-        public exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
+        /**
+        This method sort params for new(), get() and update()
+        */
+        private __exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
             // makes `params` optional
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
@@ -106,55 +120,13 @@ module Jsonapi {
             switch (exec_type) {
                 case 'get':
                 return this._get(id, params, fc_success, fc_error);
+                case 'delete':
+                return this._get(id, params, fc_success, fc_error);
                 case 'all':
                 return this._all(params, fc_success, fc_error);
                 case 'save':
                 return this._save(params, fc_success, fc_error);
             }
-
-            return false;
-        }
-
-        public _save(params?, fc_success?, fc_error?): IResource {
-            let object = this.toObject(params);
-
-            // http request
-            let path = new Jsonapi.PathMaker();
-            path.addPath(this.getPath());
-            this.id && path.addPath(this.id);
-            params.include ? path.setInclude(params.include) : null;
-
-            //let resource = new Resource();
-            let resource = this.new();
-
-            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object);
-
-            promise.then(
-                success => {
-                    let value = success.data.data;
-                    resource.attributes = value.attributes;
-                    resource.id = value.id;
-
-                    // instancio los include y los guardo en included arrary
-                    let included = [];
-                    angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
-                        let resource = Jsonapi.ResourceMaker.make(data);
-                        if (resource) {
-                            // guardamos en el array de includes
-                            if (!(data.type in included)) {
-                                included[data.type] = [];
-                            }
-                            included[data.type][data.id] = resource;
-                        }
-                    });
-                    fc_error(success);
-                },
-                error => {
-                    fc_error(error);
-                }
-            );
-
-            return resource;
         }
 
         public _get(id: String, params, fc_success, fc_error): IResource {
@@ -173,43 +145,41 @@ module Jsonapi {
                     let value = success.data.data;
                     resource.attributes = value.attributes;
                     resource.id = value.id;
+                    resource.is_new = false;
 
                     // instancio los include y los guardo en included arrary
-                    let included = [];
-                    angular.forEach(success.data.included, (data: Jsonapi.IDataResource) => {
-                        let resource = Jsonapi.ResourceMaker.make(data);
-                        if (resource) {
-                            // guardamos en el array de includes
-                            if (!(data.type in included)) {
-                                included[data.type] = [];
-                            }
-                            included[data.type][data.id] = resource;
-                        }
-                    });
+                    let included = {};
+                    if ('included' in success.data) {
+                        included = Converter.json_array2resources_array_by_type(success.data.included, false);
+                    }
 
                     // recorro los relationships levanto el service correspondiente
                     angular.forEach(value.relationships, (relation_value, relation_key) => {
 
-                        // relation is in schema?
-                        if (!(relation_key in resource.relationships)) {
-                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema');
+                        // relation is in schema? have data or just links?
+                        if (!(relation_key in resource.relationships) && ('data' in relation_value)) {
+                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema.');
                             resource.relationships[relation_key] = { data: [] };
                         }
 
-                        let resource_service = Jsonapi.ResourceMaker.getService(relation_key);
-                        if (resource_service) {
-                            // recorro los resources del relation type
-                            let relationship_resources = [];
-                            angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
-                                // está en el included?
-                                let tmp_resource;
-                                if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
-                                    tmp_resource = included[resource_value.type][resource_value.id];
-                                } else {
-                                    tmp_resource = Jsonapi.ResourceMaker.procreate(resource_service, resource_value);
-                                }
-                                resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
-                            });
+                        // sometime data=null or simple { }
+                        if (relation_value.data && relation_value.data.length > 0) {
+                            // we use relation_value.data[0].type, becouse maybe is polymophic
+                            let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
+                            if (resource_service) {
+                                // recorro los resources del relation type
+                                let relationship_resources = [];
+                                angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
+                                    // está en el included?
+                                    let tmp_resource;
+                                    if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
+                                        tmp_resource = included[resource_value.type][resource_value.id];
+                                    } else {
+                                        tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
+                                    }
+                                    resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
+                                });
+                            }
                         }
                     });
 
@@ -223,7 +193,28 @@ module Jsonapi {
             return resource;
         }
 
-        public _all(params, fc_success, fc_error): Array<IResource> {
+        public _delete(id: String, params, fc_success, fc_error): void {
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            path.addPath(id);
+            // params.include ? path.setInclude(params.include) : null;
+
+            //let resource = new Resource();
+            // let resource = this.new();
+
+            let promise = Jsonapi.Core.Services.JsonapiHttp.delete(path.get());
+            promise.then(
+                success => {
+                    fc_success(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
+        }
+
+        public _all(params, fc_success, fc_error): Object { // Array<IResource> {
 
             // http request
             let path = new Jsonapi.PathMaker();
@@ -231,17 +222,11 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let response = [];
+            let response = {};  // if you use [], key like id is not possible
             let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
             promise.then(
                 success => {
-                    angular.forEach(success.data.data, function (value) {
-                        let resource = new Resource();
-                        resource.id = value.id;
-                        resource.attributes = value.attributes;
-
-                        response.push(resource);
-                    });
+                    Converter.json_array2resources_array(success.data.data, response, true);
                     fc_success(success);
                 },
                 error => {
@@ -251,17 +236,57 @@ module Jsonapi {
             return response;
         }
 
+        public _save(params?, fc_success?, fc_error?): IResource {
+            let object = this.toObject(params);
+
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            this.id && path.addPath(this.id);
+            params.include ? path.setInclude(params.include) : null;
+
+            let resource = this.new();
+
+            let promise = Jsonapi.Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PUT' : 'POST', object);
+
+            promise.then(
+                success => {
+                    let value = success.data.data;
+                    resource.attributes = value.attributes;
+                    resource.id = value.id;
+
+                    // instancio los include y los guardo en included arrary
+                    // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
+
+                    fc_success(success);
+                },
+                error => {
+                    fc_error('data' in error ? error.data : error);
+                }
+            );
+
+            return resource;
+        }
+
         public addRelationship(resource: Jsonapi.IResource, type_alias?: string) {
             type_alias = (type_alias ? type_alias : resource.type);
             if (!(type_alias in this.relationships)) {
                 this.relationships[type_alias] = { data: { } };
             }
 
-            if (!resource.id) {
-                resource.id = 'new_' + (Math.floor(Math.random() * 100000));
+            let object_key = resource.id;
+            if (!object_key) {
+                object_key = 'new_' + (Math.floor(Math.random() * 100000));
             }
 
-            this.relationships[type_alias]['data'][resource.id] = resource;
+            this.relationships[type_alias]['data'][object_key] = resource;
+        }
+
+        /**
+        @return This resource like a service
+        **/
+        public getService(): any {
+            return Converter.getService(this.type);
         }
     }
 }
