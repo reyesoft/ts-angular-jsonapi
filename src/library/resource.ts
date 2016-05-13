@@ -255,7 +255,7 @@ module Jsonapi {
         /**
         @return This resource like a service
         **/
-        public getMe() {
+        public getService(): any {
             return Converter.getService(this.type);
         }
     }

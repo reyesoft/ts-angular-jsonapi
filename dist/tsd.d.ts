@@ -100,6 +100,7 @@ declare module Jsonapi {
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
+        getService? (): any;
     }
 }
 
@@ -207,7 +208,7 @@ declare module Jsonapi {
         /**
         @return This resource like a service
         **/
-        getMe(): IResource;
+        getService(): any;
     }
 }
 
