@@ -123,7 +123,7 @@ declare module Jsonapi {
         protected $q: any;
         /** @ngInject */
         constructor($http: any, rsJsonapiConfig: any, $q: any);
-        delete(path: string): void;
+        delete(path: string): any;
         get(path: string): any;
         protected exec(path: string, method: string, data?: Jsonapi.IDataObject): any;
     }
@@ -195,6 +195,7 @@ declare module Jsonapi {
         reset(): void;
         toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
         get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
+        delete(id: String, params?: any, fc_success?: any, fc_error?: any): void;
         all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
         save(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
         /**
@@ -202,6 +203,7 @@ declare module Jsonapi {
         */
         private __exec(id, params, fc_success, fc_error, exec_type);
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
+        _delete(id: String, params: any, fc_success: any, fc_error: any): void;
         _all(params: any, fc_success: any, fc_error: any): Object;
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;

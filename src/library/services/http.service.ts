@@ -11,7 +11,7 @@ module Jsonapi {
         }
 
         public delete(path: string) {
-
+            return this.exec(path, 'DELETE');
         }
 
         public get(path: string) {

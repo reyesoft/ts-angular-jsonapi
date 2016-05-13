@@ -82,6 +82,10 @@ module Jsonapi {
             return this.__exec(id, params, fc_success, fc_error, 'get');
         }
 
+        public delete(id: String, params?, fc_success?, fc_error?): void {
+            this.__exec(id, params, fc_success, fc_error, 'delete');
+        }
+
         public all(params?, fc_success?, fc_error?): Array<IResource> {
             return this.__exec(null, params, fc_success, fc_error, 'all');
         }
@@ -112,6 +116,8 @@ module Jsonapi {
 
             switch (exec_type) {
                 case 'get':
+                return this._get(id, params, fc_success, fc_error);
+                case 'delete':
                 return this._get(id, params, fc_success, fc_error);
                 case 'all':
                 return this._all(params, fc_success, fc_error);
@@ -182,6 +188,27 @@ module Jsonapi {
             );
 
             return resource;
+        }
+
+        public _delete(id: String, params, fc_success, fc_error): void {
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            path.addPath(id);
+            // params.include ? path.setInclude(params.include) : null;
+
+            //let resource = new Resource();
+            // let resource = this.new();
+
+            let promise = Jsonapi.Core.Services.JsonapiHttp.delete(path.get());
+            promise.then(
+                success => {
+                    fc_success(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
         }
 
         public _all(params, fc_success, fc_error): Object { // Array<IResource> {
