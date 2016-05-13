@@ -7,6 +7,11 @@
             "email": "pablo@reyesoft.com"
         }
     ],
+    "homepage": "https://github.com/reyesoft/ts-angular-jsonapi",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/reyesoft/ts-angular-jsonapi.git"
+    },
     "main": ["dist/ts-angular-jsonapi.js"],
     "ignore": [
         "src",
@@ -17,6 +22,7 @@
         "tslint.json"
     ],
     "dependencies": {
+        "angular": "^1.4"
     },
     "devDependencies": {
         "bootstrap": "~3.1.1",
