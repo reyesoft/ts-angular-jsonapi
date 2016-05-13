@@ -251,5 +251,12 @@ module Jsonapi {
 
             this.relationships[type_alias]['data'][object_key] = resource;
         }
+
+        /**
+        @return This resource like a service
+        **/
+        public getMe() {
+            return Converter.getService(this.type);
+        }
     }
 }

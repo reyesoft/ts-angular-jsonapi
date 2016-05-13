@@ -204,6 +204,10 @@ declare module Jsonapi {
         _all(params: any, fc_success: any, fc_error: any): Object;
         _save(params?: any, fc_success?: any, fc_error?: any): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
+        /**
+        @return This resource like a service
+        **/
+        getMe(): IResource;
     }
 }
 
