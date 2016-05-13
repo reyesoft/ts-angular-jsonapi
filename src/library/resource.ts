@@ -28,6 +28,9 @@ module Jsonapi {
         @return true if the resource don't exist and registered ok
         **/
         public register(): boolean {
+            if (Jsonapi.Core.Me === null) {
+                throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
+            }
             return Jsonapi.Core.Me._register(this);
         }
 
