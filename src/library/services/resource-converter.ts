@@ -12,6 +12,7 @@ module Jsonapi {
             if (!destination_array) {
                 destination_array = [];
             }
+            let count = 0;
             for (let data of json_array) {
                 let resource = Jsonapi.Converter.json2resource(data, false);
                 if (use_id_for_key) {
@@ -21,7 +22,9 @@ module Jsonapi {
                     destination_array[resource.type + '_' + resource.id] = resource;
                     // destination_array.push(resource.id + resource.type);
                 }
+                count++;
             }
+            destination_array['$count'] = count;
             return destination_array;
         }
 
