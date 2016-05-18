@@ -24,7 +24,7 @@ module Jsonapi {
                 }
                 count++;
             }
-            destination_array['$count'] = count;
+            // destination_array['$count'] = count; // problem with toArray or angular.forEach need a !isObject
             return destination_array;
         }
 
