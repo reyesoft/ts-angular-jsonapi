@@ -58,42 +58,50 @@ module Jsonapi {
         }
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
+            params = angular.extend({}, this.params_base, params);
             let relationships = { };
+            let included = { };
             angular.forEach(this.relationships, (relationship, relation_alias) => {
                 relationships[relation_alias] = { data: [] };
                 angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
                     let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias]['data'].push(reational_object);
+
+                    if (params.include.indexOf(relation_alias) !== -1) {
+                        included[resource.type + '_' + resource.id] = resource.toObject({ }).data;
+                    }
                 });
             });
 
-            return {
+            let ret = {
                 data: {
                     type: this.type,
                     id: this.id,
                     attributes: this.attributes,
                     relationships: relationships
-                },
-                include: {
-
                 }
             };
-            //return object;
+
+            if (Object.keys(included).length > 0) {
+                ret['include'] = included;
+            }
+
+            return ret;
         }
 
-        public get(id: String, params?, fc_success?, fc_error?): IResource {
+        public get(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource {
             return this.__exec(id, params, fc_success, fc_error, 'get');
         }
 
-        public delete(id: String, params?, fc_success?, fc_error?): void {
+        public delete(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
             this.__exec(id, params, fc_success, fc_error, 'delete');
         }
 
-        public all(params?, fc_success?, fc_error?): Array<IResource> {
+        public all(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource> {
             return this.__exec(null, params, fc_success, fc_error, 'all');
         }
 
-        public save(params?, fc_success?, fc_error?): Array<IResource> {
+        public save(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource> {
             return this.__exec(null, params, fc_success, fc_error, 'save');
         }
 
@@ -236,7 +244,7 @@ module Jsonapi {
             return response;
         }
 
-        public _save(params?, fc_success?, fc_error?): IResource {
+        public _save(params: IParams, fc_success: Function, fc_error: Function): IResource {
             let object = this.toObject(params);
 
             // http request

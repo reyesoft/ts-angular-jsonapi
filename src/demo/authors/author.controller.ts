@@ -43,7 +43,9 @@ module demoApp {
         **/
         public update() {
             this.author.attributes.name += 'o';
-            this.author.save();
+            this.author.save(
+                // { include: ['books'] }
+            );
             console.log('update save', this.author.toObject());
         }
     }

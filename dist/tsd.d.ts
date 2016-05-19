@@ -194,10 +194,10 @@ declare module Jsonapi {
         new(): IResource;
         reset(): void;
         toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
-        get(id: String, params?: any, fc_success?: any, fc_error?: any): IResource;
-        delete(id: String, params?: any, fc_success?: any, fc_error?: any): void;
-        all(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
-        save(params?: any, fc_success?: any, fc_error?: any): Array<IResource>;
+        get(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource;
+        delete(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
+        all(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
+        save(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
         /**
         This method sort params for new(), get() and update()
         */
@@ -205,7 +205,7 @@ declare module Jsonapi {
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
         _delete(id: String, params: any, fc_success: any, fc_error: any): void;
         _all(params: any, fc_success: any, fc_error: any): Object;
-        _save(params?: any, fc_success?: any, fc_error?: any): IResource;
+        _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
         /**
         @return This resource like a service
