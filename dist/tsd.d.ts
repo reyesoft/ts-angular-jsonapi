@@ -178,6 +178,7 @@ declare module Jsonapi {
         schema: ISchema;
         protected path: string;
         private params_base;
+        private schema_base;
         is_new: boolean;
         type: string;
         id: string;

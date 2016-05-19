@@ -6,6 +6,10 @@ module Jsonapi {
             id: '',
             include: []
         };
+        private schema_base = {
+            attributes: {},
+            relationships: {}
+        };
 
         public is_new = true;
         public type: string;
@@ -59,22 +63,43 @@ module Jsonapi {
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
             params = angular.extend({}, this.params_base, params);
+            this.schema = angular.extend({}, this.schema_base, this.schema);
+
             let relationships = { };
-            let included_ids = [ ];
             let included = [ ];
+            let included_ids = [ ]; //just for control don't repeat any resource
+
+            // agrego cada relationship
             angular.forEach(this.relationships, (relationship, relation_alias) => {
-                relationships[relation_alias] = { data: [] };
-                angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
-                    let reational_object = { id: resource.id, type: resource.type };
-                    relationships[relation_alias]['data'].push(reational_object);
+
+                if (this.schema.relationships[relation_alias] && this.schema.relationships[relation_alias].hasMany) {
+                    relationships[relation_alias] = { data: [] };
+
+                    angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
+                        let reational_object = { id: resource.id, type: resource.type };
+                        relationships[relation_alias]['data'].push(reational_object);
+
+                        // no se agregó aún a included && se ha pedido incluir con el parms.include
+                        let temporal_id = resource.type + '_' + resource.id;
+                        if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                            included_ids.push(temporal_id);
+                            included.push(resource.toObject({ }).data);
+                        }
+                    });
+                } else {
+                    if (!('id' in relationship.data)) {
+                        console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
+                    }
+
+                    relationships[relation_alias] = { data: { id: relationship.data.id, type: relationship.data.type } };
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
-                    let temporal_id = resource.type + '_' + resource.id;
-                    if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                    let temporal_id = relationship.data.type + '_' + relationship.data.id;
+                    if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relationship.data.type) !== -1) {
                         included_ids.push(temporal_id);
-                        included.push(resource.toObject({ }).data);
+                        included.push(relationship.data.toObject({ }).data);
                     }
-                });
+                }
             });
 
             let ret: IDataObject = {
@@ -177,28 +202,45 @@ module Jsonapi {
                         // sometime data=null or simple { }
                         if (relation_value.data) {
 
-                            // when related resource is only one, maybe you
-                            // receive an object and not an array
-                            if (typeof relation_value.data.length === 'undefined') {
-                                relation_value.data = [ relation_value.data ];
-                            }
-
-                            if (relation_value.data.length > 0) {
-                                // we use relation_value.data[0].type, becouse maybe is polymophic
-                                let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
-                                if (resource_service) {
-                                    // recorro los resources del relation type
-                                    let relationship_resources = [];
-                                    angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
+                            if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
+                                if (relation_value.data.length > 0) {
+                                    // we use relation_value.data[0].type, becouse maybe is polymophic
+                                    let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
+                                    if (resource_service) {
+                                        // recorro los resources del relation type
+                                        let relationship_resources = [];
+                                        angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
+                                            // está en el included?
+                                            let tmp_resource;
+                                            if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
+                                                tmp_resource = included[resource_value.type][resource_value.id];
+                                            } else {
+                                                tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
+                                            }
+                                            resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
+                                        });
+                                    }
+                                }
+                            } else {
+                                if (relation_value.data.id) {
+                                    // we use relation_value.data[0].type, becouse maybe is polymophic
+                                    let resource_service = Jsonapi.Converter.getService(relation_value.data.type);
+                                    if (resource_service) {
+                                        // recorro los resources del relation type
+                                        let relationship_resources = {};
+                                        // angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
                                         // está en el included?
                                         let tmp_resource;
-                                        if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
-                                            tmp_resource = included[resource_value.type][resource_value.id];
+                                        if (relation_value.data.type in included &&
+                                            relation_value.data.id in included[relation_value.data.type]
+                                            ) {
+                                            tmp_resource = included[relation_value.data.type][relation_value.data.id];
                                         } else {
-                                            tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
+                                            tmp_resource = Jsonapi.Converter.procreate(resource_service, relation_value.data);
                                         }
-                                        resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
-                                    });
+                                        resource.relationships[relation_key].data = tmp_resource;
+                                        // });
+                                    }
                                 }
                             }
                         }

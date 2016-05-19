@@ -12,8 +12,12 @@ module demoApp {
                 updated_at: {}
             },
             relationships: {
-                books: {},
-                photos: {}
+                books: {
+                    hasMany: true
+                },
+                photos: {
+                    hasMany: true
+                }
             }
         };
     }
