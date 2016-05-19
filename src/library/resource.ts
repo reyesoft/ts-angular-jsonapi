@@ -87,7 +87,7 @@ module Jsonapi {
             };
 
             if (included.length > 0) {
-                ret['include'] = included;
+                ret.included = included;
             }
 
             return ret;
