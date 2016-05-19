@@ -60,20 +60,24 @@ module Jsonapi {
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
             params = angular.extend({}, this.params_base, params);
             let relationships = { };
-            let included = { };
+            let included_ids = [ ];
+            let included = [ ];
             angular.forEach(this.relationships, (relationship, relation_alias) => {
                 relationships[relation_alias] = { data: [] };
                 angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
                     let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias]['data'].push(reational_object);
 
-                    if (params.include.indexOf(relation_alias) !== -1) {
-                        included[resource.type + '_' + resource.id] = resource.toObject({ }).data;
+                    // no se agregó aún a included && se ha pedido incluir con el parms.include
+                    let temporal_id = resource.type + '_' + resource.id;
+                    if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                        included_ids.push(temporal_id);
+                        included.push(resource.toObject({ }).data);
                     }
                 });
             });
 
-            let ret = {
+            let ret: IDataObject = {
                 data: {
                     type: this.type,
                     id: this.id,
@@ -82,7 +86,7 @@ module Jsonapi {
                 }
             };
 
-            if (Object.keys(included).length > 0) {
+            if (included.length > 0) {
                 ret['include'] = included;
             }
 

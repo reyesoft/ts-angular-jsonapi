@@ -35,7 +35,7 @@ module demoApp {
                 author.addRelationship(book /* , 'handbook' */);
             });
             console.log('new save', author.toObject());
-            author.save( /* { include: ['book'] } */ );
+            // author.save( /* { include: ['book'] } */ );
         }
 
         /**
@@ -46,7 +46,8 @@ module demoApp {
             this.author.save(
                 // { include: ['books'] }
             );
-            console.log('update save', this.author.toObject());
+            console.log('update save with book include', this.author.toObject({ include: ['books'] }));
+            console.log('update save without any include', this.author.toObject());
         }
     }
 
