@@ -51,17 +51,25 @@ module Jsonapi {
             let resource_service = Jsonapi.Converter.getService(json_resource.type);
             if (resource_service) {
                 return Jsonapi.Converter.procreate(resource_service, json_resource);
+            } else {
+                // service not registered
+                console.warn('`' + json_resource.type + '`', 'service not found on json2resource()');
+                let temp = new Jsonapi.Resource();
+                temp.id = json_resource.id;
+                temp.type = json_resource.type;
+                return temp;
             }
         }
 
         static getService(type: string): Jsonapi.IResource {
             let resource_service = Jsonapi.Core.Me.getResource(type);
             if (angular.isUndefined(resource_service)) {
-                console.warn('Jsonapi Resource type `' + type + '` is not registered.');
+                console.warn('`' + type + '`', 'service not found on getService()');
             }
             return resource_service;
         }
 
+        /* return a resource type(resoruce_service) with data(data) */
         static procreate(resource_service: Jsonapi.IResource, data: Jsonapi.IDataResource): Jsonapi.IResource {
             if (!('type' in data && 'id' in data)) {
                 console.error('Jsonapi Resource is not correct', data);
@@ -69,10 +77,57 @@ module Jsonapi {
             let resource = new (<any>resource_service.constructor)();
             resource.new();
             resource.id = data.id;
-            resource.attributes = data.attributes;
+            resource.attributes = data.attributes ? data.attributes : {};
             resource.is_new = false;
             return resource;
         }
+
+
+
+        static buildRelationships(relationships_from: Array<any>, relationships_dest: Array<any>, included_array, schema: ISchema) {
+            // recorro los relationships levanto el service correspondiente
+            angular.forEach(relationships_from, (relation_value, relation_key) => {
+
+                // relation is in schema? have data or just links?
+                if (!(relation_key in relationships_dest) && ('data' in relation_value)) {
+                    relationships_dest[relation_key] = { data: [] };
+                }
+
+                // sometime data=null or simple { }
+                if (!relation_value.data)
+                    return ;
+
+                if (schema.relationships[relation_key] && schema.relationships[relation_key].hasMany) {
+                    if (relation_value.data.length < 1)
+                        return ;
+                    let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
+                    if (resource_service) {
+                        angular.forEach(relation_value.data, (relation_value: Jsonapi.IDataResource) => {
+                            let tmp = Converter.__buildRelationship(relation_value, included_array);
+                            relationships_dest[relation_key].data[tmp.id] = tmp;
+                        });
+                    }
+                } else {
+                    relationships_dest[relation_key].data = Converter.__buildRelationship(relation_value.data, included_array);
+                }
+            });
+        }
+
+        static __buildRelationship(relation: Jsonapi.IDataResource, included_array): Jsonapi.IResource | Jsonapi.IDataResource {
+            if (relation.type in included_array &&
+                relation.id in included_array[relation.type]
+            ) {
+                // it's in included
+                return included_array[relation.type][relation.id];
+            } else {
+                // resource not included, return directly the object
+                return relation;
+            }
+        }
+
+
+
+
 
     }
 }

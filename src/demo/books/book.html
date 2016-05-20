@@ -1,11 +1,26 @@
 <div>
     <filter-textbox filter="vm.filter"></filter-textbox>
     <br/>
-    <h3>Book {{ vm.id }}</h3>
+    <h3>Book #{{ vm.book.id }}</h3>
     <ul>
         <li>Title: <strong>{{ vm.book.attributes.title }}</strong></li>
         <li>Date Published: <strong>{{ vm.book.attributes.date_published | date }}</strong></li>
     </ul>
+
+    <h4>Author (one)</h4>
+    <p><small>This a relationship with <i>hasMany:false</i></small></p>
+    <ul>
+        <li>Name: <strong>{{ vm.book.relationships.author.data.attributes.name }}</strong></li>
+    </ul>
+
+    <h4>Photos (many)</h4>
+    <p><small>This a relationship with <i>hasMany:true</i></small></p>
+    <ul>
+        <li ng-repeat="photo in vm.book.relationships.photos.data">
+            URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
+        </li>
+    </ul>
+
     <p>
         <a href="#/books/">Volver</a>
     </p>

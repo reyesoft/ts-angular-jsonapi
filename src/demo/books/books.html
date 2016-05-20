@@ -8,6 +8,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 <th>Date Published</th>
+                <th>Author</th>
             </tr>
         </thead>
         <tr ng-repeat="book in vm.books | orderBy:'title'">
@@ -16,6 +17,7 @@
                 <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
             </td>
             <td>{{ book.attributes.date_published | date }}</td>
+            <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
         </tr>
     </table>
 </div>

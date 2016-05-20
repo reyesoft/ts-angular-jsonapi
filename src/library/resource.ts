@@ -190,61 +190,7 @@ module Jsonapi {
                         included = Converter.json_array2resources_array_by_type(success.data.included, false);
                     }
 
-                    // recorro los relationships levanto el service correspondiente
-                    angular.forEach(value.relationships, (relation_value, relation_key) => {
-
-                        // relation is in schema? have data or just links?
-                        if (!(relation_key in resource.relationships) && ('data' in relation_value)) {
-                            console.warn(resource.type + '.relationships.' + relation_key + ' received, but is not defined on schema.');
-                            resource.relationships[relation_key] = { data: [] };
-                        }
-
-                        // sometime data=null or simple { }
-                        if (relation_value.data) {
-
-                            if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
-                                if (relation_value.data.length > 0) {
-                                    // we use relation_value.data[0].type, becouse maybe is polymophic
-                                    let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
-                                    if (resource_service) {
-                                        // recorro los resources del relation type
-                                        let relationship_resources = [];
-                                        angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
-                                            // está en el included?
-                                            let tmp_resource;
-                                            if (resource_value.type in included && resource_value.id in included[resource_value.type]) {
-                                                tmp_resource = included[resource_value.type][resource_value.id];
-                                            } else {
-                                                tmp_resource = Jsonapi.Converter.procreate(resource_service, resource_value);
-                                            }
-                                            resource.relationships[relation_key].data[tmp_resource.id] = tmp_resource;
-                                        });
-                                    }
-                                }
-                            } else {
-                                if (relation_value.data.id) {
-                                    // we use relation_value.data[0].type, becouse maybe is polymophic
-                                    let resource_service = Jsonapi.Converter.getService(relation_value.data.type);
-                                    if (resource_service) {
-                                        // recorro los resources del relation type
-                                        let relationship_resources = {};
-                                        // angular.forEach(relation_value.data, (resource_value: Jsonapi.IDataResource) => {
-                                        // está en el included?
-                                        let tmp_resource;
-                                        if (relation_value.data.type in included &&
-                                            relation_value.data.id in included[relation_value.data.type]
-                                            ) {
-                                            tmp_resource = included[relation_value.data.type][relation_value.data.id];
-                                        } else {
-                                            tmp_resource = Jsonapi.Converter.procreate(resource_service, relation_value.data);
-                                        }
-                                        resource.relationships[relation_key].data = tmp_resource;
-                                        // });
-                                    }
-                                }
-                            }
-                        }
-                    });
+                    Converter.buildRelationships(value.relationships, resource.relationships, included, this.schema);
 
                     fc_success(success);
                 },
@@ -254,27 +200,6 @@ module Jsonapi {
             );
 
             return resource;
-        }
-
-        public _delete(id: String, params, fc_success, fc_error): void {
-            // http request
-            let path = new Jsonapi.PathMaker();
-            path.addPath(this.getPath());
-            path.addPath(id);
-            // params.include ? path.setInclude(params.include) : null;
-
-            //let resource = new Resource();
-            // let resource = this.new();
-
-            let promise = Jsonapi.Core.Services.JsonapiHttp.delete(path.get());
-            promise.then(
-                success => {
-                    fc_success(success);
-                },
-                error => {
-                    fc_error(error);
-                }
-            );
         }
 
         public _all(params, fc_success, fc_error): Object { // Array<IResource> {
@@ -297,6 +222,27 @@ module Jsonapi {
                 }
             );
             return response;
+        }
+
+        public _delete(id: String, params, fc_success, fc_error): void {
+            // http request
+            let path = new Jsonapi.PathMaker();
+            path.addPath(this.getPath());
+            path.addPath(id);
+            // params.include ? path.setInclude(params.include) : null;
+
+            //let resource = new Resource();
+            // let resource = this.new();
+
+            let promise = Jsonapi.Core.Services.JsonapiHttp.delete(path.get());
+            promise.then(
+                success => {
+                    fc_success(success);
+                },
+                error => {
+                    fc_error(error);
+                }
+            );
         }
 
         public _save(params: IParams, fc_success: Function, fc_error: Function): IResource {
