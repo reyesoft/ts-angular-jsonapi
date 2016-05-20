@@ -5,7 +5,7 @@ declare module Jsonapi {
         // error in child interface IJsonapiErrors
         jsonapi?: string;
         links?: ILinks;
-        included?: Object;
+        included?: Array<Jsonapi.IDataResource>;
         meta?: Object;
 
         promise?: any;

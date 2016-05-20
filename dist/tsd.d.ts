@@ -17,7 +17,7 @@ declare module Jsonapi {
 
 declare module Jsonapi {
     interface IDataCollection extends IDocument {
-        data: IResource[];
+        data: Array<Jsonapi.IDataResource>;
     }
 }
 
@@ -45,7 +45,7 @@ declare module Jsonapi {
         // error in child interface IJsonapiErrors
         jsonapi?: string;
         links?: ILinks;
-        included?: Object;
+        included?: Array<Jsonapi.IDataResource>;
         meta?: Object;
 
         promise?: any;
@@ -143,14 +143,19 @@ declare module Jsonapi {
         /**
         Convert json arrays (like included) to an Resources arrays without [keys]
         **/
-        static json_array2resources_array(json_array: [Jsonapi.IDataResource], destination_array?: Object, use_id_for_key?: boolean): Object;
+        static json_array2resources_array(json_array: Array<Jsonapi.IDataResource>, destination_array?: Object, use_id_for_key?: boolean): Object;
         /**
         Convert json arrays (like included) to an indexed Resources array by [type][id]
         **/
-        static json_array2resources_array_by_type(json_array: [Jsonapi.IDataResource], instance_relationships: boolean): Object;
+        static json_array2resources_array_by_type(json_array: Array<Jsonapi.IDataResource>, instance_relationships: boolean): Object;
         static json2resource(json_resource: Jsonapi.IDataResource, instance_relationships: any): Jsonapi.IResource;
         static getService(type: string): Jsonapi.IResource;
         static procreate(resource_service: Jsonapi.IResource, data: Jsonapi.IDataResource): Jsonapi.IResource;
+        static build(document_from: any, resource_dest: any, schema: ISchema): void;
+        static _buildResources(document_from: IDataCollection, resource_dest: Array<IDataCollection>, schema: ISchema, included: any): void;
+        static _buildResource(document_from: IDataResource, resource_dest: IResource, schema: ISchema, included: any): void;
+        static __buildRelationships(relationships_from: Array<any>, relationships_dest: Array<any>, included_array: any, schema: ISchema): void;
+        static __buildRelationship(relation: Jsonapi.IDataResource, included_array: any): Jsonapi.IResource | Jsonapi.IDataResource;
     }
 }
 
@@ -203,8 +208,8 @@ declare module Jsonapi {
         */
         private __exec(id, params, fc_success, fc_error, exec_type);
         _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
-        _delete(id: String, params: any, fc_success: any, fc_error: any): void;
         _all(params: any, fc_success: any, fc_error: any): Object;
+        _delete(id: String, params: any, fc_success: any, fc_error: any): void;
         _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
         /**

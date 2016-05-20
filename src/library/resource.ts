@@ -173,25 +173,13 @@ module Jsonapi {
             path.addPath(id);
             params.include ? path.setInclude(params.include) : null;
 
-            //let resource = new Resource();
             let resource = this.new();
 
-            let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
-            promise.then(
+            Jsonapi.Core.Services.JsonapiHttp
+            .get(path.get())
+            .then(
                 success => {
-                    let value = success.data.data;
-                    resource.attributes = value.attributes;
-                    resource.id = value.id;
-                    resource.is_new = false;
-
-                    // instancio los include y los guardo en included arrary
-                    let included = {};
-                    if ('included' in success.data) {
-                        included = Converter.json_array2resources_array_by_type(success.data.included, false);
-                    }
-
-                    Converter.buildRelationships(value.relationships, resource.relationships, included, this.schema);
-
+                    Converter.build(success.data, resource, this.schema);
                     fc_success(success);
                 },
                 error => {
@@ -210,18 +198,19 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let response = {};  // if you use [], key like id is not possible
-            let promise = Jsonapi.Core.Services.JsonapiHttp.get(path.get());
-            promise.then(
+            let resource = {};  // if you use [], key like id is not possible
+            Jsonapi.Core.Services.JsonapiHttp
+            .get(path.get())
+            .then(
                 success => {
-                    Converter.json_array2resources_array(success.data.data, response, true);
+                    Converter.build(success.data, resource, this.schema);
                     fc_success(success);
                 },
                 error => {
                     fc_error(error);
                 }
             );
-            return response;
+            return resource;
         }
 
         public _delete(id: String, params, fc_success, fc_error): void {
@@ -229,13 +218,10 @@ module Jsonapi {
             let path = new Jsonapi.PathMaker();
             path.addPath(this.getPath());
             path.addPath(id);
-            // params.include ? path.setInclude(params.include) : null;
 
-            //let resource = new Resource();
-            // let resource = this.new();
-
-            let promise = Jsonapi.Core.Services.JsonapiHttp.delete(path.get());
-            promise.then(
+            Jsonapi.Core.Services.JsonapiHttp
+            .delete(path.get())
+            .then(
                 success => {
                     fc_success(success);
                 },
@@ -263,9 +249,6 @@ module Jsonapi {
                     let value = success.data.data;
                     resource.attributes = value.attributes;
                     resource.id = value.id;
-
-                    // instancio los include y los guardo en included arrary
-                    // let included = Converter.json_array2resources_array_by_type(success.data.included, false);
 
                     fc_success(success);
                 },

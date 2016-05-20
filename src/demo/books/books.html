@@ -9,6 +9,7 @@
                 <th>Title</th>
                 <th>Date Published</th>
                 <th>Author</th>
+                <th>Photos</th>
             </tr>
         </thead>
         <tr ng-repeat="book in vm.books | orderBy:'title'">
@@ -18,6 +19,7 @@
             </td>
             <td>{{ book.attributes.date_published | date }}</td>
             <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
+            <td><span ng-repeat="photo in book.relationships.photos.data">{{ photo.id }} </span></td>
         </tr>
     </table>
 </div>

@@ -5,7 +5,7 @@ module Jsonapi {
         Convert json arrays (like included) to an Resources arrays without [keys]
         **/
         static json_array2resources_array(
-            json_array: [Jsonapi.IDataResource],
+            json_array: Array<Jsonapi.IDataResource>,
             destination_array?: Object, // Array<Jsonapi.IResource>,
             use_id_for_key = false
         ): Object { // Array<Jsonapi.IResource> {
@@ -32,7 +32,7 @@ module Jsonapi {
         Convert json arrays (like included) to an indexed Resources array by [type][id]
         **/
         static json_array2resources_array_by_type (
-            json_array: [Jsonapi.IDataResource],
+            json_array: Array<Jsonapi.IDataResource>,
             instance_relationships: boolean
         ): Object { // Array<Jsonapi.IResource> {
             let all_resources:any = { } ;
@@ -84,7 +84,37 @@ module Jsonapi {
 
 
 
-        static buildRelationships(relationships_from: Array<any>, relationships_dest: Array<any>, included_array, schema: ISchema) {
+        // static build(document_from: IDataObject | IDataCollection, resource_dest: IResource, schema: ISchema) {
+        static build(document_from: any, resource_dest: any, schema: ISchema) {
+            // instancio los include y los guardo en included arrary
+            let included = {};
+            if ('included' in document_from) {
+                included = Converter.json_array2resources_array_by_type(document_from.included, false);
+            }
+
+            if (angular.isArray(document_from.data)) {
+                Converter._buildResources(document_from, resource_dest, schema, included);
+            } else {
+                Converter._buildResource(document_from.data, resource_dest, schema, included);
+            }
+        }
+
+        static _buildResources(document_from: IDataCollection, resource_dest: Array<IDataCollection>, schema: ISchema, included) {
+            for (let data of document_from.data) {
+                let resource = Jsonapi.Converter.getService(data.type);
+                resource_dest[data.id] = new (<any>resource.constructor)();
+                Converter._buildResource(data, resource_dest[data.id], schema, included);
+            }
+        }
+
+        static _buildResource(document_from: IDataResource, resource_dest: IResource, schema: ISchema, included) {
+            resource_dest.attributes = document_from.attributes;
+            resource_dest.id = document_from.id;
+            resource_dest.is_new = false;
+            Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included, schema);
+        }
+
+        static __buildRelationships(relationships_from: Array<any>, relationships_dest: Array<any>, included_array, schema: ISchema) {
             // recorro los relationships levanto el service correspondiente
             angular.forEach(relationships_from, (relation_value, relation_key) => {
 
@@ -102,6 +132,7 @@ module Jsonapi {
                         return ;
                     let resource_service = Jsonapi.Converter.getService(relation_value.data[0].type);
                     if (resource_service) {
+                        relationships_dest[relation_key].data = {}; // force to object (not array)
                         angular.forEach(relation_value.data, (relation_value: Jsonapi.IDataResource) => {
                             let tmp = Converter.__buildRelationship(relation_value, included_array);
                             relationships_dest[relation_key].data[tmp.id] = tmp;
