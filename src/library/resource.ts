@@ -154,6 +154,8 @@ module Jsonapi {
             fc_success = angular.isFunction(fc_success) ? fc_success : function () {};
             fc_error = angular.isFunction(fc_error) ? fc_error : function () {};
 
+            this.schema = angular.extend({}, this.schema_base, this.schema);
+
             switch (exec_type) {
                 case 'get':
                 return this._get(id, params, fc_success, fc_error);
