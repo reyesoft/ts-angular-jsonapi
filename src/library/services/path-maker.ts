@@ -19,7 +19,7 @@ module Jsonapi {
             }
 
             return this.paths.join('/') +
-                (get_params.length > 0 ? '/?' + get_params.join('&') : '');
+                (get_params.length > 0 ? '?' + get_params.join('&') : '');
         }
     }
 }
