@@ -118,10 +118,11 @@ declare module Jsonapi {
 declare module Jsonapi {
     class Http {
         protected $http: any;
+        protected $timeout: any;
         protected rsJsonapiConfig: any;
         protected $q: any;
         /** @ngInject */
-        constructor($http: any, rsJsonapiConfig: any, $q: any);
+        constructor($http: any, $timeout: any, rsJsonapiConfig: any, $q: any);
         delete(path: string): any;
         get(path: string): any;
         protected exec(path: string, method: string, data?: Jsonapi.IDataObject): any;
