@@ -160,7 +160,7 @@ module Jsonapi {
                 case 'get':
                 return this._get(id, params, fc_success, fc_error);
                 case 'delete':
-                return this._get(id, params, fc_success, fc_error);
+                return this._delete(id, params, fc_success, fc_error);
                 case 'all':
                 return this._all(params, fc_success, fc_error);
                 case 'save':
