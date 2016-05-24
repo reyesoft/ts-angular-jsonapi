@@ -4,7 +4,8 @@
     // Config
     angular.module('Jsonapi.config', [])
     .constant('rsJsonapiConfig', {
-        url: 'http://yourdomain/api/v1/'
+        url: 'http://yourdomain/api/v1/',
+        delay: 0
     });
 
     angular.module('Jsonapi.services', []);

@@ -50,13 +50,13 @@ module Jsonapi {
         }
 
         public reset(): void {
-            let xthis = this;
+            let self = this;
             this.id = '';
             this.attributes = {};
             this.relationships = {};
             angular.forEach(this.schema.relationships, (value, key) => {
-                xthis.relationships[key] = {};
-                xthis.relationships[key]['data'] = {};
+                self.relationships[key] = {};
+                self.relationships[key]['data'] = {};
             });
             this.is_new = true;
         }
