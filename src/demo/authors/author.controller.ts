@@ -49,6 +49,12 @@ module demoApp {
             console.log('update save with book include', this.author.toObject({ include: ['books'] }));
             console.log('update save without any include', this.author.toObject());
         }
+
+        public removeRelationship() {
+            this.author.removeRelationship('photos', 1);
+            this.author.save();
+            console.log('removeRelationship save with photos include', this.author.toObject());
+        }
     }
 
     angular.module('demoApp').controller('AuthorController', AuthorController);

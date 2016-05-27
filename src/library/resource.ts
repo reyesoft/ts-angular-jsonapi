@@ -276,6 +276,20 @@ module Jsonapi {
             this.relationships[type_alias]['data'][object_key] = resource;
         }
 
+        public removeRelationship(type_alias: string, id: string): boolean {
+            if (!(type_alias in this.relationships)) {
+                return false;
+            }
+            if (!('data' in this.relationships[type_alias])) {
+                return false;
+            }
+            if (!(id in this.relationships[type_alias]['data'])) {
+                return false;
+            }
+            delete this.relationships[type_alias]['data'][id];
+            return true;
+        }
+
         /**
         @return This resource like a service
         **/
