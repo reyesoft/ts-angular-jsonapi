@@ -15,7 +15,7 @@ module Jsonapi {
         public type: string;
         public id: string;
         public attributes: any ;
-        public relationships: any = [];
+        public relationships: any = {}; //[];
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
