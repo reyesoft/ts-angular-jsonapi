@@ -26,7 +26,7 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in vm.books">
+        <tr ng-repeat="book in vm.author.relationships.books.data">
             <td>{{ book.id }}</td>
             <td>
                 <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
