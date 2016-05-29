@@ -1,21 +1,14 @@
 module Jsonapi {
     export class Resource implements IResource {
         public schema: ISchema;
-        protected path: string = null;   // without slashes
-        private params_base: Jsonapi.IParams = {
-            id: '',
-            include: []
-        };
-        private schema_base = {
-            attributes: {},
-            relationships: {}
-        };
+        protected path: string;   // without slashes
 
         public is_new = true;
         public type: string;
         public id: string;
         public attributes: any ;
         public relationships: any = {}; //[];
+        public cache: Object;
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
@@ -35,6 +28,8 @@ module Jsonapi {
             if (Jsonapi.Core.Me === null) {
                 throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
             }
+            // only when service is registered, not cloned object
+            this.cache = {};
             return Jsonapi.Core.Me._register(this);
         }
 
@@ -62,8 +57,8 @@ module Jsonapi {
         }
 
         public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
-            params = angular.extend({}, this.params_base, params);
-            this.schema = angular.extend({}, this.schema_base, this.schema);
+            params = angular.extend({}, Jsonapi.Base.Params, params);
+            this.schema = angular.extend({}, Jsonapi.Base.Schema, this.schema);
 
             let relationships = { };
             let included = [ ];
@@ -118,11 +113,11 @@ module Jsonapi {
             return ret;
         }
 
-        public get(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource {
+        public get(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource {
             return this.__exec(id, params, fc_success, fc_error, 'get');
         }
 
-        public delete(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
+        public delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
             this.__exec(id, params, fc_success, fc_error, 'delete');
         }
 
@@ -137,24 +132,24 @@ module Jsonapi {
         /**
         This method sort params for new(), get() and update()
         */
-        private __exec(id: String, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
+        private __exec(id: string, params: Jsonapi.IParams, fc_success, fc_error, exec_type: string): any {
             // makes `params` optional
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
                 fc_success = params;
-                params = this.params_base;
+                params = Jsonapi.Base.Params;
             } else {
                 if (angular.isUndefined(params)) {
-                    params = this.params_base;
+                    params = Jsonapi.Base.Params;
                 } else {
-                    params = angular.extend({}, this.params_base, params);
+                    params = angular.extend({}, Jsonapi.Base.Params, params);
                 }
             }
 
             fc_success = angular.isFunction(fc_success) ? fc_success : function () {};
             fc_error = angular.isFunction(fc_error) ? fc_error : function () {};
 
-            this.schema = angular.extend({}, this.schema_base, this.schema);
+            this.schema = angular.extend({}, Jsonapi.Base.Schema, this.schema);
 
             switch (exec_type) {
                 case 'get':
@@ -168,20 +163,27 @@ module Jsonapi {
             }
         }
 
-        public _get(id: String, params, fc_success, fc_error): IResource {
+        public _get(id: string, params, fc_success, fc_error): IResource {
             // http request
             let path = new Jsonapi.PathMaker();
             path.addPath(this.getPath());
             path.addPath(id);
             params.include ? path.setInclude(params.include) : null;
 
-            let resource = this.new();
+            let resource;
+            if (id in this.getService().cache) {
+                resource = this.getService().cache[id];
+            } else {
+                resource = this.new();
+            }
+
 
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
             .then(
                 success => {
                     Converter.build(success.data, resource, this.schema);
+                    this.getService().cache[resource.id] = resource;
                     fc_success(success);
                 },
                 error => {
@@ -200,7 +202,11 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let resource = {};  // if you use [], key like id is not possible
+            let resource = {};
+            if (this.getService().cache) {
+                resource = this.getService().cache;
+            }
+
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
             .then(
@@ -215,7 +221,7 @@ module Jsonapi {
             return resource;
         }
 
-        public _delete(id: String, params, fc_success, fc_error): void {
+        public _delete(id: string, params, fc_success, fc_error): void {
             // http request
             let path = new Jsonapi.PathMaker();
             path.addPath(this.getPath());

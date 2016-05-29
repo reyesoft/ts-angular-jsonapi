@@ -117,6 +117,16 @@ declare module Jsonapi {
 /// <reference path="_all.d.ts" />
 
 declare module Jsonapi {
+    class Base {
+        static Params: Jsonapi.IParams;
+        static Schema: {
+            attributes: {};
+            relationships: {};
+        };
+    }
+}
+
+declare module Jsonapi {
     class Http {
         protected $http: any;
         protected $timeout: any;
@@ -184,13 +194,12 @@ declare module Jsonapi {
     class Resource implements IResource {
         schema: ISchema;
         protected path: string;
-        private params_base;
-        private schema_base;
         is_new: boolean;
         type: string;
         id: string;
         attributes: any;
         relationships: any;
+        cache: Object;
         clone(): any;
         /**
         Register schema on Jsonapi.Core
@@ -201,17 +210,17 @@ declare module Jsonapi {
         new(): IResource;
         reset(): void;
         toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
-        get(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource;
-        delete(id: String, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
+        get(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource;
+        delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
         all(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
         save(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
         /**
         This method sort params for new(), get() and update()
         */
         private __exec(id, params, fc_success, fc_error, exec_type);
-        _get(id: String, params: any, fc_success: any, fc_error: any): IResource;
+        _get(id: string, params: any, fc_success: any, fc_error: any): IResource;
         _all(params: any, fc_success: any, fc_error: any): Object;
-        _delete(id: String, params: any, fc_success: any, fc_error: any): void;
+        _delete(id: string, params: any, fc_success: any, fc_error: any): void;
         _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
         addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
         removeRelationship(type_alias: string, id: string): boolean;
@@ -233,6 +242,7 @@ declare module Jsonapi {
 /// <reference path="interfaces/core.d.ts" />
 /// <reference path="interfaces/resource.d.ts" />
 /// <reference path="app.module.d.ts" />
+/// <reference path="services/base.d.ts" />
 /// <reference path="services/http.service.d.ts" />
 /// <reference path="services/path-maker.d.ts" />
 /// <reference path="services/resource-converter.d.ts" />

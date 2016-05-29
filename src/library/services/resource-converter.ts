@@ -82,8 +82,6 @@ module Jsonapi {
             return resource;
         }
 
-
-
         // static build(document_from: IDataObject | IDataCollection, resource_dest: IResource, schema: ISchema) {
         static build(document_from: any, resource_dest: any, schema: ISchema) {
             // instancio los include y los guardo en included arrary
@@ -102,7 +100,10 @@ module Jsonapi {
         static _buildResources(document_from: IDataCollection, resource_dest: Array<IDataCollection>, schema: ISchema, included) {
             for (let data of document_from.data) {
                 let resource = Jsonapi.Converter.getService(data.type);
-                resource_dest[data.id] = new (<any>resource.constructor)();
+                if (!(data.id in resource_dest)) {
+                    resource_dest[data.id] = new (<any>resource.constructor)();
+                    resource_dest[data.id].reset();
+                }
                 Converter._buildResource(data, resource_dest[data.id], schema, included);
             }
         }
