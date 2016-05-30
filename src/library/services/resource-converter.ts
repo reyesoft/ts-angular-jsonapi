@@ -109,7 +109,7 @@ module Jsonapi {
         }
 
         static _buildResource(document_from: IDataResource, resource_dest: IResource, schema: ISchema, included) {
-            resource_dest.attributes = document_from.attributes;
+            resource_dest.attributes = document_from.attributes ? document_from.attributes : { };
             resource_dest.id = document_from.id;
             resource_dest.is_new = false;
             Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included, schema);
