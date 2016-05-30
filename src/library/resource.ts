@@ -177,7 +177,7 @@ module Jsonapi {
             .then(
                 success => {
                     Converter.build(success.data, resource, this.schema);
-                    this.getService().cache[resource.id] = resource;
+                    this.fillCacheResource(resource);
                     fc_success(success);
                 },
                 error => {
@@ -196,13 +196,20 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let resource = this.getService().cache ? this.getService().cache : {};
+            let resource = { };
+            if (this.getService().cache) {
+                // we don't make
+                angular.forEach(this.getService().cache, (value, key) => {
+                    resource[key] = value;
+                });
+            }
 
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
             .then(
                 success => {
                     Converter.build(success.data, resource, this.schema);
+                    this.fillCache(resource);
                     fc_success(success);
                 },
                 error => {
@@ -285,6 +292,25 @@ module Jsonapi {
             }
             delete this.relationships[type_alias]['data'][id];
             return true;
+        }
+
+        private fillCache(resources) {
+            if (resources.id) {
+                this.fillCacheResource(resources);
+            } else {
+                this.fillCacheResources(resources);
+            }
+        }
+
+        private fillCacheResources<T extends Jsonapi.IResource>(resources: Array<T>) {
+            angular.forEach(resources, (resource) => {
+                this.fillCacheResource(resource);
+            });
+        }
+
+        private fillCacheResource<T extends Jsonapi.IResource>(resource: T) {
+            if (resource.id)
+                this.getService().cache[resource.id] = resource;
         }
 
         /**

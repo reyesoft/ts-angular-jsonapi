@@ -226,6 +226,9 @@ declare module Jsonapi {
         _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
         addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string): void;
         removeRelationship(type_alias: string, id: string): boolean;
+        private fillCache(resources);
+        private fillCacheResources<T>(resources);
+        private fillCacheResource<T>(resource);
         /**
         @return This resource like a service
         **/

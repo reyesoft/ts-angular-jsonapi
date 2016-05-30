@@ -43,6 +43,7 @@ module Jsonapi {
                 },
                 error => {
                     Jsonapi.Core.Me.refreshLoadings(-1);
+                    console.warn('Jsonapi.Http.exec error =>', error);
                     if (error.status <= 0) {
                         // offline?
                         Jsonapi.Core.Me.loadingsError();
