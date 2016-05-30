@@ -43,6 +43,10 @@ module Jsonapi {
                 },
                 error => {
                     Jsonapi.Core.Me.refreshLoadings(-1);
+                    if (error.status <= 0) {
+                        // offline?
+                        Jsonapi.Core.Me.loadingsError();
+                    }
                     deferred.reject(error);
                 }
             );

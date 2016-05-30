@@ -33,12 +33,12 @@ module Jsonapi {
             return Jsonapi.Core.Me._register(this);
         }
 
-        public getPath() {
+        public getPath(): string {
             return this.path ? this.path : this.type;
         }
 
         // empty self object
-        public new(): IResource {
+        public new<T extends Jsonapi.IResource>(): T {
             let resource = this.clone();
             resource.reset();
             return resource;
@@ -113,7 +113,7 @@ module Jsonapi {
             return ret;
         }
 
-        public get(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource {
+        public get<T extends Jsonapi.IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
             return this.__exec(id, params, fc_success, fc_error, 'get');
         }
 
@@ -121,11 +121,11 @@ module Jsonapi {
             this.__exec(id, params, fc_success, fc_error, 'delete');
         }
 
-        public all(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource> {
+        public all<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
             return this.__exec(null, params, fc_success, fc_error, 'all');
         }
 
-        public save(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource> {
+        public save<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
             return this.__exec(null, params, fc_success, fc_error, 'save');
         }
 
@@ -170,13 +170,7 @@ module Jsonapi {
             path.addPath(id);
             params.include ? path.setInclude(params.include) : null;
 
-            let resource;
-            if (id in this.getService().cache) {
-                resource = this.getService().cache[id];
-            } else {
-                resource = this.new();
-            }
-
+            let resource = this.getService().cache ? this.getService().cache[id] : this.new();
 
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
@@ -202,10 +196,7 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let resource = {};
-            if (this.getService().cache) {
-                resource = this.getService().cache;
-            }
+            let resource = this.getService().cache ? this.getService().cache : {};
 
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
@@ -268,7 +259,7 @@ module Jsonapi {
             return resource;
         }
 
-        public addRelationship(resource: Jsonapi.IResource, type_alias?: string) {
+        public addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string) {
             type_alias = (type_alias ? type_alias : resource.type);
             if (!(type_alias in this.relationships)) {
                 this.relationships[type_alias] = { data: { } };

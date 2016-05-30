@@ -3,11 +3,12 @@ declare module Jsonapi {
         rootPath?: string;
         resources?: Array<Jsonapi.IResource>;
 
-        Me?: Jsonapi.ICore;
+        Me?: Jsonapi.IResource;
         Services?: any;
 
         loadingsStart?: Function;
         loadingsDone?: Function;
+        loadingsError?: Function;
 
         _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
@@ -180,6 +181,7 @@ declare module Jsonapi {
         loadingsCounter: number;
         loadingsStart: () => void;
         loadingsDone: () => void;
+        loadingsError: () => void;
         static Me: Jsonapi.ICore;
         static Services: any;
         /** @ngInject */
@@ -207,13 +209,13 @@ declare module Jsonapi {
         **/
         register(): boolean;
         getPath(): string;
-        new(): IResource;
+        new<T extends Jsonapi.IResource>(): T;
         reset(): void;
         toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
-        get(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): IResource;
+        get<T extends Jsonapi.IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T;
         delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
-        all(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
-        save(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<IResource>;
+        all<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;
+        save<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;
         /**
         This method sort params for new(), get() and update()
         */
@@ -222,7 +224,7 @@ declare module Jsonapi {
         _all(params: any, fc_success: any, fc_error: any): Object;
         _delete(id: string, params: any, fc_success: any, fc_error: any): void;
         _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
-        addRelationship(resource: Jsonapi.IResource, type_alias?: string): void;
+        addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string): void;
         removeRelationship(type_alias: string, id: string): boolean;
         /**
         @return This resource like a service
