@@ -82,7 +82,6 @@ module Jsonapi {
             return resource;
         }
 
-        // static build(document_from: IDataObject | IDataCollection, resource_dest: IResource, schema: ISchema) {
         static build(document_from: any, resource_dest: any, schema: ISchema) {
             // instancio los include y los guardo en included arrary
             let included = {};
@@ -93,7 +92,6 @@ module Jsonapi {
             if (angular.isArray(document_from.data)) {
                 Converter._buildResources(document_from, resource_dest, schema, included);
             } else {
-                console.log('De1', document_from.data, resource_dest);
                 Converter._buildResource(document_from.data, resource_dest, schema, included);
             }
         }
@@ -105,14 +103,12 @@ module Jsonapi {
                     resource_dest[data.id] = new (<any>resource.constructor)();
                     resource_dest[data.id].reset();
                 }
-                console.log('De2', document_from.data, resource_dest);
                 Converter._buildResource(data, resource_dest[data.id], schema, included);
             }
         }
 
         static _buildResource(document_from: IDataResource, resource_dest: IResource, schema: ISchema, included) {
-            console.log('WWWW', document_from, resource_dest);
-            resource_dest.attributes = document_from.attributes ? document_from.attributes : { };
+            resource_dest.attributes = document_from.attributes;
             resource_dest.id = document_from.id;
             resource_dest.is_new = false;
             Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included, schema);

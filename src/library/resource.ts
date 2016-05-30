@@ -170,7 +170,7 @@ module Jsonapi {
             path.addPath(id);
             params.include ? path.setInclude(params.include) : null;
 
-            let resource = this.getService().cache ? this.getService().cache[id] : this.new();
+            let resource = this.getService().cache && this.getService().cache[id] ? this.getService().cache[id] : this.new();
 
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
