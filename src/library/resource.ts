@@ -197,7 +197,7 @@ module Jsonapi {
 
             // make request
             let resource = { };
-            if (this.getService().cache) {
+            if (this.getService().cache && this.getService().cache['__path'] === this.getPath()) {
                 // we don't make
                 angular.forEach(this.getService().cache, (value, key) => {
                     resource[key] = value;
@@ -298,6 +298,7 @@ module Jsonapi {
             if (resources.id) {
                 this.fillCacheResource(resources);
             } else {
+                this.getService().cache['__path'] = this.getPath();
                 this.fillCacheResources(resources);
             }
         }
