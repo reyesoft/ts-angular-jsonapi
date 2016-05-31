@@ -146,9 +146,9 @@ module Jsonapi {
                 angular.extend(params, Jsonapi.Base.Params);
             } else {
                 if (angular.isUndefined(params)) {
-                    angular.extend(params, Jsonapi.Base.Params);
+                    params = angular.extend({}, Jsonapi.Base.Params);
                 } else {
-                    params = angular.extend({}, Jsonapi.Base.Params, params);
+                    params = angular.extend(Jsonapi.Base.Params, params);
                 }
             }
 
