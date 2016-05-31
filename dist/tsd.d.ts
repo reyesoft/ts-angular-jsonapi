@@ -83,6 +83,7 @@ declare module Jsonapi {
 declare module Jsonapi {
     interface IParams {
         id?: String;
+        path?: String;
         include?: Array<String>;
     }
 }
@@ -215,6 +216,7 @@ declare module Jsonapi {
         get<T extends Jsonapi.IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T;
         delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
         all<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;
+        getRelationships<T extends Jsonapi.IResource>(parent_path_id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;
         save<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;
         /**
         This method sort params for new(), get() and update()

@@ -13,6 +13,7 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [ ] Before a HTTP request, objects are set with cached data.
 - [ ] Caché
 - [ ] Pagination
+- [X] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
 
 ## Installation
 
@@ -154,8 +155,14 @@ author.addRelationship(some_book);
 let some_publisher = this.PublishersService.get(1);
 author.addRelationship(some_publisher, 'company');
 
+// wow, now we need detach a relationship
+author.removeRelationship('books', 'book_id');
+
 // this library can send include information to server, for atomicity
 author.save( { include: ['book'] });
+
+// mmmm, if I need get related resources? For example, books related with author 1
+let books = this.AuthorsService.getRelationship('1/books');
 ```
 
 ### Update a resource

@@ -21,7 +21,9 @@ module demoApp {
                     console.log('error authors controller', error);
                 }
             );
-            this.books = this.author.relationships.books.data;
+            this.books = this.author.getRelationships($routeParams.authorId + '/books', () => {
+                console.log('Books from getRelationships', this.books);
+            });
         }
 
         /**

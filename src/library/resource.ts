@@ -125,6 +125,12 @@ module Jsonapi {
             return this.__exec(null, params, fc_success, fc_error, 'all');
         }
 
+        public getRelationships<T extends Jsonapi.IResource>(parent_path_id: string,
+            params?: Object | Function, fc_success?: Function, fc_error?: Function
+        ): Array<T> {
+            return this.__exec(parent_path_id, params, fc_success, fc_error, 'getRelationships');
+        }
+
         public save<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
             return this.__exec(null, params, fc_success, fc_error, 'save');
         }
@@ -137,10 +143,10 @@ module Jsonapi {
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
                 fc_success = params;
-                params = Jsonapi.Base.Params;
+                angular.extend(params, Jsonapi.Base.Params);
             } else {
                 if (angular.isUndefined(params)) {
-                    params = Jsonapi.Base.Params;
+                    angular.extend(params, Jsonapi.Base.Params);
                 } else {
                     params = angular.extend({}, Jsonapi.Base.Params, params);
                 }
@@ -154,6 +160,9 @@ module Jsonapi {
             switch (exec_type) {
                 case 'get':
                 return this._get(id, params, fc_success, fc_error);
+                case 'getRelationships':
+                params.path = id;
+                return this._all(params, fc_success, fc_error);
                 case 'delete':
                 return this._delete(id, params, fc_success, fc_error);
                 case 'all':
@@ -193,11 +202,13 @@ module Jsonapi {
             // http request
             let path = new Jsonapi.PathMaker();
             path.addPath(this.getPath());
+            params.path ? path.addPath(params.path) : null;
             params.include ? path.setInclude(params.include) : null;
 
             // make request
             let resource = { };
-            if (this.getService().cache && this.getService().cache['__path'] === this.getPath()) {
+            // (!params.path): becouse we need real type, not this.getService().cache
+            if (!params.path && this.getService().cache && this.getService().cache['__path'] === this.getPath()) {
                 // we don't make
                 angular.forEach(this.getService().cache, (value, key) => {
                     resource[key] = value;
@@ -209,7 +220,13 @@ module Jsonapi {
             .then(
                 success => {
                     Converter.build(success.data, resource, this.schema);
-                    this.fillCache(resource);
+                    /*
+                    (!params.path): fill cache need work with relationships too,
+                    for the momment we're created this if
+                    */
+                    if (!params.path) {
+                        this.fillCache(resource);
+                    }
                     fc_success(success);
                 },
                 error => {
@@ -310,8 +327,9 @@ module Jsonapi {
         }
 
         private fillCacheResource<T extends Jsonapi.IResource>(resource: T) {
-            if (resource.id)
+            if (resource.id) {
                 this.getService().cache[resource.id] = resource;
+            }
         }
 
         /**
