@@ -145,12 +145,12 @@ module Jsonapi {
             if (angular.isFunction(params)) {
                 fc_error = fc_success;
                 fc_success = params;
-                angular.extend(params, Jsonapi.Base.Params);
+                params = angular.extend({}, Jsonapi.Base.Params);
             } else {
                 if (angular.isUndefined(params)) {
                     params = angular.extend({}, Jsonapi.Base.Params);
                 } else {
-                    params = angular.extend(Jsonapi.Base.Params, params);
+                    params = angular.extend({}, Jsonapi.Base.Params, params);
                 }
             }
 
