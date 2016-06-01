@@ -8,7 +8,9 @@ module Jsonapi {
         public id: string;
         public attributes: any ;
         public relationships: any = {}; //[];
+
         public cache: Object;
+        public cache_vars: Object;
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
@@ -208,7 +210,7 @@ module Jsonapi {
             // make request
             let resource = { };
             // (!params.path): becouse we need real type, not this.getService().cache
-            if (!params.path && this.getService().cache && this.getService().cache['__path'] === this.getPath()) {
+            if (!params.path && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
                 // we don't make
                 angular.forEach(this.getService().cache, (value, key) => {
                     resource[key] = value;
@@ -315,7 +317,7 @@ module Jsonapi {
             if (resources.id) {
                 this.fillCacheResource(resources);
             } else {
-                this.getService().cache['__path'] = this.getPath();
+                this.getService().cache_vars['__path'] = this.getPath();
                 this.fillCacheResources(resources);
             }
         }

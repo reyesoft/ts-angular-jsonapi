@@ -203,6 +203,7 @@ declare module Jsonapi {
         attributes: any;
         relationships: any;
         cache: Object;
+        cache_vars: Object;
         clone(): any;
         /**
         Register schema on Jsonapi.Core
