@@ -10,7 +10,7 @@ module Jsonapi {
         public relationships: any = {}; //[];
 
         public cache: Object;
-        public cache_vars: Object;
+        public cache_vars: Object = {};
 
         public clone(): any {
             var cloneObj = new (<any>this.constructor)();
