@@ -97,7 +97,8 @@ declare module Jsonapi {
         clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
         addRelationship? (resource: IResource, type_alias?: string): void;
         removeRelationship? (type_alias: string, id: string): boolean;
-        toObject? (params: Jsonapi.IParams): Jsonapi.IDataObject;
+        save? (params: IParams, fc_success: Function, fc_error: Function): any;
+        toObject? (params?: Jsonapi.IParams): IDataObject;
         register? (): boolean;
         // new? (): IResource;
         get? (id: String): IResource;
@@ -213,7 +214,7 @@ declare module Jsonapi {
         getPath(): string;
         new<T extends Jsonapi.IResource>(): T;
         reset(): void;
-        toObject(params: Jsonapi.IParams): Jsonapi.IDataObject;
+        toObject(params?: Jsonapi.IParams): IDataObject;
         get<T extends Jsonapi.IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T;
         delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void;
         all<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T>;

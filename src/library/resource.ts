@@ -58,7 +58,7 @@ module Jsonapi {
             this.is_new = true;
         }
 
-        public toObject(params: Jsonapi.IParams): Jsonapi.IDataObject {
+        public toObject(params?: Jsonapi.IParams): IDataObject {
             params = angular.extend({}, Jsonapi.Base.Params, params);
             this.schema = angular.extend({}, Jsonapi.Base.Schema, this.schema);
 
@@ -66,10 +66,11 @@ module Jsonapi {
             let included = [ ];
             let included_ids = [ ]; //just for control don't repeat any resource
 
-            // agrego cada relationship
+            // REALTIONSHIS
             angular.forEach(this.relationships, (relationship, relation_alias) => {
 
                 if (this.schema.relationships[relation_alias] && this.schema.relationships[relation_alias].hasMany) {
+                    // has many (hasMany:true)
                     relationships[relation_alias] = { data: [] };
 
                     angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
@@ -84,11 +85,12 @@ module Jsonapi {
                         }
                     });
                 } else {
+                    // has one (hasMany:false)
                     if (!('id' in relationship.data)) {
                         console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                     }
 
-                    relationships[relation_alias] = { data: { id: relationship.data.id, type: relationship.data.type } };
+                    relationships[relation_alias] = { data: { /* id: relationship.data.id, type: relationship.data.type */ } };
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = relationship.data.type + '_' + relationship.data.id;
