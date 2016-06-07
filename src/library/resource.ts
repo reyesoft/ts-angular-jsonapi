@@ -66,7 +66,7 @@ module Jsonapi {
             let included = [ ];
             let included_ids = [ ]; //just for control don't repeat any resource
 
-            // REALTIONSHIS
+            // REALTIONSHIPS
             angular.forEach(this.relationships, (relationship, relation_alias) => {
 
                 if (this.schema.relationships[relation_alias] && this.schema.relationships[relation_alias].hasMany) {
@@ -90,7 +90,11 @@ module Jsonapi {
                         console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                     }
 
-                    relationships[relation_alias] = { data: { /* id: relationship.data.id, type: relationship.data.type */ } };
+                    if (relationship.data.id && relationship.data.type) {
+                        relationships[relation_alias] = { data: { id: relationship.data.id, type: relationship.data.type } };
+                    } else {
+                        relationships[relation_alias] = { data: { } };
+                    }
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = relationship.data.type + '_' + relationship.data.id;
