@@ -86,7 +86,7 @@ module Jsonapi {
                     });
                 } else {
                     // has one (hasMany:false)
-                    if (!('id' in relationship.data)) {
+                    if (!('id' in relationship.data) && !angular.equals({}, relationship.data)) {
                         console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                     }
 
