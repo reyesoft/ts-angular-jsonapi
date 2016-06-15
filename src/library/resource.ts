@@ -292,17 +292,21 @@ module Jsonapi {
         }
 
         public addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string) {
-            type_alias = (type_alias ? type_alias : resource.type);
-            if (!(type_alias in this.relationships)) {
-                this.relationships[type_alias] = { data: { } };
-            }
-
             let object_key = resource.id;
             if (!object_key) {
                 object_key = 'new_' + (Math.floor(Math.random() * 100000));
             }
 
-            this.relationships[type_alias]['data'][object_key] = resource;
+            type_alias = (type_alias ? type_alias : resource.type);
+            if (!(type_alias in this.relationships)) {
+                this.relationships[type_alias] = { data: { } };
+            }
+
+            if (this.schema.relationships[type_alias].hasMany) {
+                this.relationships[type_alias]['data'][object_key] = resource;
+            } else {
+                this.relationships[type_alias]['data'] = resource;
+            }
         }
 
         public removeRelationship(type_alias: string, id: string): boolean {
