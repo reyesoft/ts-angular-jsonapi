@@ -6,7 +6,9 @@ declare module Jsonapi {
 
         clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
         addRelationship? (resource: IResource, type_alias?: string): void;
-        toObject? (params: Jsonapi.IParams): Jsonapi.IDataObject;
+        removeRelationship? (type_alias: string, id: string): boolean;
+        save? (params: IParams, fc_success: Function, fc_error: Function): any;
+        toObject? (params?: Jsonapi.IParams): IDataObject;
         register? (): boolean;
         // new? (): IResource;
         get? (id: String): IResource;

@@ -11,7 +11,12 @@ module demoApp {
                 updated_at: { }
             },
             relationships: {
-                authors: {}
+                author: {
+                    hasMany: false
+                },
+                photos: {
+                    hasMany: true
+                }
             }
         };
     }

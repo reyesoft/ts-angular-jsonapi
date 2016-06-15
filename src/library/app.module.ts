@@ -4,13 +4,15 @@
     // Config
     angular.module('Jsonapi.config', [])
     .constant('rsJsonapiConfig', {
-        url: 'http://yourdomain/api/v1/'
+        url: 'http://yourdomain/api/v1/',
+        delay: 0,
+        unify_concurrency: true,
+        cache_prerequests: true
     });
 
     angular.module('Jsonapi.services', []);
 
-    angular.module('rsJsonapi',
-    [
+    angular.module('rsJsonapi', [
         'angular-storage',
         'Jsonapi.config',
         'Jsonapi.services'

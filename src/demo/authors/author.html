@@ -1,5 +1,6 @@
 <div>
-    <h3>Author {{ vm.author.id }}</h3>
+    <h3>Author, with </h3>
+    <pre>authors.get('{{vm.author.id}}', { include: ['books', 'photos'] });</pre>
     <ul>
         <li>Name: <strong>{{ vm.author.attributes.name }}</strong></li>
         <li>Date of birth: <strong>{{ vm.author.attributes.date_of_birth | date }}</strong></li>
@@ -8,12 +9,35 @@
     <p>
         <button ng-click="vm.new()">New author</button>
         <button ng-click="vm.update()">Update author</button>
+        <button ng-click="vm.removeRelationship()">Remove relationship</button>
     </p>
 
     <h4>Photos</h4>
-    <img ng-repeat="photo in vm.author.relationships.photos.data" ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em" />
+    <img ng-repeat="photo in vm.author.relationships.photos.data"
+        ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em"
+        title="Book id #{{ photo.id }}"
+        />
 
     <h4>Books</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date Published</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="book in vm.author.relationships.books.data">
+            <td>{{ book.id }}</td>
+            <td>
+                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+            </td>
+            <td>{{ book.attributes.date_published | date }}</td>
+        </tr>
+    </table>
+
+    <h3>Books</h3>
+    <pre>authors.getRelationships('{{vm.author.id}}/books');</pre>
     <table class="table table-striped">
         <thead>
             <tr>

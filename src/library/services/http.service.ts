@@ -4,6 +4,7 @@ module Jsonapi {
         /** @ngInject */
         public constructor(
             protected $http,
+            protected $timeout,
             protected rsJsonapiConfig,
             protected $q
         ) {
@@ -30,15 +31,23 @@ module Jsonapi {
             let promise = this.$http(req);
 
             let deferred = this.$q.defer();
-            let xthis = this;
+            let self = this;
             Jsonapi.Core.Me.refreshLoadings(1);
             promise.then(
                 success => {
-                    Jsonapi.Core.Me.refreshLoadings(-1);
-                    deferred.resolve(success);
+                    // timeout just for develop environment
+                    self.$timeout( () => {
+                        Jsonapi.Core.Me.refreshLoadings(-1);
+                        deferred.resolve(success);
+                    }, self.rsJsonapiConfig.delay);
                 },
                 error => {
                     Jsonapi.Core.Me.refreshLoadings(-1);
+                    console.warn('Jsonapi.Http.exec error =>', error);
+                    if (error.status <= 0) {
+                        // offline?
+                        Jsonapi.Core.Me.loadingsError();
+                    }
                     deferred.reject(error);
                 }
             );

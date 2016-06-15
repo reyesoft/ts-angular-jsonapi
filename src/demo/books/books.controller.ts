@@ -9,9 +9,9 @@ module demoApp {
             protected BooksService
         ) {
             this.books = BooksService.all(
-                { include: ['authors'] },
+                { include: ['author', 'photos'] },
                 success => {
-                    console.log('success books controller', success);
+                    console.log('success books controller', success, this.books);
                 },
                 error => {
                     console.log('error books controller', error);

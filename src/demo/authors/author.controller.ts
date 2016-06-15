@@ -21,7 +21,9 @@ module demoApp {
                     console.log('error authors controller', error);
                 }
             );
-            this.books = this.author.relationships.books.data;
+            this.books = this.author.getRelationships($routeParams.authorId + '/books', () => {
+                console.log('Books from getRelationships', this.books);
+            });
         }
 
         /**
@@ -35,7 +37,7 @@ module demoApp {
                 author.addRelationship(book /* , 'handbook' */);
             });
             console.log('new save', author.toObject());
-            author.save( /* { include: ['book'] } */ );
+            // author.save( /* { include: ['book'] } */ );
         }
 
         /**
@@ -43,8 +45,17 @@ module demoApp {
         **/
         public update() {
             this.author.attributes.name += 'o';
+            this.author.save(
+                // { include: ['books'] }
+            );
+            console.log('update save with book include', this.author.toObject({ include: ['books'] }));
+            console.log('update save without any include', this.author.toObject());
+        }
+
+        public removeRelationship() {
+            this.author.removeRelationship('photos', 1);
             this.author.save();
-            console.log('update save', this.author.toObject());
+            console.log('removeRelationship save with photos include', this.author.toObject());
         }
     }
 

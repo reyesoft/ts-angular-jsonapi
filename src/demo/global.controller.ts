@@ -18,10 +18,13 @@ module demoApp {
             PhotosService.register();
 
             JsonapiCore.loadingsStart = () => {
-                self.$scope.loading = true;
+                self.$scope.loading = 'LOADING...';
             };
             JsonapiCore.loadingsDone = () => {
-                self.$scope.loading = false;
+                self.$scope.loading = '';
+            };
+            JsonapiCore.loadingsError = () => {
+                self.$scope.loading = 'No connection!!!';
             };
         }
     }

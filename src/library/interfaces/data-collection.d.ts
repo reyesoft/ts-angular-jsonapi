@@ -1,5 +1,5 @@
 declare module Jsonapi {
     interface IDataCollection extends IDocument {
-        data: IResource[];
+        data: Array<Jsonapi.IDataResource>;
     }
 }
