@@ -18,6 +18,13 @@
             </td>
             <td>{{ author.attributes.date_of_birth | date }}</td>
             <td>{{ author.attributes.date_of_death | date }}</td>
+            <td><button ng-click="vm.delete(author)">Delete</button></td>
         </tr>
     </table>
+
+    <!-- <p>
+        <button ng-click="vm.update()">Update author</button>
+        <button ng-click="vm.removeRelationship()">Remove relationship</button>
+    </p> -->
+
 </div>

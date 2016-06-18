@@ -13,6 +13,7 @@ declare module Jsonapi {
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
+        delete? (id: String): void;
         getService? (): any;
     }
 }

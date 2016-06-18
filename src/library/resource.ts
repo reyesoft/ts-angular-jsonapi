@@ -254,6 +254,11 @@ module Jsonapi {
             .delete(path.get())
             .then(
                 success => {
+                    if (this.getService().cache && this.getService().cache[id]) {
+                        this.getService().cache[id]['id'] = '';
+                        this.getService().cache[id]['attributes'] = null;
+                        delete this.getService().cache[id];
+                    }
                     fc_success(success);
                 },
                 error => {
