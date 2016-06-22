@@ -43,10 +43,13 @@ module Jsonapi {
                 },
                 error => {
                     Jsonapi.Core.Me.refreshLoadings(-1);
-                    console.warn('Jsonapi.Http.exec error =>', error);
                     if (error.status <= 0) {
                         // offline?
-                        Jsonapi.Core.Me.loadingsError();
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
+                        Jsonapi.Core.Me.loadingsOffline(error);
+                    } else {
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
+                        Jsonapi.Core.Me.loadingsError(error);
                     }
                     deferred.reject(error);
                 }

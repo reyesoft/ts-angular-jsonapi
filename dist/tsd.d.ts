@@ -9,6 +9,7 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
         loadingsError?: Function;
+        loadingsOffline?: Function;
 
         _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
@@ -185,6 +186,7 @@ declare module Jsonapi {
         loadingsStart: () => void;
         loadingsDone: () => void;
         loadingsError: () => void;
+        loadingsOffline: () => void;
         static Me: Jsonapi.ICore;
         static Services: any;
         /** @ngInject */

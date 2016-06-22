@@ -9,6 +9,7 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
         loadingsError?: Function;
+        loadingsOffline?: Function;
 
         _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
