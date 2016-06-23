@@ -314,6 +314,20 @@ module Jsonapi {
             }
         }
 
+        public addRelationships<T extends Jsonapi.IResource>(resources: Array<T>, type_alias: string) {
+            if (!(type_alias in this.relationships)) {
+                this.relationships[type_alias] = { data: { } };
+            }
+
+            if (!this.schema.relationships[type_alias].hasMany) {
+                console.warn('addRelationships not supported on ' + this.type + ' schema.');
+            }
+
+            angular.forEach(resources, (resource) => {
+                this.relationships[type_alias]['data'][resource.id] = resource;
+            });
+        }
+
         public removeRelationship(type_alias: string, id: string): boolean {
             if (!(type_alias in this.relationships)) {
                 return false;
