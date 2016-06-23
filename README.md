@@ -162,7 +162,7 @@ author.removeRelationship('books', 'book_id');
 author.save( { include: ['book'] });
 
 // mmmm, if I need get related resources? For example, books related with author 1
-let books = this.AuthorsService.getRelationship('1/books');
+let books = this.AuthorsService.getRelationships('1/books');
 ```
 
 ### Update a resource
