@@ -7,15 +7,20 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
 - [x] Get resource and collection of resources
 - [x] Include support (also, when you save)
-- [ ] Equal requests, return a same ResourceObject
 - [ ] Declaration file published on [DefinitelyTyped repository](https://github.com/borisyankov/DefinitelyTyped).
 - [ ] Two+ equal calls, only one HTTP request.
-- [ ] Before a HTTP request, objects are set with cached data.
-- [ ] Caché
+- [x] Before a HTTP request, objects are set with cached data.
+- [x] Equal requests, return a same ResourceObject
+- [x] Short time cache (on memory)
+- [ ] Long time cache (localstorage)
 - [ ] Pagination
-- [X] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
+- [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
 
-## Installation
+## Usage
+
+More information on [examples section](#examples).
+
+### Installation
 
 First of all, you need read, read and read [Jsonapi specification](http://jsonapi.org/).
 
