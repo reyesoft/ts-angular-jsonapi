@@ -14,6 +14,7 @@
 
 // TS-Jsonapi Classes Interfaces
 /// <reference path="./interfaces/core.d.ts"/>
+/// <reference path="./interfaces/collection.d.ts"/>
 /// <reference path="./interfaces/resource.d.ts"/>
 
 // TS-Jsonapi classes

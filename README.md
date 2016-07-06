@@ -15,6 +15,7 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [ ] Long time cache (localstorage)
 - [ ] Pagination
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
+- [x] Properties on collections like `$length`, `$isloading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
