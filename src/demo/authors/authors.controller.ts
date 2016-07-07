@@ -11,7 +11,7 @@ module demoApp {
             this.authors = AuthorsService.all(
                 // { include: ['books', 'photos'] },
                 success => {
-                    console.log('success authors controll', success);
+                    console.log('success authors controll', this.authors);
                 },
                 error => {
                     console.log('error authors controll', error);
