@@ -1,6 +1,5 @@
 {
     "name": "ts-angular-jsonapi",
-    "version": "0.0.1",
     "authors": [
         {
             "name": "Pablo Reyes",
@@ -36,5 +35,10 @@
         "chai": "~1.10.0",
         "sinon-chai": "~2.6.0",
         "angular-mocks": "~1.3.4"
-    }
+    },
+    "keywords": [
+      "angular",
+      "typescript",
+      "jsonapi"
+    ],
 }
