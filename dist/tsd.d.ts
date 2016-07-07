@@ -1,4 +1,12 @@
 declare module Jsonapi {
+    interface ICollection extends Object {
+        $length: number;
+        $isloading: boolean;
+        $source: string;
+    }
+}
+
+declare module Jsonapi {
     interface ICore {
         rootPath?: string;
         resources?: Array<Jsonapi.IResource>;
@@ -9,6 +17,7 @@ declare module Jsonapi {
         loadingsStart?: Function;
         loadingsDone?: Function;
         loadingsError?: Function;
+        loadingsOffline?: Function;
 
         _register? (clase: any): boolean;
         getResource? (type: string): Jsonapi.IResource;
@@ -96,6 +105,7 @@ declare module Jsonapi {
 
         clone? (resource: Jsonapi.IResource, type_alias?: string): Object;
         addRelationship? (resource: IResource, type_alias?: string): void;
+        addRelationships? (resources: Array<IResource>, type_alias: string): void;
         removeRelationship? (type_alias: string, id: string): boolean;
         save? (params: IParams, fc_success: Function, fc_error: Function): any;
         toObject? (params?: Jsonapi.IParams): IDataObject;
@@ -103,6 +113,7 @@ declare module Jsonapi {
         // new? (): IResource;
         get? (id: String): IResource;
         all? (): Array<IResource>;
+        delete? (id: String): void;
         getService? (): any;
     }
 }
@@ -184,6 +195,7 @@ declare module Jsonapi {
         loadingsStart: () => void;
         loadingsDone: () => void;
         loadingsError: () => void;
+        loadingsOffline: () => void;
         static Me: Jsonapi.ICore;
         static Services: any;
         /** @ngInject */
@@ -225,10 +237,11 @@ declare module Jsonapi {
         */
         private __exec(id, params, fc_success, fc_error, exec_type);
         _get(id: string, params: any, fc_success: any, fc_error: any): IResource;
-        _all(params: any, fc_success: any, fc_error: any): Object;
+        _all(params: any, fc_success: any, fc_error: any): ICollection;
         _delete(id: string, params: any, fc_success: any, fc_error: any): void;
         _save(params: IParams, fc_success: Function, fc_error: Function): IResource;
         addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string): void;
+        addRelationships<T extends Jsonapi.IResource>(resources: Array<T>, type_alias: string): void;
         removeRelationship(type_alias: string, id: string): boolean;
         private fillCache(resources);
         private fillCacheResources<T>(resources);
@@ -249,6 +262,7 @@ declare module Jsonapi {
 /// <reference path="interfaces/links.d.ts" />
 /// <reference path="interfaces/schema.d.ts" />
 /// <reference path="interfaces/core.d.ts" />
+/// <reference path="interfaces/collection.d.ts" />
 /// <reference path="interfaces/resource.d.ts" />
 /// <reference path="app.module.d.ts" />
 /// <reference path="services/base.d.ts" />

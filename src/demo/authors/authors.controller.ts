@@ -18,6 +18,16 @@ module demoApp {
                 }
             );
         }
+
+        public delete (author: Jsonapi.IResource) {
+            console.log('eliminaremos (no soportado en este ejemplo)', author.toObject());
+            this.AuthorsService.delete(
+                author.id,
+                success => {
+                    console.log('deleted', success);
+                }
+            );
+        }
     }
 
     angular.module('demoApp').controller('AuthorsController', AuthorsController);

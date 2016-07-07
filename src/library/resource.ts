@@ -205,7 +205,7 @@ module Jsonapi {
             return resource;
         }
 
-        public _all(params, fc_success, fc_error): Object { // Array<IResource> {
+        public _all(params, fc_success, fc_error): ICollection { // Array<IResource> {
 
             // http request
             let path = new Jsonapi.PathMaker();
@@ -214,19 +214,33 @@ module Jsonapi {
             params.include ? path.setInclude(params.include) : null;
 
             // make request
-            let resource = { };
+            let resource: ICollection;
+
+            resource = Object.defineProperties({}, {
+                '$length': {
+                    get: function() { return Object.keys(this).length; },
+                    enumerable: false
+                },
+                '$isloading': { value: false, enumerable: false, writable: true },
+                '$source': { value: '', enumerable: false, writable: true  }
+            });
+
             // (!params.path): becouse we need real type, not this.getService().cache
             if (!params.path && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
                 // we don't make
+                resource.$source = 'cache';
                 angular.forEach(this.getService().cache, (value, key) => {
                     resource[key] = value;
                 });
             }
 
+            resource['$isloading'] = true;
             Jsonapi.Core.Services.JsonapiHttp
             .get(path.get())
             .then(
                 success => {
+                    resource.$source = 'server';
+                    resource.$isloading = false;
                     Converter.build(success.data, resource, this.schema);
                     /*
                     (!params.path): fill cache need work with relationships too,
@@ -238,6 +252,8 @@ module Jsonapi {
                     fc_success(success);
                 },
                 error => {
+                    resource.$source = 'server';
+                    resource.$isloading = false;
                     fc_error(error);
                 }
             );
@@ -254,6 +270,11 @@ module Jsonapi {
             .delete(path.get())
             .then(
                 success => {
+                    if (this.getService().cache && this.getService().cache[id]) {
+                        this.getService().cache[id]['id'] = '';
+                        this.getService().cache[id]['attributes'] = null;
+                        delete this.getService().cache[id];
+                    }
                     fc_success(success);
                 },
                 error => {
@@ -307,6 +328,20 @@ module Jsonapi {
             } else {
                 this.relationships[type_alias]['data'] = resource;
             }
+        }
+
+        public addRelationships<T extends Jsonapi.IResource>(resources: Array<T>, type_alias: string) {
+            if (!(type_alias in this.relationships)) {
+                this.relationships[type_alias] = { data: { } };
+            }
+
+            if (!this.schema.relationships[type_alias].hasMany) {
+                console.warn('addRelationships not supported on ' + this.type + ' schema.');
+            }
+
+            angular.forEach(resources, (resource) => {
+                this.relationships[type_alias]['data'][resource.id] = resource;
+            });
         }
 
         public removeRelationship(type_alias: string, id: string): boolean {
