@@ -225,12 +225,16 @@ module Jsonapi {
                 '$source': { value: '', enumerable: false, writable: true  }
             });
 
+            // MEMORY_CACHE
             // (!params.path): becouse we need real type, not this.getService().cache
             if (!params.path && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
                 // we don't make
                 resource.$source = 'cache';
+                let filter = new Jsonapi.Filter();
                 angular.forEach(this.getService().cache, (value, key) => {
-                    resource[key] = value;
+                    if (!params.filter || filter.passFilter(value, params.filter)) {
+                        resource[key] = value;
+                    }
                 });
             }
 
@@ -249,6 +253,17 @@ module Jsonapi {
                     if (!params.path) {
                         this.fillCache(resource);
                     }
+
+                    // filter getted data
+                    if (params.filter) {
+                        let filter = new Jsonapi.Filter();
+                        angular.forEach(resource, (value, key) => {
+                            if (!filter.passFilter(value, params.filter)) {
+                                delete resource[key];
+                            }
+                        });
+                    }
+
                     fc_success(success);
                 },
                 error => {

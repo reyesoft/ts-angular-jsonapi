@@ -9,7 +9,10 @@ module demoApp {
             protected BooksService
         ) {
             this.books = BooksService.all(
-                { include: ['author', 'photos'] },
+                {
+                    // filter: { title : 'The Hobbit' },
+                    include: ['author', 'photos']
+                },
                 success => {
                     console.log('success books controller', success, this.books);
                 },

@@ -13,7 +13,9 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] Equal requests, return a same ResourceObject
 - [x] Short time cache (on memory)
 - [ ] Long time cache (localstorage)
+- [ ] Sorting
 - [ ] Pagination
+- [ ] Filtering
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
 - [x] Properties on collections like `$length`, `$isloading` or `$source` (_`empty`_ |`cache`|`server`)
 
@@ -112,6 +114,16 @@ class AuthorsController {
 </p>
 ```
 
+#### More options? Collection filtering
+
+Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
+
+```javascript
+let authors = AuthorsService.all(
+    { filter: { name: 'xx' } }
+);
+```
+
 ### Get a single resource
 
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
@@ -120,7 +132,7 @@ From this point, you only see important code for this library. For a full exampl
 let author = AuthorsService.get('some_author_id');
 ```
 
-#### Need you more control and options?
+#### More options? Include resources when you fetch data (or save!)
 
 ```javascript
 let author = AuthorsService.get(
