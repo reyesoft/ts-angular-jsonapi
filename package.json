@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ts-angular-jsonapi",
   "contributors": [
     {
@@ -12,10 +12,21 @@
     "type": "git",
     "url": "https://github.com/DanWahlin/AngularIn20TypeScript"
   },
+  "bugs": {
+    "url": "https://github.com/reyesoft/ts-angular-jsonapi/issues"
+  },
+  "main": "dist/ts-angular-jsonapi.js",
+  "files": [
+    "dist/ts-angular-jsonapi.js",
+    "dist/**",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
-    "postinstall": "npm run typings install && gulp",
+    "build": "# npm run typings install && gulp",
     "start": "gulp serve",
-    "typings": "typings"
+    "prepublish": "gulp dist"
   },
   "keywords": [
     "angularjs",
