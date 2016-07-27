@@ -94,6 +94,7 @@ declare module Jsonapi {
         id?: String;
         path?: String;
         include?: Array<String>;
+        filter?: any;
     }
 }
 
@@ -151,6 +152,12 @@ declare module Jsonapi {
         delete(path: string): any;
         get(path: string): any;
         protected exec(path: string, method: string, data?: Jsonapi.IDataObject): any;
+    }
+}
+
+declare module Jsonapi {
+    class Filter {
+        passFilter(resource: IResource, filter: any): boolean;
     }
 }
 
@@ -267,6 +274,7 @@ declare module Jsonapi {
 /// <reference path="app.module.d.ts" />
 /// <reference path="services/base.d.ts" />
 /// <reference path="services/http.service.d.ts" />
+/// <reference path="services/filter.d.ts" />
 /// <reference path="services/path-maker.d.ts" />
 /// <reference path="services/resource-converter.d.ts" />
 /// <reference path="core.d.ts" />

@@ -30,15 +30,18 @@
         "bootstrap": "~3",
         "jquery": "~1.11.0",
         "angular": "~1",
-        "DefinitelyTyped": "~1",
         "mocha": "~2.0.1",
         "chai": "~1.10.0",
         "sinon-chai": "~2.6.0",
-        "angular-mocks": "~1.3.4"
+        "angular-mocks": "~1.3.4",
+        "DefinitelyTyped": "*"
     },
     "keywords": [
-      "angular",
-      "typescript",
-      "jsonapi"
-    ]
+        "angular",
+        "typescript",
+        "jsonapi"
+    ],
+    "resolutions": {
+        "angular": ">=1.5"
+    }
 }

@@ -1,8 +1,8 @@
 {
-  "ambientDependencies": {
-    "angular": "registry:dt/angular#1.5.0+20160412133217",
-    "angular-animate": "registry:dt/angular-animate#1.5.0+20160407085121",
+  "globalDependencies": {
+    "angular": "registry:dt/angular#1.5.0+20160725073351",
+    "angular-animate": "registry:dt/angular-animate#1.5.0+20160709061515",
     "angular-route": "registry:dt/angular-route#1.3.0+20160317120654",
-    "jquery": "registry:dt/jquery#1.10.0+20160417213236"
+    "jquery": "registry:dt/jquery#1.10.0+20160704162008"
   }
 }

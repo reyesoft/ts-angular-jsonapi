@@ -3,5 +3,6 @@ declare module Jsonapi {
         id?: String;
         path?: String;
         include?: Array<String>;
+        filter?: any;
     }
 }

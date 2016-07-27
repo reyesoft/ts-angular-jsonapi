@@ -1,4 +1,4 @@
-/// <reference path="../../typings/main.d.ts" />
+/// <reference path="../../typings/index.d.ts" />
 
 // Jsonapi interfaces part of top level
 /// <reference path="./interfaces/document.d.ts"/>
@@ -21,6 +21,7 @@
 /// <reference path="./app.module.ts"/>
 /// <reference path="./services/base.ts"/>
 /// <reference path="./services/http.service.ts"/>
+/// <reference path="./services/filter.ts"/>
 /// <reference path="./services/path-maker.ts"/>
 /// <reference path="./services/resource-converter.ts"/>
 //// <reference path="./services/core-services.service.ts"/>
