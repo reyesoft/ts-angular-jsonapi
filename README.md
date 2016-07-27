@@ -197,8 +197,8 @@ this.author.save(success => {
 
 ### More examples
 
-- Pagination
-- Include anothers resources -
+- Pagination (is comming)
+- Include anothers resources (is comming)
 
 ## Demo local
 
@@ -222,6 +222,7 @@ Now, you have jsonapi endpoints like `http://localhost:8080/v1/authors`.
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
 cd ts-angular-jsonapi
+npm install -g bower gulp typings
 npm install
 gulp serve
 ```

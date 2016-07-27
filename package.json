@@ -24,7 +24,9 @@
     "package.json"
   ],
   "scripts": {
-    "build": "# npm run typings install && gulp",
+    "preinstall": "#",
+    "install": "bower install && typings install && gulp -v",
+    "postinstall": "#",
     "start": "gulp serve",
     "prepublish": "gulp dist"
   },

@@ -80,7 +80,7 @@ var merge = require('merge-stream');
 gulp.task('dist', function() {
 
     // get ts interfaces
-    var tsResult = gulp.src(['src/library/**/*.ts', 'src/library/**/*.d.ts', 'typings/browser/**/*.d.ts'])
+    var tsResult = gulp.src(['src/library/**/*.ts', 'src/library/**/*.d.ts', 'typings/globals/**/*.d.ts'])
     .pipe(ts({
         declarationFiles: true,
         declaration: true,
