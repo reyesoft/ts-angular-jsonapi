@@ -141,6 +141,7 @@ declare module Jsonapi {
     }
 }
 
+/// <reference path="../_all.d.ts" />
 declare module Jsonapi {
     class Http {
         protected $http: any;

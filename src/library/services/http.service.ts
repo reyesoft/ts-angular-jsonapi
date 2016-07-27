@@ -1,3 +1,5 @@
+/// <reference path="../_all.ts" />
+
 module Jsonapi {
     export class Http {
 
