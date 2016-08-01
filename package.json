@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ts-angular-jsonapi",
   "contributors": [
     {
@@ -24,7 +24,7 @@
     "package.json"
   ],
   "scripts": {
-    "install": "bower install && typings install && gulp -v",
+    "demoinstall": "bower install && typings install && gulp -v",
     "start": "gulp serve",
     "prepublish": "gulp dist"
   },

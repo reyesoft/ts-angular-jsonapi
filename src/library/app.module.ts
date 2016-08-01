@@ -13,7 +13,7 @@
     angular.module('Jsonapi.services', []);
 
     angular.module('rsJsonapi', [
-        'angular-storage',
+        // 'angular-storage',
         'Jsonapi.config',
         'Jsonapi.services'
     ]);

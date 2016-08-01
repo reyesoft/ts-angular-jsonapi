@@ -193,6 +193,7 @@ declare module Jsonapi {
     }
 }
 
+/// <reference path="_all.d.ts" />
 declare module Jsonapi {
     class Core implements Jsonapi.ICore {
         protected rsJsonapiConfig: any;
@@ -281,6 +282,7 @@ declare module Jsonapi {
 /// <reference path="core.d.ts" />
 /// <reference path="resource.d.ts" />
 
+/// <reference path="../_all.d.ts" />
 declare module Jsonapi {
     class CoreServices {
         protected JsonapiHttp: any;
