@@ -1,23 +1,18 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.3",
-  "description": "ts-angular-jsonapi",
-  "contributors": [
-    {
-      "name": "Pablo Reyes",
-      "email": "pablo@reyesoft.com"
-    }
-  ],
+  "version": "0.0.7",
+  "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DanWahlin/AngularIn20TypeScript"
+    "url": "https://github.com/reyesoft/ts-angular-jsonapi"
   },
   "bugs": {
     "url": "https://github.com/reyesoft/ts-angular-jsonapi/issues"
   },
-  "main": "dist/ts-angular-jsonapi.js",
+  "main": "index.js",
+  "typings": "./dist/tsd.d.ts",
   "files": [
-    "dist/ts-angular-jsonapi.js",
+    "index.js",
     "dist/**",
     "LICENSE",
     "README.md",
@@ -30,6 +25,7 @@
   },
   "keywords": [
     "angularjs",
+    "jsonapi",
     "typescript"
   ],
   "license": "ISC",
@@ -43,6 +39,7 @@
     "gulp-inject": "^4.0.0",
     "gulp-ng-annotate": "^2.0.0",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-strip-line": "0.0.1",
     "gulp-tslint": "^5.0.0",
     "gulp-typescript": "^2.13.0",
     "gulp-uglify": "^1.5.3",

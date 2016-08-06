@@ -129,7 +129,7 @@ declare module Jsonapi {
     }
 }
 
-/// <reference path="_all.d.ts" />
+
 
 declare module Jsonapi {
     class Base {
@@ -141,7 +141,7 @@ declare module Jsonapi {
     }
 }
 
-/// <reference path="../_all.d.ts" />
+
 declare module Jsonapi {
     class Http {
         protected $http: any;
@@ -193,7 +193,7 @@ declare module Jsonapi {
     }
 }
 
-/// <reference path="_all.d.ts" />
+
 declare module Jsonapi {
     class Core implements Jsonapi.ICore {
         protected rsJsonapiConfig: any;
@@ -262,27 +262,27 @@ declare module Jsonapi {
     }
 }
 
-/// <reference path="interfaces/document.d.ts" />
-/// <reference path="interfaces/data-collection.d.ts" />
-/// <reference path="interfaces/data-object.d.ts" />
-/// <reference path="interfaces/data-resource.d.ts" />
-/// <reference path="interfaces/params.d.ts" />
-/// <reference path="interfaces/errors.d.ts" />
-/// <reference path="interfaces/links.d.ts" />
-/// <reference path="interfaces/schema.d.ts" />
-/// <reference path="interfaces/core.d.ts" />
-/// <reference path="interfaces/collection.d.ts" />
-/// <reference path="interfaces/resource.d.ts" />
-/// <reference path="app.module.d.ts" />
-/// <reference path="services/base.d.ts" />
-/// <reference path="services/http.service.d.ts" />
-/// <reference path="services/filter.d.ts" />
-/// <reference path="services/path-maker.d.ts" />
-/// <reference path="services/resource-converter.d.ts" />
-/// <reference path="core.d.ts" />
-/// <reference path="resource.d.ts" />
 
-/// <reference path="../_all.d.ts" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 declare module Jsonapi {
     class CoreServices {
         protected JsonapiHttp: any;
