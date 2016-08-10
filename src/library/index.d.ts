@@ -16,14 +16,3 @@
 /// <reference path="./interfaces/core.d.ts"/>
 /// <reference path="./interfaces/collection.d.ts"/>
 /// <reference path="./interfaces/resource.d.ts"/>
-
-// TS-Jsonapi classes
-/// <reference path="./app.module.ts"/>
-/// <reference path="./services/base.ts"/>
-/// <reference path="./services/http.service.ts"/>
-/// <reference path="./services/filter.ts"/>
-/// <reference path="./services/path-maker.ts"/>
-/// <reference path="./services/resource-converter.ts"/>
-//// <reference path="./services/core-services.service.ts"/>
-/// <reference path="./core.ts"/>
-/// <reference path="./resource.ts"/>

@@ -1,7 +1,12 @@
-/bower_components/
-/node_modules/
+.tmp/
+coverage/
+node_modules/
+jspm_packages/
+bower_components/
+
 /typings/
 /build/
+/dist/
 /dist-demo/
 **/bower_packages
 .DS_Store

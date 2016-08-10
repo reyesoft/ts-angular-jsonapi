@@ -1,13 +1,11 @@
-// http://jsonapi.org/format/#document-top-level
-declare module Jsonapi {
+// http://org/format/#document-top-level
     interface IDocument {
         // data in child interface IJsonapiCollection
         // error in child interface IJsonapiErrors
         jsonapi?: string;
         links?: ILinks;
-        included?: Array<Jsonapi.IDataResource>;
+        included?: Array<IDataResource>;
         meta?: Object;
 
         promise?: any;
     }
-}

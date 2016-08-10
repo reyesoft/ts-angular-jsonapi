@@ -2,7 +2,7 @@
     <input ng-model="filter"></input>
     <br/>
     <h3>Authors</h3>
-    <p><code>$length={{ vm.authors.$length }}. $isloading={{ vm.authors.$isloading }}. $source={{ vm.authors.$source }}.</code></p>
+    <p><code>$length={{ $ctrl.authors.$length }}. $isloading={{ $ctrl.authors.$isloading }}. $source={{ $ctrl.authors.$source }}.</code></p>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -12,20 +12,20 @@
                 <th>Date of dead</th>
             </tr>
         </thead>
-        <tr ng-repeat="author in vm.authors track by $index | orderBy:'name'">
+        <tr ng-repeat="author in $ctrl.authors track by $index">
             <td>{{ author.id }}</td>
             <td>
-                <a href="#/authors/author/{{ author.id }}">{{ author.attributes.name  }}</a>
+                <a ui-sref="author({ authorId: author.id })">{{ author.attributes.name  }}</a>
             </td>
             <td>{{ author.attributes.date_of_birth | date }}</td>
             <td>{{ author.attributes.date_of_death | date }}</td>
-            <td><button ng-click="vm.delete(author)">Delete</button></td>
+            <td><button ng-click="$ctrl.delete(author)">Delete</button></td>
         </tr>
     </table>
 
     <!-- <p>
-        <button ng-click="vm.update()">Update author</button>
-        <button ng-click="vm.removeRelationship()">Remove relationship</button>
+        <button ng-click="$ctrl.update()">Update author</button>
+        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>
     </p> -->
 
 </div>

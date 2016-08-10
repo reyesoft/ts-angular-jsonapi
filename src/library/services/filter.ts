@@ -1,4 +1,3 @@
-module Jsonapi {
     export class Filter {
 
         public passFilter(resource: IResource, filter): boolean {
@@ -11,4 +10,3 @@ module Jsonapi {
         }
 
     }
-}

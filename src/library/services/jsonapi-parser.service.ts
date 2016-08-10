@@ -1,13 +1,11 @@
-module Jsonapi {
-    export class JsonapiParser {
+export class JsonapiParser {
 
-        /** @ngInject */
-        public constructor() {
+    /** @ngInject */
+    public constructor() {
 
-        }
+    }
 
-        public toObject(json_string: string) {
-            return json_string;
-        }
+    public toObject(json_string: string) {
+        return json_string;
     }
 }

@@ -4,37 +4,23 @@ Pablo Reyes
 
 @pablorsk
 http://github.com/pablorsk
+
+Structure generated with "Fountain Webapp Generator"
+https://github.com/FountainJS/generator-fountain-webapp
 -->
-<!DOCTYPE html>
-<html ng-app="demoApp">
-<head>
+<!doctype html>
+<html>
+  <head>
+    <base href="/">
+    <meta charset="utf-8">
     <title>TS Angular Jsonapi Example</title>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" />
-</head>
-<body class="container">
-    <h1 ng-controller="GlobalController">
-        TS Angular Jsonapi Example
-        <small class="bg-primary" ng-if="loading">{{ loading }} <img src="http://s.ytimg.com/yt/img/loader-vflff1Mjj.gif" /></small>
-    </h1>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+  </head>
 
-    <nav>
-        <ul class="nav nav-pills pull-xs-right">
-            <li class="nav-item">
-                <a class="nav-link" href="#/">Authors</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#/books/">Books</a>
-            </li>
-        </ul>
-    </nav>
-
-    <div ng-view></div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
-    <script src="//cdn.rawgit.com/auth0/angular-storage/master/dist/angular-storage.js"></script>
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script> -->
-<script src="build/ts-angular-jsonapi.js"></script>
-<script src="build/demo.js"></script>
-</body>
+  <body ng-app="app" class="container">
+      <app>
+          <ui-view></ui-view>
+      </app>
+  </body>
 </html>

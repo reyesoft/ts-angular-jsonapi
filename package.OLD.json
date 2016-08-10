@@ -1,0 +1,52 @@
+{
+  "name": "ts-angular-jsonapi",
+  "version": "0.0.7",
+  "description": "JSONAPI library developed for AngularJS in Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reyesoft/ts-angular-jsonapi"
+  },
+  "bugs": {
+    "url": "https://github.com/reyesoft/ts-angular-jsonapi/issues"
+  },
+  "main": "index.js",
+  "typings": "./dist/tsd.d.ts",
+  "files": [
+    "index.js",
+    "dist/**",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "demoinstall": "bower install && typings install && gulp -v",
+    "start": "gulp serve",
+    "prepublish": "gulp dist"
+  },
+  "keywords": [
+    "angularjs",
+    "jsonapi",
+    "typescript"
+  ],
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.12.5",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-debug": "^2.1.2",
+    "gulp-inject": "^4.0.0",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-strip-line": "0.0.1",
+    "gulp-tslint": "^5.0.0",
+    "gulp-typescript": "^2.13.0",
+    "gulp-uglify": "^1.5.3",
+    "merge-stream": "^1.0.0",
+    "superstatic": "^4.0.2",
+    "tslint": "^3.8.1",
+    "typescript": "^1.8.10",
+    "typings": "^0.8.1"
+  }
+}
