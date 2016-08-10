@@ -1,19 +1,19 @@
 <div>
     <h3>Author, with </h3>
-    <pre>authors.get('{{vm.author.id}}', { include: ['books', 'photos'] });</pre>
+    <pre>authors.get('{{$ctrl.author.id}}', { include: ['books', 'photos'] });</pre>
     <ul>
-        <li>Name: <strong>{{ vm.author.attributes.name }}</strong></li>
-        <li>Date of birth: <strong>{{ vm.author.attributes.date_of_birth | date }}</strong></li>
-        <li>Date of dead: <strong>{{ vm.author.attributes.date_of_death | date }}</strong></li>
+        <li>Name: <strong>{{ $ctrl.author.attributes.name }}</strong></li>
+        <li>Date of birth: <strong>{{ $ctrl.author.attributes.date_of_birth | date }}</strong></li>
+        <li>Date of dead: <strong>{{ $ctrl.author.attributes.date_of_death | date }}</strong></li>
     </ul>
     <p>
-        <button ng-click="vm.new()">New author</button>
-        <button ng-click="vm.update()">Update author</button>
-        <button ng-click="vm.removeRelationship()">Remove relationship</button>
+        <button ng-click="$ctrl.new()">New author</button>
+        <button ng-click="$ctrl.update()">Update author</button>
+        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>
     </p>
 
     <h4>Photos</h4>
-    <img ng-repeat="photo in vm.author.relationships.photos.data"
+    <img ng-repeat="photo in $ctrl.author.relationships.photos.data"
         ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em"
         title="Book id #{{ photo.id }}"
         />
@@ -27,17 +27,17 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in vm.author.relationships.books.data">
+        <tr ng-repeat="book in $ctrl.author.relationships.books.data">
             <td>{{ book.id }}</td>
             <td>
-                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+                <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
             </td>
             <td>{{ book.attributes.date_published | date }}</td>
         </tr>
     </table>
 
     <h3>Books</h3>
-    <pre>authors.getRelationships('{{vm.author.id}}/books');</pre>
+    <pre>authors.getRelationships('{{$ctrl.author.id}}/books');</pre>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -46,16 +46,16 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in vm.books">
+        <tr ng-repeat="book in $ctrl.books">
             <td>{{ book.id }}</td>
             <td>
-                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+                <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
             </td>
             <td>{{ book.attributes.date_published | date }}</td>
         </tr>
     </table>
 
     <p>
-        <a href="#/">Volver</a>
+        <a ui-sref="authors">Volver</a>
     </p>
 </div>

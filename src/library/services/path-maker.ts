@@ -1,4 +1,3 @@
-module Jsonapi {
     export class PathMaker {
         public paths: Array<String> = [];
         public includes: Array<String> = [];
@@ -22,4 +21,3 @@ module Jsonapi {
                 (get_params.length > 0 ? '?' + get_params.join('&') : '');
         }
     }
-}

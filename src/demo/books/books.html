@@ -1,5 +1,5 @@
 <div>
-    <filter-textbox filter="vm.filter"></filter-textbox>
+    <filter-textbox filter="$ctrl.filter"></filter-textbox>
     <br/>
     <h3>Books</h3>
     <table class="table table-striped">
@@ -12,10 +12,10 @@
                 <th>Photos</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in vm.books | orderBy:'title'">
+        <tr ng-repeat="book in $ctrl.books">
             <td>{{ book.id }}</td>
             <td>
-                <a href="#/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
+                <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>
             </td>
             <td>{{ book.attributes.date_published | date }}</td>
             <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>

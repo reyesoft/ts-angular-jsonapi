@@ -1,5 +1,4 @@
-// http://jsonapi.org/format/#document-links
-declare module Jsonapi {
+// http://org/format/#document-links
     interface ILinks {
         self?: string;
         related?: {
@@ -7,4 +6,3 @@ declare module Jsonapi {
             meta: any;
         };
     }
-}

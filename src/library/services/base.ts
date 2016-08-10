@@ -1,13 +1,11 @@
-module Jsonapi {
-    export class Base {
-        static Params: Jsonapi.IParams = {
-            id: '',
-            include: []
-        };
+export class Base {
+    static Params: IParams = {
+        id: '',
+        include: []
+    };
 
-        static Schema = {
-            attributes: {},
-            relationships: {}
-        };
-    }
+    static Schema = {
+        attributes: {},
+        relationships: {}
+    };
 }

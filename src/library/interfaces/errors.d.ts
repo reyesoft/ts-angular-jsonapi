@@ -1,4 +1,3 @@
-declare module Jsonapi {
     interface IErrors extends IDocument {
         errors: [
             {
@@ -12,4 +11,3 @@ declare module Jsonapi {
             }
         ];
     }
-}

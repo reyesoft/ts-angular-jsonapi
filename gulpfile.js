@@ -1,161 +1,29 @@
-'use strict';
+const gulp = require('gulp');
+const HubRegistry = require('gulp-hub');
+const browserSync = require('browser-sync');
 
-var gulp = require('gulp'),
-debug = require('gulp-debug'),
-inject = require('gulp-inject'),
-tsc = require('gulp-typescript'),
-tslint = require('gulp-tslint'),
-sourcemaps = require('gulp-sourcemaps'),
-del = require('del'),
-Config = require('./gulpfile.config'),
-tsProject = tsc.createProject('tsconfig.json'),
-browserSync = require('browser-sync'),
-superstatic = require( 'superstatic' );
+const conf = require('./conf/gulp.conf');
 
-var config = new Config();
+// Load some files into the registry
+const hub = new HubRegistry([conf.path.tasks('*.js')]);
 
-/**
-* Lint all custom TypeScript files.
-*/
-gulp.task('ts-lint', function () {
-    return gulp.src(config.allTypeScript).pipe(tslint()).pipe(tslint.report('prose'));
-});
+// Tell gulp to use the tasks just loaded
+gulp.registry(hub);
 
-gulp.task('compile-ts', function () {
-    var sourceTsFiles = [config.allTypeScript,                //path to typescript files
-        config.libraryTypeScriptDefinitions
-    ]; //reference to library .d.ts files
+gulp.task('build', gulp.series('partials', gulp.parallel('other', 'webpack:dist')));
+gulp.task('test', gulp.series('karma:single-run'));
+gulp.task('test:auto', gulp.series('karma:auto-run'));
+gulp.task('serve', gulp.series('webpack:watch', 'watch', 'browsersync'));
+gulp.task('serve:dist', gulp.series('default', 'browsersync:dist'));
+gulp.task('default', gulp.series('clean', 'build'));
+gulp.task('watch', watch);
 
-    var tsResult = gulp.src(sourceTsFiles)
-    .pipe(sourcemaps.init())
-    .pipe(tsc(tsProject));
+function reloadBrowserSync(cb) {
+  browserSync.reload();
+  cb();
+}
 
-    tsResult.dts.pipe(gulp.dest(config.tsOutputPath));
-    return tsResult.js
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(config.tsOutputPath));
-});
-
-/**
-* Remove all generated JavaScript files from TypeScript compilation.
-*/
-gulp.task('clean-ts', function (cb) {
-    var typeScriptGenFiles = [
-        config.tsOutputPath +'/**/*.js',    // path to all JS files auto gen'd by editor
-        config.tsOutputPath +'/**/*.js.map', // path to all sourcemap files auto gen'd by editor
-        '!' + config.tsOutputPath + '/lib'
-    ];
-
-    // delete the files
-    del(typeScriptGenFiles, cb);
-});
-
-gulp.task('watch', function() {
-    gulp.watch(['./src/**/*.ts'], ['lib', 'demo']);
-});
-
-
-
-var concat = require('gulp-concat');
-var ts = require('gulp-typescript');
-var sourcemaps = require('gulp-sourcemaps');
-var ngAnnotate = require('gulp-ng-annotate');
-var uglify = require('gulp-uglify');
-
-gulp.task('lib', function() {
-    var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
-    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-    .pipe(ts({
-        sortOutput: true,
-    }));
-
-    return tsResult.js
-    .pipe(ngAnnotate())
-    .pipe(concat('ts-angular-jsonapi.js')) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('build'));
-});
-
-var merge = require('merge-stream');
-var stripLine = require('gulp-strip-line');
-gulp.task('dist', function() {
-
-    // get ts interfaces
-    var tsResult = gulp.src(['src/library/**/*.ts', 'src/library/**/*.d.ts', 'typings/globals/**/*.d.ts'])
-    .pipe(ts({
-        declarationFiles: true,
-        declaration: true,
-        noExternalResolve: true,
-        noImplicitAny: false,
-        removeComments: false,
-        target: 'ES5',
-        emitDecoratorMetadata: false
-    }));
-    var content1 = tsResult.dts;
-
-    // // get ts definitions
-    var content2 = gulp.src(['src/library/**/*.d.ts']);
-
-    // put all ts information
-    var final_content = merge(content1, content2);
-    final_content
-        .pipe(concat('tsd.d.ts'))
-        // remove lines with triple-slash references
-        // ref: https://www.typescriptlang.org/docs/handbook/typings-for-npm-packages.html
-        .pipe(stripLine([/^\/\/\//, 'use strict']))
-        .pipe(gulp.dest('dist'))
-
-    // get all ts information for compression
-    var tsResult = gulp.src(['src/library/**/*.ts', 'src/*.ts'])
-    .pipe(ts({
-        sortOutput: true,
-    }));
-
-    // library
-    tsResult.js
-    .pipe(ngAnnotate())
-    .pipe(concat('ts-angular-jsonapi.js')) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('dist'));
-
-    // mifified library
-    return tsResult.js
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(concat('ts-angular-jsonapi.min.js')) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(gulp.dest('dist'));
-});
-
-gulp.task('demo', function() {
-    var tsResult = gulp.src('src/demo/**/*.ts')
-    .pipe(sourcemaps.init()) // This means sourcemaps will be generated
-    .pipe(ts({
-        sortOutput: true,
-    }));
-
-    return tsResult.js
-    .pipe(ngAnnotate())
-    .pipe(concat('demo.js')) // You can use other plugins that also support gulp-sourcemaps
-    .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file
-    .pipe(gulp.dest('build'));
-});
-
-gulp.task('serve', ['lib', 'demo', 'watch'], function() {
-    process.stdout.write('Starting browserSync and superstatic...\n');
-    browserSync({
-        port: 3000,
-        files: ['index.html', '**/*.js'],
-        injectChanges: true,
-        logFileChanges: false,
-        logLevel: 'silent',
-        logPrefix: 'angularin20typescript',
-        notify: true,
-        reloadDelay: 0,
-        server: {
-            baseDir: './src/demo',
-            middleware: superstatic({ debug: false})
-        }
-    });
-});
-
-gulp.task('default', ['dist']);
+function watch(done) {
+  gulp.watch(conf.path.src('demo/**/*.html'), reloadBrowserSync);
+  done();
+}
