@@ -85,7 +85,7 @@
   ],
   "license": "ISC",
   "scripts": {
-      "demoinstall": "bower install && typings install && gulp -v",
+      "demoinstall": "npm install && typings install && gulp -v",
       "start": "gulp serve",
       "prepublish": "gulp build"
   },

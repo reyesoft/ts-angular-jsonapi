@@ -28,12 +28,6 @@ More information on [examples section](#examples).
 First of all, you need read, read and read [Jsonapi specification](http://jsonapi.org/).
 
 ```bash
-bower install ts-angular-jsonapi --save
-```
-
-Or throw npm
-
-```bash
 npm install ts-angular-jsonapi --save
 ```
 
@@ -45,7 +39,7 @@ npm install ts-angular-jsonapi --save
 4. Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
 ```javascript
-/// <reference path="../../bower_components/ts-angular-jsonapi/dist/ts-angular-jsonapi.d.ts"/>
+import 'ts-angular-jsonapi';
 
 var app = angular.module('yourAppName', ['rsJsonapiConfig']);
 
@@ -222,8 +216,8 @@ Now, you have jsonapi endpoints like `http://localhost:8080/v1/authors`.
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
 cd ts-angular-jsonapi
-npm install -g bower gulp typings
-npm install
+npm install -g gulp typings
+npm run demoinstall
 gulp serve
 ```
 
