@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -10,10 +10,7 @@
     "url": "https://github.com/reyesoft/ts-angular-jsonapi/issues"
   },
   "dependencies": {
-    "angular": "^1.5.0",
-    "angular-ui-router": "^0.3.1",
-    "bootstrap": "^3.3.7",
-    "todomvc-app-css": "^2.0.4"
+    "angular": "^1.5.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0-beta.2",
@@ -69,7 +66,9 @@
     "typescript": "^1.7.5",
     "typings": "^1.0.4",
     "webpack": "2.1.0-beta.8",
-    "webpack-split-by-path": "^0.0.10"
+    "webpack-split-by-path": "^0.0.10",
+    "angular-ui-router": "^0.3.1",
+    "bootstrap": "^3.3.7"
   },
   "files": [
     "index.js",
