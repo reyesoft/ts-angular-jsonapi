@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -84,6 +84,7 @@
   ],
   "license": "ISC",
   "scripts": {
+      "build": "rm -rf dist/* && gulp build",
       "demoinstall": "npm install && typings install && gulp -v",
       "start": "gulp serve",
       "prepublish": "gulp build"

@@ -41,7 +41,7 @@ npm install ts-angular-jsonapi --save
 ```javascript
 import 'ts-angular-jsonapi';
 
-var app = angular.module('yourAppName', ['rsJsonapiConfig']);
+var app = angular.module('yourAppName', ['rsJsonapi']);
 
 app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
     angular.extend(rsJsonapiConfig, {

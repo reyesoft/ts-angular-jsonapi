@@ -25,20 +25,17 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
         // new webpack.optimize.UglifyJsPlugin({
         //     compress: {unused: true, dead_code: true} // eslint-disable-line camelcase
-        // }),
-        new SplitByPathPlugin([{
-          name: 'demo-',
-          path: path.join(__dirname, '../src/demo')
-        }]),
-        new SplitByPathPlugin([{
-          name: 'ts-angular-jsonapi',
-          path: path.join(__dirname, '../src/library')
-        }]),
+        // })
     ],
     output: {
+        // https://webpack.github.io/docs/library-and-externals.html
         path: path.join(process.cwd(), conf.paths.dist),
-        // filename: '[name]-[hash].js'
-        filename: '[name].js'
+        library: 'ts-angular-jsonapi',
+        libraryTarget: 'commonjs',
+        filename: 'ts-angular-js.js'
+    },
+    externals: {
+        'angular': 'angular'
     },
     resolve: {
         extensions: [
@@ -49,12 +46,7 @@ module.exports = {
             '.ts'
         ]
     },
-    entry: {
-        app: [
-            `./${conf.path.src('library/index')}`,
-            `./${conf.path.tmp('templateCacheHtml.ts')}`
-        ]
-    },
+    entry: `./${conf.path.src('library/index')}`,
     ts: {
         configFileName: 'conf/ts.conf.json'
     },
