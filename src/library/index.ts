@@ -20,7 +20,10 @@ angular.module('rsJsonapi', [
 import { Core } from './core';
 import { Resource } from './resource';
 
-export var Jsonapi = {
-    Core: Core,
-    Resource: Resource
-};
+export { Core };
+export { Resource };
+
+// export var Jsonapi = {
+//     Core: Core,
+//     Resource: Resource
+// };

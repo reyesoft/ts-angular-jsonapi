@@ -48,12 +48,12 @@ function webpackWrapper(watch, conf, done) {
     } else {
 
         // // get ts definitions
-        var content2 = gulp.src(['src/library/**/*.d.ts']);
-        content2
-        .pipe(concat('index.d.ts'))
-        .pipe(stripLine([/^\/\//, 'use strict']))
-        .pipe(stripLine([/^\n$/, 'use strict']))
-        .pipe(gulp.dest('dist'))
+        // var content2 = gulp.src(['src/library/**/*.d.ts']);
+        // content2
+        // .pipe(concat('index.d.ts'))
+        // .pipe(stripLine([/^\/\//, 'use strict']))
+        // .pipe(stripLine([/^\n$/, 'use strict']))
+        // .pipe(gulp.dest('dist'))
 
         webpackBundler.run(webpackChangeHandler);
     }

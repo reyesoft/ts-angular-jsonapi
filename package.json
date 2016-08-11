@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -14,9 +14,11 @@
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0-beta.2",
+    "angular-ui-router": "^0.3.1",
     "autoprefixer": "^6.2.2",
     "babel-eslint": "^6.0.2",
     "babel-loader": "^6.2.0",
+    "bootstrap": "^3.3.7",
     "browser-sync": "^2.9.11",
     "browser-sync-spa": "^1.0.3",
     "css-loader": "^0.23.1",
@@ -66,9 +68,7 @@
     "typescript": "^1.7.5",
     "typings": "^1.0.4",
     "webpack": "2.1.0-beta.8",
-    "webpack-split-by-path": "^0.0.10",
-    "angular-ui-router": "^0.3.1",
-    "bootstrap": "^3.3.7"
+    "webpack-split-by-path": "^0.0.10"
   },
   "files": [
     "index.js",
@@ -84,10 +84,10 @@
   ],
   "license": "ISC",
   "scripts": {
-      "build": "rm -rf dist/* && gulp build",
-      "demoinstall": "npm install && typings install && gulp -v",
-      "start": "gulp serve",
-      "prepublish": "gulp build"
+    "build": "rm -rf dist/* && gulp build",
+    "demoinstall": "npm install && typings install && gulp -v",
+    "start": "gulp serve",
+    "prepublish": "gulp build"
   },
   "eslintConfig": {
     "globals": {

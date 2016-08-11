@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SplitByPathPlugin = require('webpack-split-by-path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const autoprefixer = require('autoprefixer');
+var DeclarationBundlerPlugin = require('declaration-bundler-webpack-plugin');
 
 module.exports = {
     module: {
@@ -30,9 +31,9 @@ module.exports = {
     output: {
         // https://webpack.github.io/docs/library-and-externals.html
         path: path.join(process.cwd(), conf.paths.dist),
-        library: 'ts-angular-jsonapi',
+        library: 'Jsonapi',
         libraryTarget: 'commonjs',
-        filename: 'ts-angular-js.js'
+        filename: 'ts-angular-jsonapi.js'
     },
     externals: {
         'angular': 'angular'
@@ -46,9 +47,9 @@ module.exports = {
             '.ts'
         ]
     },
-    entry: `./${conf.path.src('library/index')}`,
+    entry: `./${conf.path.srcdist('index.ts')}`,
     ts: {
-        configFileName: 'conf/ts.conf.json'
+        configFileName: 'tsconfig.json'
     },
     tslint: {
         configuration: require('../tslint.json')
