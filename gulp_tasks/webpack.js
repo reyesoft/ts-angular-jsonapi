@@ -8,7 +8,10 @@ const browsersync = require('browser-sync');
 
 // modification by pablorsk for especial dist
 const concat = require('gulp-concat');
-const stripLine = require('gulp-strip-line');
+var clean = require('gulp-clean');
+var deleteLines = require('gulp-delete-lines');
+var ts = require('gulp-typescript');
+var addsrc = require('gulp-add-src');
 
 gulp.task('webpack:dev', done => {
     webpackWrapper(false, webpackConf, done);
@@ -47,13 +50,27 @@ function webpackWrapper(watch, conf, done) {
         webpackBundler.watch(200, webpackChangeHandler);
     } else {
 
-        // // get ts definitions
-        // var content2 = gulp.src(['src/library/**/*.d.ts']);
-        // content2
-        // .pipe(concat('index.d.ts'))
-        // .pipe(stripLine([/^\/\//, 'use strict']))
-        // .pipe(stripLine([/^\n$/, 'use strict']))
-        // .pipe(gulp.dest('dist'))
+        // clear folder
+        gulp.src('dist/*', {read: false})
+          .pipe(clean());
+
+        var tsProjectDts = ts.createProject('conf/ts.conf.json', { sortOutput: true });
+        var tsResult = gulp.src('src/library/**.ts')
+            .pipe(ts(tsProjectDts));
+        tsResult.dts
+            .pipe(deleteLines({
+                'filters': [ /^\/\/\//i]
+            }))
+            .pipe(addsrc.prepend('src/library/interfaces/**.d.ts'))
+            .pipe(concat('index.d.ts'))
+            .pipe(deleteLines({
+                'filters': [ /^import/i]
+            }))
+            .pipe(deleteLines({
+                'filters': [ /^export \*/i]
+            }))
+            .pipe(gulp.dest('dist'));
+            ;
 
         webpackBundler.run(webpackChangeHandler);
     }

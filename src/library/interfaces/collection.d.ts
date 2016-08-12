@@ -1,4 +1,4 @@
-interface ICollection extends Object {
+export interface ICollection extends Object {
     $length: number;
     $isloading: boolean;
     $source: string;

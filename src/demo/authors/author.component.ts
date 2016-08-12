@@ -1,4 +1,5 @@
 import 'angular-ui-router';
+import * as Jsonapi from '../../library/index';
 
 class AuthorController {
     public author: any = null;
@@ -32,7 +33,7 @@ class AuthorController {
         let author = this.AuthorsService.new();
         author.attributes.name = 'Pablo Reyes';
         author.attributes.date_of_birth = '2030-12-10';
-        angular.forEach(this.books, (book: IResource) => {
+        angular.forEach(this.books, (book: Jsonapi.IResource) => {
             author.addRelationship(book /* , 'handbook' */);
         });
         console.log('new save', author.toObject());

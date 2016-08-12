@@ -1,13 +1,15 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "amd",
+        "module": "commonjs",
         "outDir": "build/tsconfig.outDir",
+        "moduleResolution": "node",
         "sourceMap": true
     },
-    "exclude": [
-        "dist",
-        "bower_components",
-        "node_modules"
+    "filesGlob": [
+      "**/*.ts",
+      "**/*.tsx",
+      "!typings/**",
+      "!node_modules/**"
     ]
 }

@@ -23,7 +23,7 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoErrorsPlugin()
         // new webpack.optimize.UglifyJsPlugin({
         //     compress: {unused: true, dead_code: true} // eslint-disable-line camelcase
         // })

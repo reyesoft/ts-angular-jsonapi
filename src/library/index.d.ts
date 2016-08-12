@@ -13,6 +13,6 @@
 /// <reference path="./interfaces/schema.d.ts"/>
 
 // TS-Jsonapi Classes Interfaces
-/// <reference path="./interfaces/core.d.ts"/>
+// / <reference path="./interfaces/core.d.ts"/>
 /// <reference path="./interfaces/collection.d.ts"/>
 /// <reference path="./interfaces/resource.d.ts"/>

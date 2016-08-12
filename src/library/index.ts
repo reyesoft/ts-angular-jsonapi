@@ -19,9 +19,13 @@ angular.module('rsJsonapi', [
 
 import { Core } from './core';
 import { Resource } from './resource';
-
 export { Core };
 export { Resource };
+export * from './interfaces';
+// export * from './core'
+import { IResource } from './interfaces';
+export { IResource };
+
 
 // export var Jsonapi = {
 //     Core: Core,

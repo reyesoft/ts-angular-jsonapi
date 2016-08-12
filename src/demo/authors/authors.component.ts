@@ -1,3 +1,5 @@
+import * as Jsonapi from '../../library/index';
+
 class AuthorsController {
     public authors: any = null;
 
@@ -17,7 +19,7 @@ class AuthorsController {
         );
     }
 
-    public delete (author: IResource) {
+    public delete (author: Jsonapi.IResource) {
         console.log('eliminaremos (no soportado en este ejemplo)', author.toObject());
         this.AuthorsService.delete(
             author.id,

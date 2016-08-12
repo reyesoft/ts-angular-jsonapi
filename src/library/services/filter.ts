@@ -1,12 +1,12 @@
-    export class Filter {
+import * as Jsonapi from '../interfaces';
 
-        public passFilter(resource: IResource, filter): boolean {
-            for (let attribute in  filter) {
-                if (attribute in resource.attributes && resource.attributes[attribute] === filter[attribute]) {
-                    return true;
-                }
+export class Filter {
+    public passFilter(resource: Jsonapi.IResource, filter): boolean {
+        for (let attribute in  filter) {
+            if (attribute in resource.attributes && resource.attributes[attribute] === filter[attribute]) {
+                return true;
             }
-            return false;
         }
-
+        return false;
     }
+}

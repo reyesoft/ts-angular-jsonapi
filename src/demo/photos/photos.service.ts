@@ -1,6 +1,6 @@
 /// <reference path="../_all.ts" />
 
-import { Jsonapi } from '../../library/index';
+import * as Jsonapi from '../../library/index';
 
 export class PhotosService extends Jsonapi.Resource {
     type = 'photos';
