@@ -1,10 +1,11 @@
 /// <reference path="./index.d.ts" />
 
-import * as Jsonapi from './interfaces';
+import './services/core-services.service';
+import { ICore, IResource } from './interfaces';
 
-export class Core implements Jsonapi.ICore {
+export class Core implements ICore {
     public rootPath: string = 'http://reyesoft.ddns.net:9999/api/v1/companies/2';
-    public resources: Array<Jsonapi.IResource> = [];
+    public resources: Array<IResource> = [];
 
     public loadingsCounter: number = 0;
     public loadingsStart = () => {};
@@ -12,7 +13,7 @@ export class Core implements Jsonapi.ICore {
     public loadingsError = () => {};
     public loadingsOffline = () => {};
 
-    public static Me: Jsonapi.ICore = null;
+    public static Me: ICore = null;
     public static Services: any = null;
 
     /** @ngInject */
@@ -20,7 +21,6 @@ export class Core implements Jsonapi.ICore {
         protected rsJsonapiConfig,
         protected JsonapiCoreServices
     ) {
-        console.log('core constructed');
         Core.Me = this;
         Core.Services = JsonapiCoreServices;
     }

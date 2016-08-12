@@ -1,4 +1,6 @@
 export class AppController {
+
+    /** @ngInject */
     constructor(
         protected JsonapiCore,
         protected AuthorsService,
@@ -8,6 +10,8 @@ export class AppController {
     ) {
         let self = this;
         $scope.loading  = false;
+
+        console.log('injected JsonapiCore?', JsonapiCore);
 
         // bootstrap all services
         AuthorsService.register();

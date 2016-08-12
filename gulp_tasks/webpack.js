@@ -12,6 +12,8 @@ var clean = require('gulp-clean');
 var deleteLines = require('gulp-delete-lines');
 var ts = require('gulp-typescript');
 var addsrc = require('gulp-add-src');
+var replace = require('gulp-replace');
+var inject = require('gulp-inject-string');
 
 gulp.task('webpack:dev', done => {
     webpackWrapper(false, webpackConf, done);
@@ -67,8 +69,12 @@ function webpackWrapper(watch, conf, done) {
                 'filters': [ /^import/i]
             }))
             .pipe(deleteLines({
-                'filters': [ /^export \*/i]
+                'filters': [ /^export [\*|\{]/i]
             }))
+
+            .pipe(replace(/export declare class/g, 'export class')) // because all is on a "export module Jsonapi"
+            .pipe(inject.wrap("export module Jsonapi { \n", '}'))
+
             .pipe(gulp.dest('dist'));
             ;
 

@@ -7,10 +7,10 @@ import { PathMaker } from './services/path-maker';
 import { Converter } from './services/resource-converter';
 import { Filter } from './services/filter';
 
-import * as Jsonapi from './interfaces/';
+import { ISchema, IResource, ICollection } from './interfaces';
 
-export class Resource implements Jsonapi.IResource {
-    public schema: Jsonapi.ISchema;
+export class Resource implements IResource {
+    public schema: ISchema;
     protected path: string;   // without slashes
 
     public is_new = true;
@@ -50,7 +50,7 @@ export class Resource implements Jsonapi.IResource {
     }
 
     // empty self object
-    public new<T extends Jsonapi.IResource>(): T {
+    public new<T extends IResource>(): T {
         let resource = this.clone();
         resource.reset();
         return resource;
@@ -83,7 +83,7 @@ export class Resource implements Jsonapi.IResource {
                 // has many (hasMany:true)
                 relationships[relation_alias] = { data: [] };
 
-                angular.forEach(relationship.data, (resource: Jsonapi.IResource) => {
+                angular.forEach(relationship.data, (resource: IResource) => {
                     let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias]['data'].push(reational_object);
 
@@ -131,7 +131,7 @@ export class Resource implements Jsonapi.IResource {
         return ret;
     }
 
-    public get<T extends Jsonapi.IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
+    public get<T extends IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
         return this.__exec(id, params, fc_success, fc_error, 'get');
     }
 
@@ -139,17 +139,17 @@ export class Resource implements Jsonapi.IResource {
         this.__exec(id, params, fc_success, fc_error, 'delete');
     }
 
-    public all<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
+    public all<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
 
-    public getRelationships<T extends Jsonapi.IResource>(parent_path_id: string,
+    public getRelationships<T extends IResource>(parent_path_id: string,
         params?: Object | Function, fc_success?: Function, fc_error?: Function
     ): Array<T> {
         return this.__exec(parent_path_id, params, fc_success, fc_error, 'getRelationships');
     }
 
-    public save<T extends Jsonapi.IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
+    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'save');
     }
 
@@ -190,7 +190,7 @@ export class Resource implements Jsonapi.IResource {
         }
     }
 
-    public _get(id: string, params, fc_success, fc_error): Jsonapi.IResource {
+    public _get(id: string, params, fc_success, fc_error): IResource {
         // http request
         let path = new PathMaker();
         path.addPath(this.getPath());
@@ -215,7 +215,7 @@ export class Resource implements Jsonapi.IResource {
         return resource;
     }
 
-    public _all(params, fc_success, fc_error): Jsonapi.ICollection { // Array<Jsonapi.IResource> {
+    public _all(params, fc_success, fc_error): ICollection { // Array<IResource> {
 
         // http request
         let path = new PathMaker();
@@ -224,7 +224,7 @@ export class Resource implements Jsonapi.IResource {
         params.include ? path.setInclude(params.include) : null;
 
         // make request
-        let resource: Jsonapi.ICollection;
+        let resource: ICollection;
 
         resource = Object.defineProperties({}, {
             '$length': {
@@ -308,7 +308,7 @@ export class Resource implements Jsonapi.IResource {
         );
     }
 
-    public _save(params: IParams, fc_success: Function, fc_error: Function): Jsonapi.IResource {
+    public _save(params: IParams, fc_success: Function, fc_error: Function): IResource {
         let object = this.toObject(params);
 
         // http request
@@ -337,7 +337,7 @@ export class Resource implements Jsonapi.IResource {
         return resource;
     }
 
-    public addRelationship<T extends Jsonapi.IResource>(resource: T, type_alias?: string) {
+    public addRelationship<T extends IResource>(resource: T, type_alias?: string) {
         let object_key = resource.id;
         if (!object_key) {
             object_key = 'new_' + (Math.floor(Math.random() * 100000));
@@ -355,7 +355,7 @@ export class Resource implements Jsonapi.IResource {
         }
     }
 
-    public addRelationships<T extends Jsonapi.IResource>(resources: Array<T>, type_alias: string) {
+    public addRelationships<T extends IResource>(resources: Array<T>, type_alias: string) {
         if (!(type_alias in this.relationships)) {
             this.relationships[type_alias] = { data: { } };
         }
@@ -392,13 +392,13 @@ export class Resource implements Jsonapi.IResource {
         }
     }
 
-    private fillCacheResources<T extends Jsonapi.IResource>(resources: Array<T>) {
+    private fillCacheResources<T extends IResource>(resources: Array<T>) {
         angular.forEach(resources, (resource) => {
             this.fillCacheResource(resource);
         });
     }
 
-    private fillCacheResource<T extends Jsonapi.IResource>(resource: T) {
+    private fillCacheResource<T extends IResource>(resource: T) {
         if (resource.id) {
             this.getService().cache[resource.id] = resource;
         }
