@@ -5,6 +5,7 @@ import * as angular from 'angular';
 angular.module('Jsonapi.config', [])
     .constant('rsJsonapiConfig', {
         url: 'http://yourdomain/api/v1/',
+        delay: 0,
         unify_concurrency: true,
         cache_prerequests: true
     });

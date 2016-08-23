@@ -23,7 +23,7 @@ export class Http {
         return this.exec(path, 'GET');
     }
 
-    protected exec(path: string, method: string, data?: IDataObject) {
+    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true) {
         let req = {
             method: method,
             url: this.rsJsonapiConfig.url + path,
@@ -53,7 +53,7 @@ export class Http {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
                 } else {
-                    if (!Core.Me.loadingsError(error)) {
+                    if (call_loadings_error && !Core.Me.loadingsError(error)) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                     }
                 }

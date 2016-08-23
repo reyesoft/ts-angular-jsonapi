@@ -170,8 +170,8 @@ export class Resource implements IResource {
             }
         }
 
-        fc_success = angular.isFunction(fc_success) ? fc_success : function () {};
-        fc_error = angular.isFunction(fc_error) ? fc_error : function () {};
+        fc_success = angular.isFunction(fc_success) ? fc_success : angular.noop();
+        fc_error = angular.isFunction(fc_error) ? fc_error : undefined;
 
         this.schema = angular.extend({}, Base.Schema, this.schema);
 
@@ -188,6 +188,10 @@ export class Resource implements IResource {
             case 'save':
             return this._save(params, fc_success, fc_error);
         }
+    }
+
+    private runFc(some_fc, param) {
+        return angular.isFunction(some_fc) ? some_fc(param) : angular.noop();
     }
 
     public _get(id: string, params, fc_success, fc_error): IResource {
@@ -208,7 +212,7 @@ export class Resource implements IResource {
                 fc_success(success);
             },
             error => {
-                fc_error(error);
+                this.runFc(fc_error, error);
             }
         );
 
@@ -279,7 +283,7 @@ export class Resource implements IResource {
             error => {
                 resource.$source = 'server';
                 resource.$isloading = false;
-                fc_error(error);
+                this.runFc(fc_error, error);
             }
         );
         return resource;
@@ -303,7 +307,7 @@ export class Resource implements IResource {
                 fc_success(success);
             },
             error => {
-                fc_error(error);
+                this.runFc(fc_error, error);
             }
         );
     }
@@ -319,7 +323,10 @@ export class Resource implements IResource {
 
         let resource = this.new();
 
-        let promise = Core.Services.JsonapiHttp.exec(path.get(), this.id ? 'PUT' : 'POST', object);
+        let promise = Core.Services.JsonapiHttp.exec(
+                                path.get(), this.id ? 'PUT' : 'POST',
+                                object, !angular.isFunction(fc_error)
+                        );
 
         promise.then(
             success => {
@@ -330,7 +337,7 @@ export class Resource implements IResource {
                 fc_success(success);
             },
             error => {
-                fc_error('data' in error ? error.data : error);
+                this.runFc(fc_error, 'data' in error ? error.data : error);
             }
         );
 
