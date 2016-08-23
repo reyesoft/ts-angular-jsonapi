@@ -4,7 +4,7 @@ import './services/core-services.service';
 import { ICore, IResource } from './interfaces';
 
 export class Core implements ICore {
-    public rootPath: string = 'http://reyesoft.ddns.net:9999/api/v1/companies/2';
+    public rootPath: string = 'http://url/';
     public resources: Array<IResource> = [];
 
     public loadingsCounter: number = 0;
