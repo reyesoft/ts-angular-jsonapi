@@ -209,7 +209,7 @@ export class Resource implements IResource {
             success => {
                 Converter.build(success.data, resource, this.schema);
                 this.fillCacheResource(resource);
-                fc_success(success);
+                this.runFc(fc_success, success);
             },
             error => {
                 this.runFc(fc_error, error);
@@ -278,7 +278,7 @@ export class Resource implements IResource {
                     });
                 }
 
-                fc_success(success);
+                this.runFc(fc_success, success);
             },
             error => {
                 resource.$source = 'server';
@@ -304,7 +304,7 @@ export class Resource implements IResource {
                     this.getService().cache[id]['attributes'] = null;
                     delete this.getService().cache[id];
                 }
-                fc_success(success);
+                this.runFc(fc_success, success);
             },
             error => {
                 this.runFc(fc_error, error);
@@ -325,7 +325,7 @@ export class Resource implements IResource {
 
         let promise = Core.Services.JsonapiHttp.exec(
                                 path.get(), this.id ? 'PUT' : 'POST',
-                                object, !angular.isFunction(fc_error)
+                                object, !(angular.isFunction(fc_error))
                         );
 
         promise.then(
@@ -334,7 +334,7 @@ export class Resource implements IResource {
                 resource.attributes = value.attributes;
                 resource.id = value.id;
 
-                fc_success(success);
+                this.runFc(fc_success, success);
             },
             error => {
                 this.runFc(fc_error, 'data' in error ? error.data : error);
