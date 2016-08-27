@@ -19,6 +19,7 @@ export class AuthorsService extends Jsonapi.Resource {
             photos: {
                 hasMany: true
             }
-        }
+        },
+        ttl: 10
     };
 }
