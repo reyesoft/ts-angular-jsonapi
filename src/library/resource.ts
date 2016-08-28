@@ -343,6 +343,9 @@ export class Resource implements IResource {
                 resource.attributes = value.attributes;
                 resource.id = value.id;
 
+                // foce reload cache
+                this.getService().cache_vars['__cache_last_update'] = 0;
+
                 this.runFc(fc_success, success);
             },
             error => {
