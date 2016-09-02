@@ -256,8 +256,6 @@ export class Resource implements IResource {
             if (Date.now() <= (this.getService().cache_vars['__cache_last_update'] + this.schema.ttl * 1000)) {
                 return collection;
             }
-
-            this.getService().cache_vars['__cache_last_update'] = collection.$cache_last_update = Date.now();
         }
 
         // SERVER REQUEST
@@ -402,12 +400,13 @@ export class Resource implements IResource {
         return true;
     }
 
-    private fillCache(resources) {
-        if (resources.id) {
-            this.fillCacheResource(resources);
+    private fillCache(resource_or_collection) {
+        if (resource_or_collection.id) {
+            this.fillCacheResource(resource_or_collection);
         } else {
             this.getService().cache_vars['__path'] = this.getPath();
-            this.fillCacheResources(resources);
+            this.getService().cache_vars['__cache_last_update'] = resource_or_collection.$cache_last_update = Date.now();
+            this.fillCacheResources(resource_or_collection);
         }
     }
 
