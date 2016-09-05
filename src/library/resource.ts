@@ -143,12 +143,6 @@ export class Resource implements IResource {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
 
-    public getRelationships<T extends IResource>(parent_path_id: string,
-        params?: Object | Function, fc_success?: Function, fc_error?: Function
-    ): Array<T> {
-        return this.__exec(parent_path_id, params, fc_success, fc_error, 'getRelationships');
-    }
-
     public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'save');
     }
@@ -178,9 +172,6 @@ export class Resource implements IResource {
         switch (exec_type) {
             case 'get':
             return this._get(id, params, fc_success, fc_error);
-            case 'getRelationships':
-            params.path = id;
-            return this._all(params, fc_success, fc_error);
             case 'delete':
             return this._delete(id, params, fc_success, fc_error);
             case 'all':
@@ -197,8 +188,8 @@ export class Resource implements IResource {
     public _get(id: string, params, fc_success, fc_error): IResource {
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        path.addPath(id);
+        path.appendPath(this.getPath());
+        path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
 
         let resource = this.getService().cache && this.getService().cache[id] ? this.getService().cache[id] : this.new();
@@ -219,12 +210,12 @@ export class Resource implements IResource {
         return resource;
     }
 
-    public _all(params, fc_success, fc_error): ICollection { // Array<IResource> {
+    public _all(params: IParams, fc_success, fc_error): ICollection {
 
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        params.path ? path.addPath(params.path) : null;
+        path.prependPath(this.getPath());
+        params.beforepath ? path.prependPath(params.beforepath) : null;
         params.include ? path.setInclude(params.include) : null;
 
         // make request
@@ -242,7 +233,7 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         // (!params.path): becouse we need real type, not this.getService().cache
-        if (!params.path && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
+        if (!params.beforepath && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
             // we don't make
             collection.$source = 'cache';
             let filter = new Filter();
@@ -271,7 +262,7 @@ export class Resource implements IResource {
                 (!params.path): fill cache need work with relationships too,
                 for the momment we're created this if
                 */
-                if (!params.path) {
+                if (!params.beforepath) {
                     this.fillCache(collection);
                 }
 
@@ -299,8 +290,8 @@ export class Resource implements IResource {
     public _delete(id: string, params, fc_success, fc_error): void {
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        path.addPath(id);
+        path.appendPath(this.getPath());
+        path.appendPath(id);
 
         Core.Services.JsonapiHttp
         .delete(path.get())
@@ -324,16 +315,16 @@ export class Resource implements IResource {
 
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        this.id && path.addPath(this.id);
+        path.appendPath(this.getPath());
+        this.id && path.appendPath(this.id);
         params.include ? path.setInclude(params.include) : null;
 
         let resource = this.new();
 
         let promise = Core.Services.JsonapiHttp.exec(
-                                path.get(), this.id ? 'PUT' : 'POST',
-                                object, !(angular.isFunction(fc_error))
-                        );
+            path.get(), this.id ? 'PUT' : 'POST',
+            object, !(angular.isFunction(fc_error))
+        );
 
         promise.then(
             success => {

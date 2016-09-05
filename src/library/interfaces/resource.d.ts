@@ -15,10 +15,9 @@ export interface IResource extends IDataResource {
     register? (): boolean;
     // new? (): IResource;
 
-    get (id: String, params?: Object | Function, success?: Function, error?: Function): IResource;
-    all (params?: Object | Function, success?: Function, error?: Function): Array<IResource>;
-    getRelationships (params?: Object | Function, success?: Function, error?: Function): Array<IResource>;
-    delete (id: String, params?: Object | Function, success?: Function, error?: Function): void;
+    get (id: String, IParams?: Object | Function, success?: Function, error?: Function): IResource;
+    all (params?: IParams | Function, success?: Function, error?: Function): Array<IResource>;
+    delete (id: String, params?: IParams | Function, success?: Function, error?: Function): void;
 
     getService? (): any;
 }

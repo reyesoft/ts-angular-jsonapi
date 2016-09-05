@@ -3,7 +3,6 @@ import * as Jsonapi from '../../library/index';
 
 class AuthorController {
     public author: Jsonapi.IResource;
-    public books_old: Jsonapi.IResource[];
     public relatedbooks: Jsonapi.IResource[];
 
     /** @ngInject */
@@ -22,13 +21,13 @@ class AuthorController {
                 console.log('error authors controller', error);
             }
         );
-        this.books_old = this.author.getRelationships($stateParams.authorId + '/books', () => {
-            console.log('Books from getRelationships', this.books_old);
-        });
 
-        this.relatedbooks = this.author.getRelationships($stateParams.authorId + '/books', () => {
-            console.log('Books from getRelationships', this.books_old);
-        });
+        this.relatedbooks = BooksService.all(
+            { beforepath: 'authors/' + $stateParams.authorId },
+            () => {
+                console.log('Books from authors relationship', this.relatedbooks);
+            }
+        );
     }
 
     /**
@@ -38,7 +37,7 @@ class AuthorController {
         let author = this.AuthorsService.new();
         author.attributes.name = 'Pablo Reyes';
         author.attributes.date_of_birth = '2030-12-10';
-        angular.forEach(this.books_old, (book: Jsonapi.IResource) => {
+        angular.forEach(this.relatedbooks, (book: Jsonapi.IResource) => {
             author.addRelationship(book /* , 'handbook' */);
         });
         console.log('new save', author.toObject());

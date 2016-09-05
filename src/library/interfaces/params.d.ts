@@ -1,6 +1,6 @@
 interface IParams {
-    id?: String;
-    path?: String;
-    include?: Array<String>;
+    id?: string;
+    beforepath?: string;
+    include?: Array<string>;
     filter?: any;
 }
