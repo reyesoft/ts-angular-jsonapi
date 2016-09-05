@@ -324,6 +324,7 @@ export class Resource implements IResource {
 
         // http request
         let path = new PathMaker();
+        path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         this.id && path.appendPath(this.id);
         params.include ? path.setInclude(params.include) : null;
