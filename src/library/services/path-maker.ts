@@ -7,7 +7,9 @@ export class PathMaker {
     }
 
     public appendPath(value: String) {
-        this.paths.push(value);
+        if (value !== '') {
+            this.paths.push(value);
+        }
     }
 
     public setInclude(strings_array: Array<String>) {

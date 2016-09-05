@@ -45,6 +45,9 @@ export class Resource implements IResource {
         return Core.Me._register(this);
     }
 
+    public getPrePath(): string {
+        return '';
+    }
     public getPath(): string {
         return this.path ? this.path : this.type;
     }
@@ -188,6 +191,7 @@ export class Resource implements IResource {
     public _get(id: string, params, fc_success, fc_error): IResource {
         // http request
         let path = new PathMaker();
+        path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
@@ -214,8 +218,9 @@ export class Resource implements IResource {
 
         // http request
         let path = new PathMaker();
-        path.prependPath(this.getPath());
-        params.beforepath ? path.prependPath(params.beforepath) : null;
+        path.appendPath(this.getPrePath());
+        params.beforepath ? path.appendPath(params.beforepath) : null;
+        path.appendPath(this.getPath());
         params.include ? path.setInclude(params.include) : null;
 
         // make request
@@ -233,7 +238,10 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         // (!params.path): becouse we need real type, not this.getService().cache
-        if (!params.beforepath && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
+        if (!params.beforepath
+            && this.getService().cache
+            && this.getService().cache_vars['__path'] === this.getPrePath() + this.getPath()
+        ) {
             // we don't make
             collection.$source = 'cache';
             let filter = new Filter();
@@ -290,6 +298,7 @@ export class Resource implements IResource {
     public _delete(id: string, params, fc_success, fc_error): void {
         // http request
         let path = new PathMaker();
+        path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         path.appendPath(id);
 
@@ -395,7 +404,7 @@ export class Resource implements IResource {
         if (resource_or_collection.id) {
             this.fillCacheResource(resource_or_collection);
         } else {
-            this.getService().cache_vars['__path'] = this.getPath();
+            this.getService().cache_vars['__path'] = this.getPrePath() + this.getPath();
             this.getService().cache_vars['__cache_last_update'] = resource_or_collection.$cache_last_update = Date.now();
             this.fillCacheResources(resource_or_collection);
         }
