@@ -36,8 +36,8 @@
         </tr>
     </table>
 
-    <h3>Books</h3>
-    <pre>authors.getRelationships('{{$ctrl.author.id}}/books');</pre>
+    <h3>Related Books by URL</h3>
+    <pre>BooksService.all( { beforepath: 'authors/{{$ctrl.author.id}}' } );</pre>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -46,7 +46,7 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in $ctrl.books">
+        <tr ng-repeat="book in $ctrl.relatedbooks">
             <td>{{ book.id }}</td>
             <td>
                 <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>

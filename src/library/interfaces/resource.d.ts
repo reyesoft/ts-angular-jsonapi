@@ -5,16 +5,19 @@ export interface IResource extends IDataResource {
 
     is_new: boolean;
 
+    new? (): IResource;
     clone? (resource: IResource, type_alias?: string): Object;
     addRelationship? (resource: IResource, type_alias?: string): void;
     addRelationships? (resources: Array<IResource>, type_alias: string): void;
     removeRelationship? (type_alias: string, id: string): boolean;
-    save? (params: IParams, fc_success: Function, fc_error: Function): any;
+    save? (params?: IParams, fc_success?: Function, fc_error?: Function): any;
     toObject? (params?: IParams): IDataObject;
     register? (): boolean;
     // new? (): IResource;
-    get? (id: String): IResource;
-    all? (): Array<IResource>;
-    delete? (id: String): void;
+
+    get (id: String, IParams?: Object | Function, success?: Function, error?: Function): IResource;
+    all (params?: IParams | Function, success?: Function, error?: Function): Array<IResource>;
+    delete (id: String, params?: IParams | Function, success?: Function, error?: Function): void;
+
     getService? (): any;
 }

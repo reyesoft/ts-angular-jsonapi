@@ -143,12 +143,6 @@ export class Resource implements IResource {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
 
-    public getRelationships<T extends IResource>(parent_path_id: string,
-        params?: Object | Function, fc_success?: Function, fc_error?: Function
-    ): Array<T> {
-        return this.__exec(parent_path_id, params, fc_success, fc_error, 'getRelationships');
-    }
-
     public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'save');
     }
@@ -178,9 +172,6 @@ export class Resource implements IResource {
         switch (exec_type) {
             case 'get':
             return this._get(id, params, fc_success, fc_error);
-            case 'getRelationships':
-            params.path = id;
-            return this._all(params, fc_success, fc_error);
             case 'delete':
             return this._delete(id, params, fc_success, fc_error);
             case 'all':
@@ -197,8 +188,8 @@ export class Resource implements IResource {
     public _get(id: string, params, fc_success, fc_error): IResource {
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        path.addPath(id);
+        path.appendPath(this.getPath());
+        path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
 
         let resource = this.getService().cache && this.getService().cache[id] ? this.getService().cache[id] : this.new();
@@ -219,61 +210,68 @@ export class Resource implements IResource {
         return resource;
     }
 
-    public _all(params, fc_success, fc_error): ICollection { // Array<IResource> {
+    public _all(params: IParams, fc_success, fc_error): ICollection {
 
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        params.path ? path.addPath(params.path) : null;
+        path.prependPath(this.getPath());
+        params.beforepath ? path.prependPath(params.beforepath) : null;
         params.include ? path.setInclude(params.include) : null;
 
         // make request
-        let resource: ICollection;
+        let collection: ICollection;
 
-        resource = Object.defineProperties({}, {
+        collection = Object.defineProperties({}, {
             '$length': {
                 get: function() { return Object.keys(this).length; },
                 enumerable: false
             },
             '$isloading': { value: false, enumerable: false, writable: true },
-            '$source': { value: '', enumerable: false, writable: true  }
+            '$source': { value: '', enumerable: false, writable: true  },
+            '$cache_last_update': { value: 0, enumerable: false, writable: true  }
         });
 
         // MEMORY_CACHE
         // (!params.path): becouse we need real type, not this.getService().cache
-        if (!params.path && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
+        if (!params.beforepath && this.getService().cache && this.getService().cache_vars['__path'] === this.getPath()) {
             // we don't make
-            resource.$source = 'cache';
+            collection.$source = 'cache';
             let filter = new Filter();
             angular.forEach(this.getService().cache, (value, key) => {
                 if (!params.filter || filter.passFilter(value, params.filter)) {
-                    resource[key] = value;
+                    collection[key] = value;
                 }
             });
+
+            // exit if ttl is not expired
+            if (Date.now() <= (this.getService().cache_vars['__cache_last_update'] + this.schema.ttl * 1000)) {
+                return collection;
+            }
         }
 
-        resource['$isloading'] = true;
+        // SERVER REQUEST
+        collection['$isloading'] = true;
         Core.Services.JsonapiHttp
         .get(path.get())
         .then(
             success => {
-                resource.$source = 'server';
-                resource.$isloading = false;
-                Converter.build(success.data, resource, this.schema);
+                collection.$source = 'server';
+                collection.$isloading = false;
+                Converter.build(success.data, collection, this.schema);
                 /*
                 (!params.path): fill cache need work with relationships too,
                 for the momment we're created this if
                 */
-                if (!params.path) {
-                    this.fillCache(resource);
+                if (!params.beforepath) {
+                    this.fillCache(collection);
                 }
 
                 // filter getted data
                 if (params.filter) {
                     let filter = new Filter();
-                    angular.forEach(resource, (value, key) => {
+                    angular.forEach(collection, (value, key) => {
                         if (!filter.passFilter(value, params.filter)) {
-                            delete resource[key];
+                            delete collection[key];
                         }
                     });
                 }
@@ -281,19 +279,19 @@ export class Resource implements IResource {
                 this.runFc(fc_success, success);
             },
             error => {
-                resource.$source = 'server';
-                resource.$isloading = false;
+                collection.$source = 'server';
+                collection.$isloading = false;
                 this.runFc(fc_error, error);
             }
         );
-        return resource;
+        return collection;
     }
 
     public _delete(id: string, params, fc_success, fc_error): void {
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        path.addPath(id);
+        path.appendPath(this.getPath());
+        path.appendPath(id);
 
         Core.Services.JsonapiHttp
         .delete(path.get())
@@ -317,22 +315,25 @@ export class Resource implements IResource {
 
         // http request
         let path = new PathMaker();
-        path.addPath(this.getPath());
-        this.id && path.addPath(this.id);
+        path.appendPath(this.getPath());
+        this.id && path.appendPath(this.id);
         params.include ? path.setInclude(params.include) : null;
 
         let resource = this.new();
 
         let promise = Core.Services.JsonapiHttp.exec(
-                                path.get(), this.id ? 'PUT' : 'POST',
-                                object, !(angular.isFunction(fc_error))
-                        );
+            path.get(), this.id ? 'PUT' : 'POST',
+            object, !(angular.isFunction(fc_error))
+        );
 
         promise.then(
             success => {
                 let value = success.data.data;
                 resource.attributes = value.attributes;
                 resource.id = value.id;
+
+                // foce reload cache
+                this.getService().cache_vars['__cache_last_update'] = 0;
 
                 this.runFc(fc_success, success);
             },
@@ -390,12 +391,13 @@ export class Resource implements IResource {
         return true;
     }
 
-    private fillCache(resources) {
-        if (resources.id) {
-            this.fillCacheResource(resources);
+    private fillCache(resource_or_collection) {
+        if (resource_or_collection.id) {
+            this.fillCacheResource(resource_or_collection);
         } else {
             this.getService().cache_vars['__path'] = this.getPath();
-            this.fillCacheResources(resources);
+            this.getService().cache_vars['__cache_last_update'] = resource_or_collection.$cache_last_update = Date.now();
+            this.fillCacheResources(resource_or_collection);
         }
     }
 

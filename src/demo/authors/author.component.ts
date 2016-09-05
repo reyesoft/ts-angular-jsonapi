@@ -2,13 +2,13 @@ import 'angular-ui-router';
 import * as Jsonapi from '../../library/index';
 
 class AuthorController {
-    public author: any = null;
-    public books: any = null;
+    public author: Jsonapi.IResource;
+    public relatedbooks: Jsonapi.IResource[];
 
     /** @ngInject */
     constructor(
-        protected AuthorsService,
-        protected BooksService,
+        protected AuthorsService: Jsonapi.IResource,
+        protected BooksService: Jsonapi.IResource,
         protected $stateParams
     ) {
         this.author = AuthorsService.get(
@@ -21,9 +21,13 @@ class AuthorController {
                 console.log('error authors controller', error);
             }
         );
-        this.books = this.author.getRelationships($stateParams.authorId + '/books', () => {
-            console.log('Books from getRelationships', this.books);
-        });
+
+        this.relatedbooks = BooksService.all(
+            { beforepath: 'authors/' + $stateParams.authorId },
+            () => {
+                console.log('Books from authors relationship', this.relatedbooks);
+            }
+        );
     }
 
     /**
@@ -33,7 +37,7 @@ class AuthorController {
         let author = this.AuthorsService.new();
         author.attributes.name = 'Pablo Reyes';
         author.attributes.date_of_birth = '2030-12-10';
-        angular.forEach(this.books, (book: Jsonapi.IResource) => {
+        angular.forEach(this.relatedbooks, (book: Jsonapi.IResource) => {
             author.addRelationship(book /* , 'handbook' */);
         });
         console.log('new save', author.toObject());
@@ -53,7 +57,7 @@ class AuthorController {
     }
 
     public removeRelationship() {
-        this.author.removeRelationship('photos', 1);
+        this.author.removeRelationship('photos', '1');
         this.author.save();
         console.log('removeRelationship save with photos include', this.author.toObject());
     }

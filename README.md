@@ -5,19 +5,19 @@ Jsonapi client library developed for AngularJS based on typescript.
 ## Supported features
 
 - [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
-- [x] Get resource and collection of resources
-- [x] Include support (also, when you save)
-- [ ] Declaration file published on [DefinitelyTyped repository](https://github.com/borisyankov/DefinitelyTyped).
+- [x] Get a simple resource or a collection of resources
+- [x] [Include support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
 - [ ] Two+ equal calls, only one HTTP request.
-- [x] Before a HTTP request, objects are set with cached data.
+- [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
+- [x] Cache (on memory): TTL of collections
+- [ ] Cache (on memory): TTL of resources
 - [x] Equal requests, return a same ResourceObject
-- [x] Short time cache (on memory)
 - [ ] Long time cache (localstorage)
 - [ ] Sorting
 - [ ] Pagination
 - [ ] Filtering
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
-- [x] Properties on collections like `$length`, `$isloading` or `$source` (_`empty`_ |`cache`|`server`)
+- [x] [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$isloading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
@@ -33,10 +33,9 @@ npm install ts-angular-jsonapi --save
 
 ### Dependecies and customization
 
-1. Add reference path to Typescript Definitions (dts).
-2. Add Jsonapi dependency.
-3. Configure your url and other paramemeters.
-4. Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
+1. Add Jsonapi dependency.
+2. Configure your url and other paramemeters.
+3. Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
 ```javascript
 import 'ts-angular-jsonapi';
@@ -174,7 +173,7 @@ author.removeRelationship('books', 'book_id');
 author.save( { include: ['book'] });
 
 // mmmm, if I need get related resources? For example, books related with author 1
-let books = this.AuthorsService.getRelationships('1/books');
+let relatedbooks = BooksService.all( { beforepath: 'authors/1' } );
 ```
 
 ### Update a resource
