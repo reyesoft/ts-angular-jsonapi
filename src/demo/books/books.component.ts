@@ -1,9 +1,11 @@
+import * as Jsonapi from '../../library/index';
+
 class BooksController {
     public books: any = null;
 
     /** @ngInject */
     constructor(
-        protected BooksService
+        protected BooksService: Jsonapi.IResource
     ) {
         this.books = BooksService.all(
             {

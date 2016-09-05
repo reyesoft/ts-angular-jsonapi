@@ -6,7 +6,7 @@ class AuthorsController {
     /** @ngInject */
     constructor(
         protected JsonapiCore,
-        protected AuthorsService
+        protected AuthorsService: Jsonapi.IResource
     ) {
         this.authors = AuthorsService.all(
             // { include: ['books', 'photos'] },

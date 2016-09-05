@@ -46,7 +46,7 @@
                 <th>Date Published</th>
             </tr>
         </thead>
-        <tr ng-repeat="book in $ctrl.books">
+        <tr ng-repeat="book in $ctrl.books_old">
             <td>{{ book.id }}</td>
             <td>
                 <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>
