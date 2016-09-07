@@ -1,3 +1,3 @@
-    interface IDataCollection extends IDocument {
-        data: Array<IDataResource>;
-    }
+interface IDataCollection extends IDocument {
+    data: IDataResource[];
+}

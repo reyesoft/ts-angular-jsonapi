@@ -3,4 +3,5 @@ export interface ICollection extends Object {
     $isloading: boolean;
     $source: string;
     $cache_last_update: number;
+    data: Array<IDataResource>;
 }

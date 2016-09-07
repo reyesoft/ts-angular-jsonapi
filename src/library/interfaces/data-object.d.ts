@@ -1,3 +1,3 @@
-    interface IDataObject extends IDocument {
-        data: IDataResource;
-    }
+interface IDataObject extends IDocument {
+    data: IDataResource;
+}

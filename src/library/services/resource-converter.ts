@@ -85,66 +85,101 @@ export class Converter {
         return resource;
     }
 
-    static build(document_from: any, resource_dest: any, schema: Jsonapi.ISchema) {
+    static build(
+        document_from: Jsonapi.ICollection & IDataObject,
+        resource_dest: Jsonapi.IResource | Jsonapi.ICollection,
+        schema: Jsonapi.ISchema
+    ) {
         // instancio los include y los guardo en included arrary
-        let included = {};
+        let included_resources = {};
         if ('included' in document_from) {
-            included = Converter.json_array2resources_array_by_type(document_from.included, false);
+            included_resources = Converter.json_array2resources_array_by_type(document_from.included, false);
         }
 
         if (angular.isArray(document_from.data)) {
-            Converter._buildResources(document_from, resource_dest, schema, included);
+            Converter._buildResources(document_from, <Jsonapi.ICollection>resource_dest, schema, included_resources);
         } else {
-            Converter._buildResource(document_from.data, resource_dest, schema, included);
+            Converter._buildResource(document_from.data, <Jsonapi.IResource>resource_dest, schema, included_resources);
         }
     }
 
-    static _buildResources(document_from: IDataCollection, resource_dest: Array<IDataCollection>, schema: Jsonapi.ISchema, included) {
+    static _buildResources(
+        document_from: Jsonapi.ICollection,
+        resource_dest: Jsonapi.ICollection,
+        schema: Jsonapi.ISchema,
+        included_resources: Object
+    ) {
         for (let data of document_from.data) {
             let resource = Converter.getService(data.type);
             if (!(data.id in resource_dest)) {
                 resource_dest[data.id] = new (<any>resource.constructor)();
                 resource_dest[data.id].reset();
             }
-            Converter._buildResource(data, resource_dest[data.id], schema, included);
+            Converter._buildResource(data, resource_dest[data.id], schema, included_resources);
         }
     }
 
-    static _buildResource(document_from: IDataResource, resource_dest: Jsonapi.IResource, schema: Jsonapi.ISchema, included) {
+    static _buildResource(
+        document_from: IDataResource,
+        resource_dest: Jsonapi.IResource,
+        schema: Jsonapi.ISchema,
+        included_resources: Object
+    ) {
         resource_dest.attributes = document_from.attributes;
         resource_dest.id = document_from.id;
         resource_dest.is_new = false;
-        Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included, schema);
+        Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included_resources, schema);
     }
 
-    static __buildRelationships(relationships_from: Array<any>, relationships_dest: Array<any>, included_array, schema: Jsonapi.ISchema) {
+    static __buildRelationships(
+        relationships_from: Array<any>,
+        relationships_dest: Array<any>,
+        included_resources: Object,
+        schema: Jsonapi.ISchema
+    ) {
         // recorro los relationships levanto el service correspondiente
-        angular.forEach(relationships_from, (relation_value, relation_key) => {
+        angular.forEach(relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
 
             // relation is in schema? have data or just links?
-            if (!(relation_key in relationships_dest) && ('data' in relation_value)) {
+            if (!(relation_key in relationships_dest) && ('data' in relation_from_value)) {
                 relationships_dest[relation_key] = { data: [] };
             }
 
             // sometime data=null or simple { }
-            if (!relation_value.data) {
+            if (!relation_from_value.data) {
                 return ;
             }
 
             if (schema.relationships[relation_key] && schema.relationships[relation_key].hasMany) {
-                if (relation_value.data.length < 1) {
+                // hasMany
+
+                if (relation_from_value.data.length < 1) {
                     return ;
                 }
-                let resource_service = Converter.getService(relation_value.data[0].type);
+                let resource_service = Converter.getService(relation_from_value.data[0].type);
                 if (resource_service) {
                     relationships_dest[relation_key].data = {}; // force to object (not array)
-                    angular.forEach(relation_value.data, (relation_value: IDataResource) => {
-                        let tmp = Converter.__buildRelationship(relation_value, included_array);
+                    angular.forEach(relation_from_value.data, (relation_value: IDataResource) => {
+                        let tmp = Converter.__buildRelationship(relation_value, included_resources);
                         relationships_dest[relation_key].data[tmp.id] = tmp;
                     });
                 }
             } else {
-                relationships_dest[relation_key].data = Converter.__buildRelationship(relation_value.data, included_array);
+                // hasOne
+
+                // cached related resource <> new related resource? delete!
+                if (relationships_dest[relation_key].data.id !== relation_from_value.data.id) {
+                    relationships_dest[relation_key].data = {};
+                }
+
+                // trae datos o cambió resource? actualizamos!
+                if (
+                    'attributes' in relation_from_value.data ||
+                    relationships_dest[relation_key].data.id !== relation_from_value.data.id
+                ) {
+                    let tmp = Converter.__buildRelationship(relation_from_value.data, included_resources);
+                    relationships_dest[relation_key].data = tmp;
+                }
             }
         });
     }
