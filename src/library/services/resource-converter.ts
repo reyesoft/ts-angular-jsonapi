@@ -167,8 +167,11 @@ export class Converter {
             } else {
                 // hasOne
 
-                // cached related resource <> new related resource? delete!
-                if (relationships_dest[relation_key].data.id !== relation_from_value.data.id) {
+                // new related resource <> cached related resource <> ? delete!
+                if (
+                    relationships_dest[relation_key].data == null ||
+                    relation_from_value.data.id !== relationships_dest[relation_key].data.id
+                ) {
                     relationships_dest[relation_key].data = {};
                 }
 
