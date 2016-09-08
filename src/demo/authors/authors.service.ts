@@ -7,7 +7,7 @@ export class AuthorsService extends Jsonapi.Resource {
     public schema: Jsonapi.ISchema = {
         attributes: {
             name: { presence: true, length: { maximum: 96 } },
-            date_of_birth: {},
+            date_of_birth: { default: '1993-12-10'},
             date_of_death: {},
             created_at: {},
             updated_at: {}

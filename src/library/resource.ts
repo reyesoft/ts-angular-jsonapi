@@ -63,6 +63,9 @@ export class Resource implements IResource {
         let self = this;
         this.id = '';
         this.attributes = {};
+        angular.forEach(this.schema.attributes, (value, key) => {
+            self.attributes[key] = value.default ? value.default : undefined;
+        });
         this.relationships = {};
         angular.forEach(this.schema.relationships, (value, key) => {
             self.relationships[key] = {};
@@ -142,7 +145,8 @@ export class Resource implements IResource {
         this.__exec(id, params, fc_success, fc_error, 'delete');
     }
 
-    public all<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
+    public all(params?: Object | Function, fc_success?: Function, fc_error?: Function): ICollection {
+    // public all<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
 
@@ -308,7 +312,7 @@ export class Resource implements IResource {
             success => {
                 if (this.getService().cache && this.getService().cache[id]) {
                     this.getService().cache[id]['id'] = '';
-                    this.getService().cache[id]['attributes'] = null;
+                    this.getService().cache[id]['attributes'] = {};
                     delete this.getService().cache[id];
                 }
                 this.runFc(fc_success, success);

@@ -1,4 +1,5 @@
 import { ISchema } from './schema';
+import { ICollection } from './collection';
 
 export interface IResource extends IDataResource {
     schema?: ISchema;
@@ -16,7 +17,7 @@ export interface IResource extends IDataResource {
     // new? (): IResource;
 
     get (id: String, IParams?: Object | Function, success?: Function, error?: Function): IResource;
-    all (params?: IParams | Function, success?: Function, error?: Function): Array<IResource>;
+    all(params?: IParams | Function, success?: Function, error?: Function): ICollection;
     delete (id: String, params?: IParams | Function, success?: Function, error?: Function): void;
 
     getService? (): any;
