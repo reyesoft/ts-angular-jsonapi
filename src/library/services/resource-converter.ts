@@ -1,6 +1,7 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
 import * as Jsonapi from '../interfaces';
+import { Base } from '../services/base';
 
 export class Converter {
 
@@ -142,7 +143,7 @@ export class Converter {
 
             // relation is in schema? have data or just links?
             if (!(relation_key in relationships_dest) && ('data' in relation_from_value)) {
-                relationships_dest[relation_key] = { data: [] };
+                relationships_dest[relation_key] = { data: Base.newCollection() };
             }
 
             // sometime data=null or simple { }
@@ -158,7 +159,7 @@ export class Converter {
                 }
                 let resource_service = Converter.getService(relation_from_value.data[0].type);
                 if (resource_service) {
-                    relationships_dest[relation_key].data = {}; // force to object (not array)
+                    relationships_dest[relation_key].data = Base.newCollection();
                     angular.forEach(relation_from_value.data, (relation_value: IDataResource) => {
                         let tmp = Converter.__buildRelationship(relation_value, included_resources);
                         relationships_dest[relation_key].data[tmp.id] = tmp;

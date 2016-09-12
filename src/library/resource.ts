@@ -69,7 +69,7 @@ export class Resource implements IResource {
         this.relationships = {};
         angular.forEach(this.schema.relationships, (value, key) => {
             self.relationships[key] = {};
-            self.relationships[key]['data'] = {};
+            self.relationships[key]['data'] = this.schema.relationships[key].hasMany ? Base.newCollection() : {};
         });
         this.is_new = true;
     }
@@ -228,17 +228,7 @@ export class Resource implements IResource {
         params.include ? path.setInclude(params.include) : null;
 
         // make request
-        let collection: ICollection;
-
-        collection = Object.defineProperties({}, {
-            '$length': {
-                get: function() { return Object.keys(this).length; },
-                enumerable: false
-            },
-            '$isloading': { value: false, enumerable: false, writable: true },
-            '$source': { value: '', enumerable: false, writable: true  },
-            '$cache_last_update': { value: 0, enumerable: false, writable: true  }
-        });
+        let collection: ICollection = Base.newCollection();
 
         // MEMORY_CACHE
         // (!params.path): becouse we need real type, not this.getService().cache
