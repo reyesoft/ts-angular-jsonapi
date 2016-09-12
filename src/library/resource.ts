@@ -333,8 +333,8 @@ export class Resource implements IResource {
         promise.then(
             success => {
                 let value = success.data.data;
-                resource.attributes = value.attributes;
-                resource.id = value.id;
+                this.attributes = value.attributes;
+                this.id = value.id;
 
                 // foce reload cache
                 this.getService().cache_vars['__cache_last_update'] = 0;
