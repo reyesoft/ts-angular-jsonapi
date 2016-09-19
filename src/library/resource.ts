@@ -14,6 +14,7 @@ export class Resource implements IResource {
     protected path: string;   // without slashes
 
     public is_new = true;
+    public is_loading = false;
     public type: string;
     public id: string;
     public attributes: any ;
@@ -201,12 +202,14 @@ export class Resource implements IResource {
         params.include ? path.setInclude(params.include) : null;
 
         let resource = this.getService().cache && this.getService().cache[id] ? this.getService().cache[id] : this.new();
+        resource.is_loading = true;
 
         Core.Services.JsonapiHttp
         .get(path.get())
         .then(
             success => {
                 Converter.build(success.data, resource, this.schema);
+                resource.is_loading = false;
                 this.fillCacheResource(resource);
                 this.runFc(fc_success, success);
             },

@@ -5,6 +5,7 @@ export interface IResource extends IDataResource {
     schema?: ISchema;
 
     is_new: boolean;
+    is_loading: boolean;
 
     new? (): IResource;
     clone? (resource: IResource, type_alias?: string): Object;

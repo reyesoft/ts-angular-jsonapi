@@ -24,4 +24,10 @@ export class Base {
             '$cache_last_update': { value: 0, enumerable: false, writable: true  }
         });
     }
+
+    static newResource(): ICollection {
+        return Object.defineProperties({}, {
+            '$isloading': { value: false, enumerable: false, writable: true }
+        });
+    }
 }
