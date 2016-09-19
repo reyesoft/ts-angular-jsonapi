@@ -1,11 +1,14 @@
 import { ISchema } from './schema';
 import { ICollection } from './collection';
+import { ICache } from './cache.d';
 
 export interface IResource extends IDataResource {
     schema?: ISchema;
 
     is_new: boolean;
     is_loading: boolean;
+
+    memorycache: ICache;
 
     new? (): IResource;
     clone? (resource: IResource, type_alias?: string): Object;

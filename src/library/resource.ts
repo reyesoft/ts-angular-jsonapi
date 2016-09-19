@@ -6,8 +6,9 @@ import { Base } from './services/base';
 import { PathMaker } from './services/path-maker';
 import { Converter } from './services/resource-converter';
 import { Filter } from './services/filter';
+import { MemoryCache } from './services/memorycache';
 
-import { ISchema, IResource, ICollection } from './interfaces';
+import { ISchema, IResource, ICollection, ICache } from './interfaces';
 
 export class Resource implements IResource {
     public schema: ISchema;
@@ -20,7 +21,7 @@ export class Resource implements IResource {
     public attributes: any ;
     public relationships: any = {}; // [];
 
-    public cache: Object;
+    public memorycache: ICache;
     public cache_vars: Object = {};
 
     public clone(): any {
@@ -42,7 +43,7 @@ export class Resource implements IResource {
             throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
         }
         // only when service is registered, not cloned object
-        this.cache = {};
+        this.memorycache = new MemoryCache();
         return Core.Me._register(this);
     }
 
@@ -201,7 +202,7 @@ export class Resource implements IResource {
         path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
 
-        let resource = this.getService().cache && this.getService().cache[id] ? this.getService().cache[id] : this.new();
+        let resource = id in this.getService().memorycache.resources ? this.getService().memorycache.resources[id] : this.new();
         resource.is_loading = true;
 
         Core.Services.JsonapiHttp
@@ -235,21 +236,21 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         // (!params.path): becouse we need real type, not this.getService().cache
+        let pathx = this.getPrePath() + this.getPath();
         if (!params.beforepath
-            && this.getService().cache
-            && this.getService().cache_vars['__path'] === this.getPrePath() + this.getPath()
+            && pathx in this.getService().memorycache.collections
         ) {
             // we don't make
-            collection.$source = 'cache';
+            collection.$source = 'memorycache';
             let filter = new Filter();
-            angular.forEach(this.getService().cache, (value, key) => {
+            angular.forEach(this.getService().memorycache.collections[pathx], (value, key) => {
                 if (!params.filter || filter.passFilter(value, params.filter)) {
                     collection[key] = value;
                 }
             });
 
             // exit if ttl is not expired
-            if (Date.now() <= (this.getService().cache_vars['__cache_last_update'] + this.schema.ttl * 1000)) {
+            if (this.getService().memorycache.isCollectionLive(pathx, this.schema.ttl)) {
                 return collection;
             }
         }
@@ -264,7 +265,7 @@ export class Resource implements IResource {
                 collection.$isloading = false;
                 Converter.build(success.data, collection, this.schema);
                 /*
-                (!params.path): fill cache need work with relationships too,
+                (!params.path): fill memorycache need work with relationships too,
                 for the momment we're created this if
                 */
                 if (!params.beforepath) {
@@ -303,11 +304,7 @@ export class Resource implements IResource {
         .delete(path.get())
         .then(
             success => {
-                if (this.getService().cache && this.getService().cache[id]) {
-                    this.getService().cache[id]['id'] = '';
-                    this.getService().cache[id]['attributes'] = {};
-                    delete this.getService().cache[id];
-                }
+                this.getService().memorycache.removeResource(id);
                 this.runFc(fc_success, success);
             },
             error => {
@@ -340,7 +337,7 @@ export class Resource implements IResource {
                 this.id = value.id;
 
                 // foce reload cache
-                this.getService().cache_vars['__cache_last_update'] = 0;
+                this.getService().memorycache.clearAllCollections();
 
                 this.runFc(fc_success, success);
             },
@@ -398,32 +395,37 @@ export class Resource implements IResource {
         return true;
     }
 
-    private fillCache(resource_or_collection) {
-        if (resource_or_collection.id) {
-            this.fillCacheResource(resource_or_collection);
+    private fillCache(resource_or_collection: IResource | ICollection) {
+        if ((<IResource>resource_or_collection).id) {
+            // resource
+            this.getService().memorycache.resources[(<IResource>resource_or_collection).id] = resource_or_collection;
+            // this.fillCacheResource(resource_or_collection);
         } else {
-            this.getService().cache_vars['__path'] = this.getPrePath() + this.getPath();
-            this.getService().cache_vars['__cache_last_update'] = resource_or_collection.$cache_last_update = Date.now();
-            this.fillCacheResources(resource_or_collection);
+            // collection
+            (<ICollection>resource_or_collection).$cache_last_update = Date.now();
+
+            this.getService().memorycache.setCollection(this.getPrePath() + this.getPath(), (<ICollection>resource_or_collection));
+            // this.fillCacheResources(resource_or_collection);
         }
     }
 
-    private fillCacheResources<T extends IResource>(resources: Array<T>) {
-        angular.forEach(resources, (resource) => {
-            this.fillCacheResource(resource);
-        });
-    }
+    // private fillCacheResources<T extends IResource>(resources: Array<T>) {
+    //     angular.forEach(resources, (resource) => {
+    //         this.fillCacheResource(resource);
+    //     });
+    // }
 
     private fillCacheResource<T extends IResource>(resource: T) {
-        if (resource.id) {
-            this.getService().cache[resource.id] = resource;
-        }
+        this.getService().memorycache.resources[resource.id] = resource;
+        // if (resource.id) {
+        //     this.getService().cache[resource.id] = resource;
+        // }
     }
 
     /**
     @return This resource like a service
     **/
-    public getService(): any {
+    public getService(): IResource {
         return Converter.getService(this.type);
     }
 }
