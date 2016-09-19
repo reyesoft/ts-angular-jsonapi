@@ -425,7 +425,7 @@ export class Resource implements IResource {
     /**
     @return This resource like a service
     **/
-    public getService(): IResource {
+    public getService(): any {
         return Converter.getService(this.type);
     }
 }
