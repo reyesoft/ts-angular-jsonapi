@@ -5,11 +5,19 @@ class BooksController {
 
     /** @ngInject */
     constructor(
-        protected BooksService: Jsonapi.IResource
+        protected BooksService: Jsonapi.IResource,
+        protected $stateParams
     ) {
+
+        // make filter (this is optional)
+        let filter = {};
+        if (this.$stateParams.filter.length > 0) {
+            filter = { title : this.$stateParams.filter };
+        }
+
         this.books = BooksService.all(
             {
-                // filter: { title : 'The Hobbit' },
+                filter: filter,
                 include: ['author', 'photos']
             },
             success => {

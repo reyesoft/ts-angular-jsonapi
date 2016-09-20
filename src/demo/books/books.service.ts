@@ -18,6 +18,7 @@ export class BooksService extends Jsonapi.Resource {
             photos: {
                 hasMany: true
             }
-        }
+        },
+        ttl: 10
     };
 }

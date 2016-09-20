@@ -1,10 +1,15 @@
 import { ICollection } from '../interfaces';
 import { ICache } from '../interfaces/cache.d';
+import { Base } from './base';
 
 export class MemoryCache implements ICache {
-    public collections = {};
-    public resources = {};
+    private collections = {};
     private collections_lastupdate = {};
+    public resources = {};
+
+    public isCollectionExist(url: string): boolean  {
+        return (url in this.collections ? true : false);
+    }
 
     public isCollectionLive(url: string, ttl: number): boolean  {
         return (Date.now() <= (this.collections_lastupdate[url] + ttl * 1000));
@@ -15,7 +20,11 @@ export class MemoryCache implements ICache {
     }
 
     public setCollection(url: string, collection: ICollection): void  {
-        this.collections[url] = collection;
+        // clone collection, because after maybe delete items for filter o pagination
+        this.collections[url] = Base.newCollection();
+        angular.forEach(collection, (value, key) => {
+            this.collections[url][key] = value;
+        });
         this.collections_lastupdate[url] = Date.now();
     }
 

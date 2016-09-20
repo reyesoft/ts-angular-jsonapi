@@ -21,7 +21,7 @@ function routesConfig(
         template: '<author></author>'
     })
     .state('books', {
-        url: '/books/',
+        url: '/books/:filter',
         template: '<books></books>'
     })
     .state('book', {

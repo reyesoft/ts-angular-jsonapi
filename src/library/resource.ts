@@ -235,16 +235,14 @@ export class Resource implements IResource {
         let collection: ICollection = Base.newCollection();
 
         // MEMORY_CACHE
-        // (!params.path): becouse we need real type, not this.getService().cache
         let pathx = this.getPrePath() + this.getPath();
-        if (!params.beforepath
-            && pathx in this.getService().memorycache.collections
-        ) {
-            // we don't make
+        if (this.getService().memorycache.isCollectionExist(pathx)) {
             collection.$source = 'memorycache';
+
+            // fill collection and filter
             let filter = new Filter();
-            angular.forEach(this.getService().memorycache.collections[pathx], (value, key) => {
-                if (!params.filter || filter.passFilter(value, params.filter)) {
+            angular.forEach(this.getService().memorycache.getCollection(pathx), (value, key) => {
+                if (!params.filter || Object.keys(params.filter).length === 0 || filter.passFilter(value, params.filter)) {
                     collection[key] = value;
                 }
             });
@@ -264,16 +262,11 @@ export class Resource implements IResource {
                 collection.$source = 'server';
                 collection.$isloading = false;
                 Converter.build(success.data, collection, this.schema);
-                /*
-                (!params.path): fill memorycache need work with relationships too,
-                for the momment we're created this if
-                */
-                if (!params.beforepath) {
-                    this.fillCache(collection);
-                }
+
+                this.getService().memorycache.setCollection(pathx, collection);
 
                 // filter getted data
-                if (params.filter) {
+                if (params.filter && Object.keys(params.filter).length) {
                     let filter = new Filter();
                     angular.forEach(collection, (value, key) => {
                         if (!filter.passFilter(value, params.filter)) {
@@ -395,37 +388,14 @@ export class Resource implements IResource {
         return true;
     }
 
-    private fillCache(resource_or_collection: IResource | ICollection) {
-        if ((<IResource>resource_or_collection).id) {
-            // resource
-            this.getService().memorycache.resources[(<IResource>resource_or_collection).id] = resource_or_collection;
-            // this.fillCacheResource(resource_or_collection);
-        } else {
-            // collection
-            (<ICollection>resource_or_collection).$cache_last_update = Date.now();
-
-            this.getService().memorycache.setCollection(this.getPrePath() + this.getPath(), (<ICollection>resource_or_collection));
-            // this.fillCacheResources(resource_or_collection);
-        }
-    }
-
-    // private fillCacheResources<T extends IResource>(resources: Array<T>) {
-    //     angular.forEach(resources, (resource) => {
-    //         this.fillCacheResource(resource);
-    //     });
-    // }
-
     private fillCacheResource<T extends IResource>(resource: T) {
         this.getService().memorycache.resources[resource.id] = resource;
-        // if (resource.id) {
-        //     this.getService().cache[resource.id] = resource;
-        // }
     }
 
     /**
     @return This resource like a service
     **/
-    public getService(): any {
+    public getService() {
         return Converter.getService(this.type);
     }
 }

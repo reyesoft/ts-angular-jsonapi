@@ -6,7 +6,11 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Title</th>
+                <th>
+                    Title
+                    <a ui-sref="books({ filter: 'The Hobbit' })"><small>Filter1</small></a>
+                    <a ui-sref="books({ filter: 'The Two Towers' })"><small>Filter2</small></a>
+                </th>
                 <th>Date Published</th>
                 <th>Author</th>
                 <th>Photos</th>
