@@ -248,6 +248,7 @@ export class Resource implements IResource {
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
+                this.runFc(fc_success, 'memorycache');
                 return collection;
             }
         }
