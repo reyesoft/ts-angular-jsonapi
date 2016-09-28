@@ -65,7 +65,7 @@ export class Converter {
         }
     }
 
-    static getService(type: string): Jsonapi.IResource {
+    static getService(type: string): any {
         let resource_service = Core.Me.getResource(type);
         if (angular.isUndefined(resource_service)) {
             console.warn('`' + type + '`', 'service not found on getService()');

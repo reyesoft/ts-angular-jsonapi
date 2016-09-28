@@ -235,20 +235,19 @@ export class Resource implements IResource {
         let collection: ICollection = Base.newCollection();
 
         // MEMORY_CACHE
-        let pathx = this.getPrePath() + this.getPath();
-        if (this.getService().memorycache.isCollectionExist(pathx)) {
+        if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
             collection.$source = 'memorycache';
 
             // fill collection and filter
             let filter = new Filter();
-            angular.forEach(this.getService().memorycache.getCollection(pathx), (value, key) => {
+            angular.forEach(this.getService().memorycache.getCollection(path.getForCache()), (value, key) => {
                 if (!params.filter || Object.keys(params.filter).length === 0 || filter.passFilter(value, params.filter)) {
                     collection[key] = value;
                 }
             });
 
             // exit if ttl is not expired
-            if (this.getService().memorycache.isCollectionLive(pathx, this.schema.ttl)) {
+            if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
                 return collection;
             }
         }
@@ -263,7 +262,7 @@ export class Resource implements IResource {
                 collection.$isloading = false;
                 Converter.build(success.data, collection, this.schema);
 
-                this.getService().memorycache.setCollection(pathx, collection);
+                this.getService().memorycache.setCollection(path.getForCache(), collection);
 
                 // filter getted data
                 if (params.filter && Object.keys(params.filter).length) {

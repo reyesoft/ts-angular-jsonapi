@@ -16,6 +16,10 @@ export class PathMaker {
         this.includes = strings_array;
     }
 
+    public getForCache(): String {
+        return this.paths.join('/');
+    }
+
     public get(): String {
         let get_params: Array<String> = [];
 

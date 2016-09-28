@@ -24,5 +24,5 @@ export interface IResource extends IDataResource {
     all(params?: IParams | Function, success?: Function, error?: Function): ICollection;
     delete (id: String, params?: IParams | Function, success?: Function, error?: Function): void;
 
-    getService?<T extends IResource> (): T;
+    getService? (): any;    // any, becouse depends of extended class
 }
