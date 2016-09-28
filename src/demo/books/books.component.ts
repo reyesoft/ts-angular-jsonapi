@@ -13,6 +13,8 @@ class BooksController {
         let filter = {};
         if (this.$stateParams.filter.length > 0) {
             filter = { title : this.$stateParams.filter };
+            // maybe you need a regular expresion ;)
+            // filter = { title : /R.*/ };
         }
 
         this.books = BooksService.all(
