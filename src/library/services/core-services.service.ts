@@ -6,7 +6,8 @@ export class CoreServices {
 
     /** @ngInject */
     public constructor(
-        protected JsonapiHttp
+        protected JsonapiHttp,
+        protected $q
     ) {
 
     }

@@ -257,7 +257,13 @@ export class Resource implements IResource {
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
-                this.runFc(fc_success, 'memorycache');
+                // we create a promise because we need return collection before
+                // run success client function
+                var deferred = Core.Services.$q.defer();
+                deferred.resolve(fc_success);
+                deferred.promise.then(fc_success => {
+                    this.runFc(fc_success, 'memorycache');
+                });
                 return this.tempororay_collection;
             }
         }
