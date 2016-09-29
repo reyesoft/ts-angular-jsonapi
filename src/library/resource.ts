@@ -24,6 +24,15 @@ export class Resource implements IResource {
     public memorycache: ICache;
     public cache_vars: Object = {};
 
+
+    /*
+    just for fix _delete becouse we duplicate collection before
+    return on _all()
+    this need to go out on the future
+    with this prevent do delete resource on user app next to success
+    */
+    private tempororay_collection: ICollection;
+
     public clone(): any {
         var cloneObj = new (<any>this.constructor)();
         for (var attribut in this) {
@@ -232,45 +241,45 @@ export class Resource implements IResource {
         params.include ? path.setInclude(params.include) : null;
 
         // make request
-        let collection: ICollection = Base.newCollection();
+        this.tempororay_collection = Base.newCollection();
 
         // MEMORY_CACHE
         if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
-            collection.$source = 'memorycache';
+            this.tempororay_collection.$source = 'memorycache';
 
             // fill collection and filter
             let filter = new Filter();
             angular.forEach(this.getService().memorycache.getCollection(path.getForCache()), (value, key) => {
                 if (!params.filter || Object.keys(params.filter).length === 0 || filter.passFilter(value, params.filter)) {
-                    collection[key] = value;
+                    this.tempororay_collection[key] = value;
                 }
             });
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
                 this.runFc(fc_success, 'memorycache');
-                return collection;
+                return this.tempororay_collection;
             }
         }
 
         // SERVER REQUEST
-        collection['$isloading'] = true;
+        this.tempororay_collection['$isloading'] = true;
         Core.Services.JsonapiHttp
         .get(path.get())
         .then(
             success => {
-                collection.$source = 'server';
-                collection.$isloading = false;
-                Converter.build(success.data, collection, this.schema);
+                this.tempororay_collection.$source = 'server';
+                this.tempororay_collection.$isloading = false;
+                Converter.build(success.data, this.tempororay_collection, this.schema);
 
-                this.getService().memorycache.setCollection(path.getForCache(), collection);
+                this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
 
                 // filter getted data
                 if (params.filter && Object.keys(params.filter).length) {
                     let filter = new Filter();
-                    angular.forEach(collection, (value, key) => {
+                    angular.forEach(this.tempororay_collection, (value, key) => {
                         if (!filter.passFilter(value, params.filter)) {
-                            delete collection[key];
+                            delete this.tempororay_collection[key];
                         }
                     });
                 }
@@ -278,12 +287,12 @@ export class Resource implements IResource {
                 this.runFc(fc_success, success);
             },
             error => {
-                collection.$source = 'server';
-                collection.$isloading = false;
+                this.tempororay_collection.$source = 'server';
+                this.tempororay_collection.$isloading = false;
                 this.runFc(fc_error, error);
             }
         );
-        return collection;
+        return this.tempororay_collection;
     }
 
     public _delete(id: string, params, fc_success, fc_error): void {
@@ -297,6 +306,7 @@ export class Resource implements IResource {
         .delete(path.get())
         .then(
             success => {
+                delete this.tempororay_collection[id];
                 this.getService().memorycache.removeResource(id);
                 this.runFc(fc_success, success);
             },
