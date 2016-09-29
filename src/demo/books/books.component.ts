@@ -30,6 +30,10 @@ class BooksController {
             }
         );
     }
+
+    public delete(book: Jsonapi.IResource) {
+        this.BooksService.delete(book.id);
+    }
 }
 
 export const Books = {

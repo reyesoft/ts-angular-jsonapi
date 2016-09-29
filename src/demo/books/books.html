@@ -24,6 +24,7 @@
             <td>{{ book.attributes.date_published | date }}</td>
             <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
             <td><span ng-repeat="photo in book.relationships.photos.data">{{ photo.id }} </span></td>
+            <td><a ng-click="$ctrl.delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
         </tr>
     </table>
 </div>

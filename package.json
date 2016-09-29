@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.1.34",
+  "version": "0.1.36",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",

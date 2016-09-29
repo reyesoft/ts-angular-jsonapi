@@ -24,6 +24,7 @@ export class MemoryCache implements ICache {
         this.collections[url] = Base.newCollection();
         angular.forEach(collection, (value, key) => {
             this.collections[url][key] = value;
+            this.resources[value.id] = value;
         });
         this.collections_lastupdate[url] = Date.now();
     }
@@ -37,9 +38,11 @@ export class MemoryCache implements ICache {
 
 
     public removeResource(id: string): void  {
-        angular.forEach(this.collections, (value, key) => {
+        angular.forEach(this.collections, (value, url) => {
             delete value[id];
         });
+        this.resources[id].attributes = {}; // just for confirm deletion on view
+        this.resources[id].relationships = {}; // just for confirm deletion on view
         delete this.resources[id];
     }
 }
