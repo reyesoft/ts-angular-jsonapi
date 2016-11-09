@@ -159,11 +159,21 @@ export class Converter {
                 }
                 let resource_service = Converter.getService(relation_from_value.data[0].type);
                 if (resource_service) {
-                    relationships_dest[relation_key].data = Base.newCollection();
+                    let tmp_relationship_data = Base.newCollection();
                     angular.forEach(relation_from_value.data, (relation_value: IDataResource) => {
                         let tmp = Converter.__buildRelationship(relation_value, included_resources);
-                        relationships_dest[relation_key].data[tmp.id] = tmp;
+
+                        // sometimes we have a cache like a services
+                        if (!('attributes' in tmp)
+                            && tmp.id in relationships_dest[relation_key].data
+                            && 'attributes' in relationships_dest[relation_key].data[tmp.id]
+                        ) {
+                            tmp_relationship_data[tmp.id] = relationships_dest[relation_key].data[tmp.id];
+                        } else {
+                            tmp_relationship_data[tmp.id] = tmp;
+                        }
                     });
+                    relationships_dest[relation_key].data = tmp_relationship_data;
                 }
             } else {
                 // hasOne
