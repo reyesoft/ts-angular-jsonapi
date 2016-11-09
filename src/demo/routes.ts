@@ -20,6 +20,10 @@ function routesConfig(
         url: '/authors/author/:authorId',
         template: '<author></author>'
     })
+    .state('photos', {
+        url: '/photos',
+        template: '<photos></photos>'
+    })
     .state('books', {
         url: '/books/:filter',
         template: '<books></books>'

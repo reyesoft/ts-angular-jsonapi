@@ -24,6 +24,7 @@ import { AuthorsService } from './authors/authors.service';
 import { Book } from './books/book.component';
 import { Books } from './books/books.component';
 import { BooksService } from './books/books.service';
+import { Photos } from './photos/photos.component';
 import { PhotosService } from './photos/photos.service';
 
 console.log('initiating app');
@@ -39,4 +40,5 @@ angular
     .component('authors', Authors)
     .component('book', Book)
     .component('books', Books)
+    .component('photos', Photos)
     ;

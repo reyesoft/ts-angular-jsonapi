@@ -245,15 +245,12 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
+            this.tempororay_collection = angular.copy(this.getService().memorycache.getCollection(path.getForCache()));
             this.tempororay_collection.$source = 'memorycache';
 
             // fill collection and filter
             let filter = new Filter();
-            angular.forEach(this.getService().memorycache.getCollection(path.getForCache()), (value, key) => {
-                if (!params.filter || Object.keys(params.filter).length === 0 || filter.passFilter(value, params.filter)) {
-                    this.tempororay_collection[key] = value;
-                }
-            });
+            this.tempororay_collection = filter.filterCollection(this.tempororay_collection, params.filter);
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
@@ -281,14 +278,8 @@ export class Resource implements IResource {
                 this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
 
                 // filter getted data
-                if (params.filter && Object.keys(params.filter).length) {
-                    let filter = new Filter();
-                    angular.forEach(this.tempororay_collection, (value, key) => {
-                        if (!filter.passFilter(value, params.filter)) {
-                            delete this.tempororay_collection[key];
-                        }
-                    });
-                }
+                let filter = new Filter();
+                this.tempororay_collection = filter.filterCollection(this.tempororay_collection, params.filter);
 
                 this.runFc(fc_success, success);
             },
