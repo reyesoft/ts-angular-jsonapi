@@ -245,7 +245,7 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
-            this.tempororay_collection = angular.copy(this.getService().memorycache.getCollection(path.getForCache()));
+            angular.copy(this.getService().memorycache.getCollection(path.getForCache()), this.tempororay_collection);
             this.tempororay_collection.$source = 'memorycache';
 
             // fill collection and filter
