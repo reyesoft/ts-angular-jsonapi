@@ -20,7 +20,7 @@ export class MemoryCache implements ICache {
     }
 
     public setCollection(url: string, collection: ICollection): void  {
-        // clone collection, because after maybe delete items for filter o pagination
+        // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
         angular.forEach(collection, (value, key) => {
             this.collections[url][key] = value;

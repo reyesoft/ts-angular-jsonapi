@@ -3,9 +3,10 @@
 // import * as Jsonapi from './core';
 import { Core } from './core';
 import { Base } from './services/base';
-import { PathMaker } from './services/path-maker';
+import { PathBuilder } from './services/path-builder';
+import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/resource-converter';
-import { Filter } from './services/filter';
+import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
 import { ISchema, IResource, ICollection, ICache } from './interfaces';
@@ -205,7 +206,7 @@ export class Resource implements IResource {
 
     public _get(id: string, params, fc_success, fc_error): IResource {
         // http request
-        let path = new PathMaker();
+        let path = new PathBuilder();
         path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         path.appendPath(id);
@@ -234,11 +235,13 @@ export class Resource implements IResource {
     public _all(params: IParams, fc_success, fc_error): ICollection {
 
         // http request
-        let path = new PathMaker();
+        let path = new PathBuilder();
+        let paramsurl = new UrlParamsBuilder();
         path.appendPath(this.getPrePath());
         params.beforepath ? path.appendPath(params.beforepath) : null;
         path.appendPath(this.getPath());
         params.include ? path.setInclude(params.include) : null;
+        params.remotefilter ? path.get_params.push(paramsurl.toparams( { filter: params.remotefilter } )) : null;
 
         // make request
         this.tempororay_collection = Base.newCollection();
@@ -248,9 +251,9 @@ export class Resource implements IResource {
             angular.copy(this.getService().memorycache.getCollection(path.getForCache()), this.tempororay_collection);
             this.tempororay_collection.$source = 'memorycache';
 
-            // fill collection and filter
-            let filter = new Filter();
-            this.tempororay_collection = filter.filterCollection(this.tempororay_collection, params.filter);
+            // fill collection and localfilter
+            let localfilter = new LocalFilter();
+            this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
@@ -277,9 +280,9 @@ export class Resource implements IResource {
 
                 this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
 
-                // filter getted data
-                let filter = new Filter();
-                this.tempororay_collection = filter.filterCollection(this.tempororay_collection, params.filter);
+                // localfilter getted data
+                let localfilter = new LocalFilter();
+                this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
 
                 this.runFc(fc_success, success);
             },
@@ -294,7 +297,7 @@ export class Resource implements IResource {
 
     public _delete(id: string, params, fc_success, fc_error): void {
         // http request
-        let path = new PathMaker();
+        let path = new PathBuilder();
         path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         path.appendPath(id);
@@ -317,7 +320,7 @@ export class Resource implements IResource {
         let object = this.toObject(params);
 
         // http request
-        let path = new PathMaker();
+        let path = new PathBuilder();
         path.appendPath(this.getPrePath());
         path.appendPath(this.getPath());
         this.id && path.appendPath(this.id);

@@ -1,6 +1,7 @@
-export class PathMaker {
+export class PathBuilder {
     public paths: Array<String> = [];
     public includes: Array<String> = [];
+    public get_params: Array<String> = [];
 
     public prependPath(value: String) {
         this.paths.unshift(value);
@@ -21,13 +22,11 @@ export class PathMaker {
     }
 
     public get(): String {
-        let get_params: Array<String> = [];
-
         if (this.includes.length > 0) {
-            get_params.push('include=' + this.includes.join(','));
+            this.get_params.push('include=' + this.includes.join(','));
         }
 
         return this.paths.join('/') +
-            (get_params.length > 0 ? '?' + get_params.join('&') : '');
+            (this.get_params.length > 0 ? '?' + this.get_params.join('&') : '');
     }
 }

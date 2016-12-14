@@ -19,7 +19,13 @@ class BooksController {
 
         this.books = BooksService.all(
             {
-                filter: filter,
+                localfilter: filter,
+                remotefilter: {
+                    date: {
+                        since:'1983-01-01',
+                        until: '2010-01-01'
+                    }
+                },
                 include: ['author', 'photos']
             },
             success => {

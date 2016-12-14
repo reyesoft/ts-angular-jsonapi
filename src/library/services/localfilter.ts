@@ -1,18 +1,18 @@
 import * as Jsonapi from '../interfaces';
 
-export class Filter {
+export class LocalFilter {
 
-    private passFilter(resource: Jsonapi.IResource, filter): boolean {
-        for (let attribute in filter) {
+    private passFilter(resource: Jsonapi.IResource, localfilter): boolean {
+        for (let attribute in localfilter) {
             if (typeof resource !== 'object' || !('attributes' in resource)) {
                 // is not a resource. Is an internal property, for example $source
                 return true;
-            } else if (typeof filter[attribute] === 'object') {
+            } else if (typeof localfilter[attribute] === 'object') {
                 // its a regular expression
-                return filter[attribute].test(resource.attributes[attribute]);
+                return localfilter[attribute].test(resource.attributes[attribute]);
             } else if (typeof resource.attributes[attribute] === 'string') {
                 // just a string
-                return (resource.attributes[attribute] === filter[attribute]);
+                return (resource.attributes[attribute] === localfilter[attribute]);
             }
         }
         return false;
@@ -20,9 +20,9 @@ export class Filter {
 
     public filterCollection(collection: Jsonapi.ICollection, filter_object: any): Jsonapi.ICollection {
         if (filter_object && Object.keys(filter_object).length) {
-            let filter = new Filter();
+            let localfilter = new LocalFilter();
             angular.forEach(collection, (resource, key) => {
-                if (!filter.passFilter(resource, filter_object)) {
+                if (!localfilter.passFilter(resource, filter_object)) {
                     delete collection[key];
                 }
             });
