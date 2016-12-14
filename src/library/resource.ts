@@ -211,7 +211,7 @@ export class Resource implements IResource {
         path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
 
-        let resource = id in this.getService().memorycache.resources ? this.getService().memorycache.resources[id] : this.new();
+        let resource = (id in this.getService().memorycache.resources ? this.getService().memorycache.resources[id] : this.new());
         resource.is_loading = true;
 
         Core.Services.JsonapiHttp
@@ -332,12 +332,15 @@ export class Resource implements IResource {
 
         promise.then(
             success => {
-                let value = success.data.data;
-                this.attributes = value.attributes;
-                this.id = value.id;
+                // let value = success.data.data;
+                // this.attributes = value.attributes;
+                this.id = success.data.data.id;
 
                 // foce reload cache
-                this.getService().memorycache.clearAllCollections();
+                // this.getService().memorycache.clearAllCollections();
+
+                Converter.build(success.data, this, this.schema);
+                this.fillCacheResource(this);
 
                 this.runFc(fc_success, success);
             },
@@ -368,12 +371,19 @@ export class Resource implements IResource {
     }
 
     public addRelationships<T extends IResource>(resources: Array<T>, type_alias: string) {
-        if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: { } };
-        }
-
         if (!this.schema.relationships[type_alias].hasMany) {
             console.warn('addRelationships not supported on ' + this.type + ' schema.');
+        }
+
+        if (!(type_alias in this.relationships)) {
+            this.relationships[type_alias] = { data: { } };
+        } else {
+            // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
+            angular.forEach(this.relationships[type_alias]['data'], (resource) => {
+                if (!(resource.id in resources)) {
+                    delete this.relationships[type_alias]['data'][resource.id];
+                }
+            });
         }
 
         angular.forEach(resources, (resource) => {
