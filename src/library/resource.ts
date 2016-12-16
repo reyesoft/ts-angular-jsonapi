@@ -335,12 +335,12 @@ export class Resource implements IResource {
 
         promise.then(
             success => {
-                // let value = success.data.data;
-                // this.attributes = value.attributes;
-                this.id = success.data.data.id;
+                // foce reload cache (for example, we add a new element)
+                if (!this.id) {
+                    this.getService().memorycache.clearAllCollections();
+                }
 
-                // foce reload cache
-                // this.getService().memorycache.clearAllCollections();
+                this.id = success.data.data.id;
 
                 Converter.build(success.data, this, this.schema);
                 this.fillCacheResource(this);
