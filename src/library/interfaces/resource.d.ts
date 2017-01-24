@@ -1,6 +1,4 @@
-import { ISchema } from './schema';
-import { ICollection } from './collection';
-import { ICache } from './cache.d';
+import { ISchema, ICollection, ICache, IParams } from './index';
 
 export interface IResource extends IDataResource {
     schema?: ISchema;
@@ -11,7 +9,7 @@ export interface IResource extends IDataResource {
     memorycache: ICache;
 
     new? (): IResource;
-    clone? (resource: IResource, type_alias?: string): Object;
+    reset? (): void;
     addRelationship? (resource: IResource, type_alias?: string): void;
     addRelationships? (resources: Array<IResource>, type_alias: string): void;
     removeRelationship? (type_alias: string, id: string): boolean;

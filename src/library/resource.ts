@@ -9,7 +9,7 @@ import { Converter } from './services/resource-converter';
 import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
-import { ISchema, IResource, ICollection, ICache } from './interfaces';
+import { ISchema, IResource, ICollection, ICache, IParams } from './interfaces';
 
 export class Resource implements IResource {
     public schema: ISchema;
@@ -242,6 +242,7 @@ export class Resource implements IResource {
         path.appendPath(this.getPath());
         params.include ? path.setInclude(params.include) : null;
         params.remotefilter ? path.get_params.push(paramsurl.toparams( { filter: params.remotefilter } )) : null;
+        params.page && params.page.number > 1 ? path.get_params.push('page[number]=' + params.page.number) : null;
 
         // make request
         this.tempororay_collection = Base.newCollection();

@@ -14,7 +14,7 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] Equal requests, return a same ResourceObject
 - [ ] Long time cache (localstorage)
 - [ ] Sorting
-- [ ] Pagination
+- [X] Pagination
 - [X] Filtering by attributes through a string or a regular expression
 - [X] Filtering by regular expression
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
@@ -115,7 +115,10 @@ Filter resources with `attribute: value` values. Filters are used as 'exact matc
 
 ```javascript
 let authors = AuthorsService.all(
-    { filter: { name: 'xx' } }
+    {
+        localfilter: { name: 'xx' },            // request all data and next filter locally
+        remotefilter: { country: 'Argentina' }  // request data with filter url parameter
+    }
 );
 ```
 
