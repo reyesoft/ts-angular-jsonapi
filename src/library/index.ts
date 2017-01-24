@@ -7,7 +7,13 @@ angular.module('Jsonapi.config', [])
         url: 'http://yourdomain/api/v1/',
         delay: 0,
         unify_concurrency: true,
-        cache_prerequests: true
+        cache_prerequests: true,
+        parameters: {
+            page: {
+                'number': 'page[number]',
+                'limit': 'page[limit]'
+            }
+        }
     });
 
 angular.module('Jsonapi.services', []);

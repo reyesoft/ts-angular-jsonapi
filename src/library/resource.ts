@@ -242,8 +242,12 @@ export class Resource implements IResource {
         path.appendPath(this.getPath());
         params.include ? path.setInclude(params.include) : null;
         params.remotefilter ? path.get_params.push(paramsurl.toparams( { filter: params.remotefilter } )) : null;
-        params.page && params.page.number > 1 ? path.get_params.push('page[number]=' + params.page.number) : null;
-        params.page && params.page.limit ? path.get_params.push('page[limit]=' + params.page.limit) : null;
+        if (params.page) {
+            params.page.number > 1 ? path.get_params.push(
+                Core.Services.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
+            params.page.limit ? path.get_params.push(
+                Core.Services.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
+        }
 
         // make request
         this.tempororay_collection = Base.newCollection();
