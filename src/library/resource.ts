@@ -243,7 +243,7 @@ export class Resource implements IResource {
         params.include ? path.setInclude(params.include) : null;
         params.remotefilter ? path.get_params.push(paramsurl.toparams( { filter: params.remotefilter } )) : null;
         params.page && params.page.number > 1 ? path.get_params.push('page[number]=' + params.page.number) : null;
-        params.page && params.page.size ? path.get_params.push('page[size]=' + params.page.size) : null;
+        params.page && params.page.limit ? path.get_params.push('page[limit]=' + params.page.limit) : null;
 
         // make request
         this.tempororay_collection = Base.newCollection();
