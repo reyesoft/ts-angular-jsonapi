@@ -6,6 +6,7 @@
 /// <reference path="./interfaces/data-object.d.ts"/>
 /// <reference path="./interfaces/data-resource.d.ts"/>
 /// <reference path="./interfaces/params.d.ts"/>
+/// <reference path="./interfaces/page.d.ts"/>
 /// <reference path="./interfaces/errors.d.ts"/>
 /// <reference path="./interfaces/links.d.ts"/>
 

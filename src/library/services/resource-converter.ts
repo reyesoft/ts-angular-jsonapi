@@ -110,6 +110,12 @@ export class Converter {
         schema: Jsonapi.ISchema,
         included_resources: Object
     ) {
+        if (document_from['meta']) {
+            resource_dest.page.number = document_from['meta']['page'] ? document_from['meta']['page'] : 1;
+            resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
+            resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
+        }
+
         for (let data of document_from.data) {
             let resource = Converter.getService(data.type);
             if (!(data.id in resource_dest)) {

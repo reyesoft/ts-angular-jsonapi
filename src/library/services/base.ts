@@ -1,5 +1,5 @@
-import {ISchema} from '../interfaces/schema.d';
-import {ICollection} from '../interfaces/collection.d';
+import { ISchema, ICollection, IParams } from '../interfaces';
+import { Page } from './page';
 
 export class Base {
     static Params: IParams = {
@@ -21,7 +21,8 @@ export class Base {
             },
             '$isloading': { value: false, enumerable: false, writable: true },
             '$source': { value: '', enumerable: false, writable: true  },
-            '$cache_last_update': { value: 0, enumerable: false, writable: true  }
+            '$cache_last_update': { value: 0, enumerable: false, writable: true  },
+            'page': { value: new Page(), enumerable: false, writable: true  }
         });
     }
 

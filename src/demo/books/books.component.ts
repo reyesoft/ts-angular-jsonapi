@@ -26,6 +26,7 @@ class BooksController {
                         until: '2010-01-01'
                     }
                 },
+                page: { number: 2 },
                 include: ['author', 'photos']
             },
             success => {
