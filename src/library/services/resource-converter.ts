@@ -112,7 +112,8 @@ export class Converter {
     ) {
         if (document_from['meta']) {
             resource_dest.page.number = document_from['meta']['page'] ? document_from['meta']['page'] : 1;
-            resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
+            resource_dest.page.
+                resources_per_page = document_from['meta']['resources_per_page'] ? document_from['meta']['resources_per_page'] : null;
             resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
         }
 

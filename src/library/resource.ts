@@ -241,11 +241,11 @@ export class Resource implements IResource {
         params.beforepath ? path.appendPath(params.beforepath) : null;
         path.appendPath(this.getPath());
         params.include ? path.setInclude(params.include) : null;
-        params.remotefilter ? path.get_params.push(paramsurl.toparams( { filter: params.remotefilter } )) : null;
+        params.remotefilter ? path.addParam(paramsurl.toparams( { filter: params.remotefilter } )) : null;
         if (params.page) {
-            params.page.number > 1 ? path.get_params.push(
+            params.page.number > 1 ? path.addParam(
                 Core.Services.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
-            params.page.limit ? path.get_params.push(
+            params.page.limit ? path.addParam(
                 Core.Services.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
         }
 

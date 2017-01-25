@@ -1,7 +1,7 @@
 export class PathBuilder {
     public paths: Array<String> = [];
     public includes: Array<String> = [];
-    public get_params: Array<String> = [];
+    private get_params: Array<String> = [];
 
     public prependPath(value: String) {
         this.paths.unshift(value);
@@ -13,20 +13,27 @@ export class PathBuilder {
         }
     }
 
+    public addParam(param: string): void {
+        this.get_params.push(param);
+    }
+
     public setInclude(strings_array: Array<String>) {
         this.includes = strings_array;
     }
 
     public getForCache(): String {
-        return this.paths.join('/');
+        return this.paths.join('/') + this.get_params.join('/');
     }
 
     public get(): String {
+        var params = [];
+        angular.copy(this.get_params, params);
+
         if (this.includes.length > 0) {
-            this.get_params.push('include=' + this.includes.join(','));
+            params.push('include=' + this.includes.join(','));
         }
 
         return this.paths.join('/') +
-            (this.get_params.length > 0 ? '?' + this.get_params.join('&') : '');
+            (params.length > 0 ? '?' + params.join('&') : '');
     }
 }
