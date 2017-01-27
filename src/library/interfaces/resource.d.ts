@@ -1,10 +1,11 @@
-import { ISchema, ICollection, ICache, IParams } from './index';
+import { ISchema, ICollection, ICache, IParamsCollection, IParamsResource } from './index';
 
 export interface IResource extends IDataResource {
     schema?: ISchema;
 
     is_new: boolean;
     is_loading: boolean;
+    lastupdate?: number;
 
     memorycache: ICache;
 
@@ -13,14 +14,15 @@ export interface IResource extends IDataResource {
     addRelationship? (resource: IResource, type_alias?: string): void;
     addRelationships? (resources: Array<IResource>, type_alias: string): void;
     removeRelationship? (type_alias: string, id: string): boolean;
-    save? (params?: IParams, fc_success?: Function, fc_error?: Function): any;
-    toObject? (params?: IParams): IDataObject;
+    save? (params?: IParamsResource, fc_success?: Function, fc_error?: Function): any;
+    toObject? (params?: IParamsResource): IDataObject;
     register? (): boolean;
     // new? (): IResource;
 
-    get (id: String, IParams?: Object | Function, success?: Function, error?: Function): IResource;
-    all(params?: IParams | Function, success?: Function, error?: Function): ICollection;
-    delete (id: String, params?: IParams | Function, success?: Function, error?: Function): void;
+    get (id: String, params?: Object | Function, success?: Function, error?: Function): IResource;
+    all(params?: IParamsCollection | Function, success?: Function, error?: Function): ICollection;
+    delete (id: String, params?: IParamsResource | Function, success?: Function, error?: Function): void;
 
     getService? (): any;    // any, becouse depends of extended class
+    clearMemoryCache? (): boolean;
 }

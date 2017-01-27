@@ -10,7 +10,7 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [ ] Two+ equal calls, only one HTTP request.
 - [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
 - [x] Cache (on memory): TTL of collections
-- [ ] Cache (on memory): TTL of resources
+- [X] Cache (on memory): TTL of resources
 - [x] Equal requests, return a same ResourceObject
 - [ ] Long time cache (localstorage)
 - [ ] Sorting
@@ -179,7 +179,15 @@ author.save( { include: ['book'] });
 
 // mmmm, if I need get related resources? For example, books related with author 1
 let relatedbooks = BooksService.all( { beforepath: 'authors/1' } );
+
+// you need get a cached object? you can force ttl on get
+let author = AuthorsService.get(
+    'some_author_id',
+    { ttl: 60 } // ttl on seconds (default: 0)
+);
 ```
+
+````
 
 ### Update a resource
 
@@ -189,14 +197,22 @@ this.author.attributes.name += 'New Name';
 this.author.save(success => {
     console.log('author saved!');
 });
-```
+````
 
 ### Handling errors
 
-### More examples
+### Pagination
 
-- Pagination (is comming)
-- Include anothers resources (is comming)
+```javascript
+let authors = AuthorsService.all(
+    {
+        // get page 2 of authors collection, with a limit per page of 50
+        page: { number: 2 ;  limit: 50 }   
+    }
+);
+```
+
+### Include anothers resources (is comming)
 
 ## Demo local
 

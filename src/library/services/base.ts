@@ -1,8 +1,8 @@
-import { ISchema, ICollection, IParams } from '../interfaces';
+import { ISchema, ICollection, IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 
 export class Base {
-    static Params: IParams = {
+    static Params: IParamsCollection | IParamsResource = {
         id: '',
         include: []
     };

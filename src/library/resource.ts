@@ -9,7 +9,7 @@ import { Converter } from './services/resource-converter';
 import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
-import { ISchema, IResource, ICollection, ICache, IParams } from './interfaces';
+import { ISchema, IResource, ICollection, ICache, IParamsCollection, IParamsResource } from './interfaces';
 
 export class Resource implements IResource {
     public schema: ISchema;
@@ -86,7 +86,7 @@ export class Resource implements IResource {
         this.is_new = true;
     }
 
-    public toObject(params?: IParams): IDataObject {
+    public toObject(params?: IParamsResource): IDataObject {
         params = angular.extend({}, Base.Params, params);
         this.schema = angular.extend({}, Base.Schema, this.schema);
 
@@ -169,7 +169,7 @@ export class Resource implements IResource {
     /**
     This method sort params for new(), get() and update()
     */
-    private __exec(id: string, params: IParams, fc_success, fc_error, exec_type: string): any {
+    private __exec(id: string, params: IParamsResource, fc_success, fc_error, exec_type: string): any {
         // makes `params` optional
         if (angular.isFunction(params)) {
             fc_error = fc_success;
@@ -212,8 +212,23 @@ export class Resource implements IResource {
         path.appendPath(id);
         params.include ? path.setInclude(params.include) : null;
 
+        // cache
         let resource = (id in this.getService().memorycache.resources ? this.getService().memorycache.resources[id] : this.new());
         resource.is_loading = true;
+        // exit if ttl is not expired
+        let temporal_ttl = params.ttl ? params.ttl : 0;
+        if (this.getService().memorycache.isResourceLive(id, temporal_ttl)) {
+            // we create a promise because we need return collection before
+            // run success client function
+            var deferred = Core.Services.$q.defer();
+            deferred.resolve(fc_success);
+            deferred.promise.then(fc_success => {
+                this.runFc(fc_success, 'memorycache');
+            });
+            resource.is_loading = false;
+            return resource;
+        }
+
 
         Core.Services.JsonapiHttp
         .get(path.get())
@@ -221,7 +236,7 @@ export class Resource implements IResource {
             success => {
                 Converter.build(success.data, resource, this.schema);
                 resource.is_loading = false;
-                this.fillCacheResource(resource);
+                this.getService().memorycache.setResource(resource);
                 this.runFc(fc_success, success);
             },
             error => {
@@ -232,7 +247,7 @@ export class Resource implements IResource {
         return resource;
     }
 
-    public _all(params: IParams, fc_success, fc_error): ICollection {
+    public _all(params: IParamsCollection, fc_success, fc_error): ICollection {
 
         // http request
         let path = new PathBuilder();
@@ -262,7 +277,8 @@ export class Resource implements IResource {
             this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
 
             // exit if ttl is not expired
-            if (this.getService().memorycache.isCollectionLive(path.getForCache(), this.schema.ttl)) {
+            let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
+            if (this.getService().memorycache.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
                 var deferred = Core.Services.$q.defer();
@@ -322,7 +338,7 @@ export class Resource implements IResource {
         );
     }
 
-    public _save(params: IParams, fc_success: Function, fc_error: Function): IResource {
+    public _save(params: IParamsResource, fc_success: Function, fc_error: Function): IResource {
         let object = this.toObject(params);
 
         // http request
@@ -349,7 +365,7 @@ export class Resource implements IResource {
                 this.id = success.data.data.id;
 
                 Converter.build(success.data, this, this.schema);
-                this.fillCacheResource(this);
+                this.getService().memorycache.setResource(this);
 
                 this.runFc(fc_success, success);
             },
@@ -414,14 +430,14 @@ export class Resource implements IResource {
         return true;
     }
 
-    private fillCacheResource<T extends IResource>(resource: T) {
-        this.getService().memorycache.resources[resource.id] = resource;
-    }
-
     /**
     @return This resource like a service
     **/
     public getService() {
         return Converter.getService(this.type);
+    }
+
+    public clearMemoryCache() {
+        return this.getService().memorycache.clearAllCollections();
     }
 }

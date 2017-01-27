@@ -1,10 +1,5 @@
-import { IPage } from './page.d';
-
-interface IParams {
-    id?: string;
+export interface IParams {
     beforepath?: string;
     include?: Array<string>;
-    localfilter?: any;
-    remotefilter?: any;
-    page?: IPage;
+    ttl?: number;
 }
