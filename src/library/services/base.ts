@@ -16,7 +16,7 @@ export class Base {
     static newCollection(): ICollection {
         return Object.defineProperties({}, {
             '$length': {
-                get: function() { return Object.keys(this).length; },
+                get: function() { return Object.keys(this).length * 1; },
                 enumerable: false
             },
             '$isloading': { value: false, enumerable: false, writable: true },
