@@ -17,6 +17,7 @@ export class Resource implements IResource {
 
     public is_new = true;
     public is_loading = false;
+    public is_saving = false;
     public type: string;
     public id: string;
     public attributes: any ;
@@ -290,6 +291,22 @@ export class Resource implements IResource {
             }
         }
 
+        // STORAGE_CACHE
+        let store = Core.Services.JsonapiHttpStore.get(path.getForCache(), params.storage_ttl);
+        if (store !== false) {
+            this.tempororay_collection.$source = 'httpstore';
+            this.tempororay_collection.$isloading = false;
+            Converter.build(store.data, this.tempororay_collection, this.schema);
+
+            // localfilter getted data
+            let localfilter = new LocalFilter();
+            this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
+
+            this.runFc(fc_success, store);
+
+            return this.tempororay_collection;
+        }
+
         // SERVER REQUEST
         this.tempororay_collection['$isloading'] = true;
         Core.Services.JsonapiHttp
@@ -301,6 +318,10 @@ export class Resource implements IResource {
                 Converter.build(success.data, this.tempororay_collection, this.schema);
 
                 this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
+
+                if (params.storage_ttl > 0) {
+                    Core.Services.JsonapiHttpStore.save(path.getForCache(), success.data);
+                }
 
                 // localfilter getted data
                 let localfilter = new LocalFilter();
@@ -339,6 +360,11 @@ export class Resource implements IResource {
     }
 
     public _save(params: IParamsResource, fc_success: Function, fc_error: Function): IResource {
+        if (this.is_saving) {
+            return ;
+        }
+        this.is_saving = true;
+
         let object = this.toObject(params);
 
         // http request
@@ -357,6 +383,8 @@ export class Resource implements IResource {
 
         promise.then(
             success => {
+                this.is_saving = false;
+
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
                     this.getService().memorycache.clearAllCollections();
@@ -370,6 +398,8 @@ export class Resource implements IResource {
                 this.runFc(fc_success, success);
             },
             error => {
+                this.is_saving = false;
+
                 this.runFc(fc_error, 'data' in error ? error.data : error);
             }
         );

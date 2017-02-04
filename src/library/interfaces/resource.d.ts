@@ -5,6 +5,7 @@ export interface IResource extends IDataResource {
 
     is_new: boolean;
     is_loading: boolean;
+    is_saving: boolean;
     lastupdate?: number;
 
     memorycache: ICache;

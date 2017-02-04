@@ -5,4 +5,5 @@ interface IParamsCollection extends IParams {
     localfilter?: any;
     remotefilter?: any;
     page?: IPage;
+    storage_ttl?: number;
 }

@@ -27,6 +27,7 @@ class BooksController {
                     }
                 },
                 page: { number: 2 },
+                // storage_ttl: 15,
                 include: ['author', 'photos']
             },
             success => {

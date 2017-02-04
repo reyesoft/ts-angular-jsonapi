@@ -4,6 +4,7 @@ import { Page } from './page';
 export class Base {
     static Params: IParamsCollection | IParamsResource = {
         id: '',
+        storage_ttl: 0,
         include: []
     };
 
