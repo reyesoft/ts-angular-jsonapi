@@ -23,7 +23,11 @@ angular.module('rsJsonapi', [
     'angular-storage',
     'Jsonapi.config',
     'Jsonapi.services'
-]);
+])
+.config(function(storeProvider) {
+    // Store defaults to localStorage but we can set sessionStorage or cookieStorage.
+    storeProvider.setStore('sessionStorage');
+});
 
 import { Core } from './core';
 import { Resource } from './resource';

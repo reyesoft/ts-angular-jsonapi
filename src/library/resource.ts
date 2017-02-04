@@ -296,14 +296,19 @@ export class Resource implements IResource {
         if (store !== false) {
             this.tempororay_collection.$source = 'httpstore';
             this.tempororay_collection.$isloading = false;
-            Converter.build(store.data, this.tempororay_collection, this.schema);
+            Converter.build(store, this.tempororay_collection, this.schema);
 
             // localfilter getted data
             let localfilter = new LocalFilter();
             this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
 
-            this.runFc(fc_success, store);
+            this.runFc(fc_success, { data: store});
 
+            var deferred = Core.Services.$q.defer();
+            deferred.resolve(fc_success);
+            deferred.promise.then(fc_success => {
+                this.runFc(fc_success, 'storagecache');
+            });
             return this.tempororay_collection;
         }
 

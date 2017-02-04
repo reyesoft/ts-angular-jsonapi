@@ -10,7 +10,7 @@ export class HttpStorage {
     }
 
     private isCacheLive(path: string, store_ttl: number): boolean  {
-        let lastupdate_time = this.store.get(path + '_lastupdate_time');
+        let lastupdate_time = this.store.get('jsonapi.' + path + '_lastupdate_time');
         return (Date.now() <= (lastupdate_time + store_ttl * 1000));
     }
 
@@ -19,18 +19,17 @@ export class HttpStorage {
             return false;
         }
 
-        let data = this.store.get(path);
-        console.log('store.get()', path, data);
+        let data = this.store.get('jsonapi.' + path);
         if (data) {
-            return { data: data };
+            return data;
         } else {
             return false;
         }
     }
 
     public save(path: string, data: string) {
-        this.store.set(path, data);
-        this.store.set(path + '_lastupdate_time', Date.now());
+        this.store.set('jsonapi.' + path, data);
+        this.store.set('jsonapi.' + path + '_lastupdate_time', Date.now());
     }
 }
 angular.module('Jsonapi.services').service('JsonapiHttpStore', HttpStorage);
