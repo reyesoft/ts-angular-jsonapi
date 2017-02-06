@@ -1,7 +1,7 @@
 /// <reference path="./index.d.ts" />
 
 import * as angular from 'angular';
-import 'angular-storage';
+import 'angular-localforage';
 
 angular.module('Jsonapi.config', [])
     .constant('rsJsonapiConfig', {
@@ -20,6 +20,7 @@ angular.module('Jsonapi.config', [])
 angular.module('Jsonapi.services', []);
 
 angular.module('rsJsonapi', [
+    'LocalForageModule',
     'Jsonapi.config',
     'Jsonapi.services'
 ]);

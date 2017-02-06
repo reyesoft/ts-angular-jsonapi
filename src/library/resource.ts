@@ -291,29 +291,40 @@ export class Resource implements IResource {
             }
         }
 
-        // STORAGE_CACHE
-        let store = Core.Services.JsonapiHttpStore.get(path.getForCache(), params.storage_ttl);
-        if (store !== false) {
-            this.tempororay_collection.$source = 'httpstore';
-            this.tempororay_collection.$isloading = false;
-            Converter.build(store, this.tempororay_collection, this.schema);
-
-            // localfilter getted data
-            let localfilter = new LocalFilter();
-            this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
-
-            this.runFc(fc_success, { data: store});
-
-            var deferred = Core.Services.$q.defer();
-            deferred.resolve(fc_success);
-            deferred.promise.then(fc_success => {
-                this.runFc(fc_success, 'storagecache');
-            });
-            return this.tempororay_collection;
-        }
-
-        // SERVER REQUEST
         this.tempororay_collection['$isloading'] = true;
+
+        // STORAGE_CACHE
+        Core.Services.JsonapiHttpStorage
+        .get(path.getForCache(), params.storage_ttl)
+        .then(
+            success => {
+                this.tempororay_collection.$source = 'httpstorage';
+                this.tempororay_collection.$isloading = false;
+                Converter.build(success, this.tempororay_collection, this.schema);
+
+                // localfilter getted data
+                let localfilter = new LocalFilter();
+                this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
+
+                this.runFc(fc_success, { data: success});
+
+                var deferred = Core.Services.$q.defer();
+                deferred.resolve(fc_success);
+                deferred.promise.then(fc_success => {
+                    this.runFc(fc_success, 'storagecache');
+                });
+                return this.tempororay_collection;
+            },
+            error => {
+                this.getAllFromServer(path, params, fc_success, fc_error);
+            }
+        );
+
+        return this.tempororay_collection;
+    }
+
+    private getAllFromServer(path, params, fc_success, fc_error) {
+        // SERVER REQUEST
         Core.Services.JsonapiHttp
         .get(path.get())
         .then(
@@ -325,7 +336,7 @@ export class Resource implements IResource {
                 this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
 
                 if (params.storage_ttl > 0) {
-                    Core.Services.JsonapiHttpStore.save(path.getForCache(), success.data);
+                    Core.Services.JsonapiHttpStorage.save(path.getForCache(), success.data);
                 }
 
                 // localfilter getted data
@@ -340,7 +351,6 @@ export class Resource implements IResource {
                 this.runFc(fc_error, error);
             }
         );
-        return this.tempororay_collection;
     }
 
     public _delete(id: string, params, fc_success, fc_error): void {

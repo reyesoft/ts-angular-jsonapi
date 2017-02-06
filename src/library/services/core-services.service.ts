@@ -1,7 +1,7 @@
 /// <reference path="../index.d.ts" />
 
 import './http.service';
-import './http-store.service';
+import './http-storage.service';
 
 export class CoreServices {
 
@@ -10,7 +10,7 @@ export class CoreServices {
         protected JsonapiHttp,
         protected rsJsonapiConfig,
         protected $q,
-        protected JsonapiHttpStore
+        protected JsonapiHttpStorage
     ) {
 
     }
