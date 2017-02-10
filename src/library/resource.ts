@@ -150,7 +150,7 @@ export class Resource implements IResource {
         return ret;
     }
 
-    public get<T extends IResource>(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
+    public get<T extends IResource>(id: string, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
         return this.__exec(id, params, fc_success, fc_error, 'get');
     }
 
@@ -158,7 +158,7 @@ export class Resource implements IResource {
         this.__exec(id, params, fc_success, fc_error, 'delete');
     }
 
-    public all(params?: Object | Function, fc_success?: Function, fc_error?: Function): ICollection {
+    public all(params?: IParamsCollection | Function, fc_success?: Function, fc_error?: Function): ICollection {
     // public all<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
@@ -205,7 +205,7 @@ export class Resource implements IResource {
         return angular.isFunction(some_fc) ? some_fc(param) : angular.noop();
     }
 
-    public _get(id: string, params, fc_success, fc_error): IResource {
+    public _get(id: string, params: IParamsResource, fc_success, fc_error): IResource {
         // http request
         let path = new PathBuilder();
         path.appendPath(this.getPrePath());
@@ -270,7 +270,10 @@ export class Resource implements IResource {
 
         // MEMORY_CACHE
         if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
-            angular.copy(this.getService().memorycache.getCollection(path.getForCache()), this.tempororay_collection);
+            // get cached data and merge with temporal collection
+            let collection_cached = this.getService().memorycache.getCollection(path.getForCache());
+            angular.copy(collection_cached, this.tempororay_collection);
+            this.tempororay_collection.page = collection_cached.page;
             this.tempororay_collection.$source = 'memorycache';
 
             // fill collection and localfilter

@@ -30,6 +30,7 @@ export class MemoryCache implements ICache {
             this.collections[url][key] = value;
             this.setResource(value);
         });
+        this.collections[url]['page'] = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }
 
