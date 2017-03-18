@@ -1,7 +1,7 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
 import * as Jsonapi from '../interfaces';
-import { Base } from '../services/base';
+import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 
 export class Converter {
 
@@ -110,20 +110,22 @@ export class Converter {
         schema: Jsonapi.ISchema,
         included_resources: Object
     ) {
-        if (document_from['meta']) {
+        // sometime get Cannot set property 'number' of undefined (page)
+        if (resource_dest.page && document_from['meta']) {
             resource_dest.page.number = document_from['meta']['page'] ? document_from['meta']['page'] : 1;
             resource_dest.page.
                 resources_per_page = document_from['meta']['resources_per_page'] ? document_from['meta']['resources_per_page'] : null;
             resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
         }
 
-        for (let data of document_from.data) {
-            let resource = Converter.getService(data.type);
-            if (!(data.id in resource_dest)) {
-                resource_dest[data.id] = new (<any>resource.constructor)();
-                resource_dest[data.id].reset();
+        let resource: IDataResource;
+        for (resource of document_from.data) {
+            let service = Converter.getService(resource.type);
+            if (!(resource.id in resource_dest)) {
+                resource_dest[resource.id] = new (<any>service.constructor)();
+                resource_dest[resource.id].reset();
             }
-            Converter._buildResource(data, resource_dest[data.id], schema, included_resources);
+            Converter._buildResource(resource, resource_dest[resource.id], schema, included_resources);
         }
     }
 
@@ -136,84 +138,14 @@ export class Converter {
         resource_dest.attributes = document_from.attributes;
         resource_dest.id = document_from.id;
         resource_dest.is_new = false;
-        Converter.__buildRelationships(document_from.relationships, resource_dest.relationships, included_resources, schema);
-    }
 
-    static __buildRelationships(
-        relationships_from: Array<any>,
-        relationships_dest: Array<any>,
-        included_resources: Object,
-        schema: Jsonapi.ISchema
-    ) {
-        // recorro los relationships levanto el service correspondiente
-        angular.forEach(relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
-
-            // relation is in schema? have data or just links?
-            if (!(relation_key in relationships_dest) && ('data' in relation_from_value)) {
-                relationships_dest[relation_key] = { data: Base.newCollection() };
-            }
-
-            // sometime data=null or simple { }
-            if (!relation_from_value.data) {
-                return ;
-            }
-
-            if (schema.relationships[relation_key] && schema.relationships[relation_key].hasMany) {
-                // hasMany
-
-                if (relation_from_value.data.length < 1) {
-                    return ;
-                }
-                let resource_service = Converter.getService(relation_from_value.data[0].type);
-                if (resource_service) {
-                    let tmp_relationship_data = Base.newCollection();
-                    angular.forEach(relation_from_value.data, (relation_value: IDataResource) => {
-                        let tmp = Converter.__buildRelationship(relation_value, included_resources);
-
-                        // sometimes we have a cache like a services
-                        if (!('attributes' in tmp)
-                            && tmp.id in relationships_dest[relation_key].data
-                            && 'attributes' in relationships_dest[relation_key].data[tmp.id]
-                        ) {
-                            tmp_relationship_data[tmp.id] = relationships_dest[relation_key].data[tmp.id];
-                        } else {
-                            tmp_relationship_data[tmp.id] = tmp;
-                        }
-                    });
-                    relationships_dest[relation_key].data = tmp_relationship_data;
-                }
-            } else {
-                // hasOne
-
-                // new related resource <> cached related resource <> ? delete!
-                if (
-                    relationships_dest[relation_key].data == null ||
-                    relation_from_value.data.id !== relationships_dest[relation_key].data.id
-                ) {
-                    relationships_dest[relation_key].data = {};
-                }
-
-                // trae datos o cambió resource? actualizamos!
-                if (
-                    'attributes' in relation_from_value.data ||
-                    relationships_dest[relation_key].data.id !== relation_from_value.data.id
-                ) {
-                    let tmp = Converter.__buildRelationship(relation_from_value.data, included_resources);
-                    relationships_dest[relation_key].data = tmp;
-                }
-            }
-        });
-    }
-
-    static __buildRelationship(relation: IDataResource, included_array): Jsonapi.IResource | IDataResource {
-        if (relation.type in included_array &&
-            relation.id in included_array[relation.type]
-        ) {
-            // it's in included
-            return included_array[relation.type][relation.id];
-        } else {
-            // resource not included, return directly the object
-            return relation;
-        }
+        let relationships_converter = new ResourceRelationshipsConverter(
+            Converter.getService,
+            document_from.relationships,
+            resource_dest.relationships,
+            included_resources,
+            schema
+        );
+        relationships_converter.buildRelationships();
     }
 }

@@ -269,7 +269,8 @@ export class Resource implements IResource {
         this.tempororay_collection = Base.newCollection();
 
         // MEMORY_CACHE
-        if (this.getService().memorycache.isCollectionExist(path.getForCache())) {
+        let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
+        if (temporal_ttl >= 0 && this.getService().memorycache.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
             let collection_cached = this.getService().memorycache.getCollection(path.getForCache());
             angular.copy(collection_cached, this.tempororay_collection);
@@ -281,7 +282,6 @@ export class Resource implements IResource {
             this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
 
             // exit if ttl is not expired
-            let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
@@ -314,7 +314,7 @@ export class Resource implements IResource {
                 var deferred = Core.Services.$q.defer();
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
-                    this.runFc(fc_success, 'storagecache');
+                    this.runFc(fc_success, 'httpstorage');
                 });
                 return this.tempororay_collection;
             },
@@ -378,7 +378,7 @@ export class Resource implements IResource {
     }
 
     public _save(params: IParamsResource, fc_success: Function, fc_error: Function): IResource {
-        if (this.is_saving) {
+        if (this.is_saving || this.is_loading) {
             return ;
         }
         this.is_saving = true;
