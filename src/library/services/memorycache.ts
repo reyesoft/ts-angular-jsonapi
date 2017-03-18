@@ -20,6 +20,9 @@ export class MemoryCache implements ICache {
     }
 
     public getCollection(url: string): ICollection  {
+        if (!(url in this.collections)) {
+            this.collections[url] = Base.newCollection();
+        }
         return this.collections[url];
     }
 

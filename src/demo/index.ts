@@ -27,7 +27,6 @@ import { BooksService } from './books/books.service';
 import { Photos } from './photos/photos.component';
 import { PhotosService } from './photos/photos.service';
 
-console.log('initiating app');
 angular
     .module('app', ['ui.router', 'rsJsonapi'])
     .config(routesConfig)

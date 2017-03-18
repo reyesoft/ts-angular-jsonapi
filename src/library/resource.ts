@@ -266,20 +266,18 @@ export class Resource implements IResource {
         }
 
         // make request
-        this.tempororay_collection = Base.newCollection();
+        // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
+        let tempororay_collection = this.getService().memorycache.getCollection(path.getForCache());
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
         if (temporal_ttl >= 0 && this.getService().memorycache.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
-            let collection_cached = this.getService().memorycache.getCollection(path.getForCache());
-            angular.copy(collection_cached, this.tempororay_collection);
-            this.tempororay_collection.page = collection_cached.page;
-            this.tempororay_collection.$source = 'memorycache';
+            tempororay_collection.$source = 'memorycache';
 
             // fill collection and localfilter
             let localfilter = new LocalFilter();
-            this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
+            tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
 
             // exit if ttl is not expired
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), temporal_ttl)) {
@@ -290,24 +288,24 @@ export class Resource implements IResource {
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'memorycache');
                 });
-                return this.tempororay_collection;
+                return tempororay_collection;
             }
         }
 
-        this.tempororay_collection['$isloading'] = true;
+        tempororay_collection['$isloading'] = true;
 
         // STORAGE_CACHE
         Core.Services.JsonapiHttpStorage
         .get(path.getForCache(), params.storage_ttl)
         .then(
             success => {
-                this.tempororay_collection.$source = 'httpstorage';
-                this.tempororay_collection.$isloading = false;
-                Converter.build(success, this.tempororay_collection, this.schema);
+                tempororay_collection.$source = 'httpstorage';
+                tempororay_collection.$isloading = false;
+                Converter.build(success, tempororay_collection, this.schema);
 
                 // localfilter getted data
                 let localfilter = new LocalFilter();
-                this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
+                tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
 
                 this.runFc(fc_success, { data: success});
 
@@ -316,27 +314,27 @@ export class Resource implements IResource {
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'httpstorage');
                 });
-                return this.tempororay_collection;
+                return tempororay_collection;
             },
             error => {
-                this.getAllFromServer(path, params, fc_success, fc_error);
+                this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection);
             }
         );
 
-        return this.tempororay_collection;
+        return tempororay_collection;
     }
 
-    private getAllFromServer(path, params, fc_success, fc_error) {
+    private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection) {
         // SERVER REQUEST
         Core.Services.JsonapiHttp
         .get(path.get())
         .then(
             success => {
-                this.tempororay_collection.$source = 'server';
-                this.tempororay_collection.$isloading = false;
-                Converter.build(success.data, this.tempororay_collection, this.schema);
+                tempororay_collection.$source = 'server';
+                tempororay_collection.$isloading = false;
+                Converter.build(success.data, tempororay_collection, this.schema);
 
-                this.getService().memorycache.setCollection(path.getForCache(), this.tempororay_collection);
+                this.getService().memorycache.setCollection(path.getForCache(), tempororay_collection);
 
                 if (params.storage_ttl > 0) {
                     Core.Services.JsonapiHttpStorage.save(path.getForCache(), success.data);
@@ -344,13 +342,13 @@ export class Resource implements IResource {
 
                 // localfilter getted data
                 let localfilter = new LocalFilter();
-                this.tempororay_collection = localfilter.filterCollection(this.tempororay_collection, params.localfilter);
+                tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
 
                 this.runFc(fc_success, success);
             },
             error => {
-                this.tempororay_collection.$source = 'server';
-                this.tempororay_collection.$isloading = false;
+                tempororay_collection.$source = 'server';
+                tempororay_collection.$isloading = false;
                 this.runFc(fc_error, error);
             }
         );
