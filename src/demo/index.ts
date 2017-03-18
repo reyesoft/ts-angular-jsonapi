@@ -27,6 +27,8 @@ import { BooksService } from './books/books.service';
 import { Photos } from './photos/photos.component';
 import { PhotosService } from './photos/photos.service';
 
+import { NoDuplicatedHttpCalls } from './tests/noduplicatedhttpcalls.component';
+
 console.log('initiating app');
 angular
     .module('app', ['ui.router', 'rsJsonapi'])
@@ -41,4 +43,5 @@ angular
     .component('book', Book)
     .component('books', Books)
     .component('photos', Photos)
+    .component('noduplicatedcalltests', NoDuplicatedHttpCalls)
     ;

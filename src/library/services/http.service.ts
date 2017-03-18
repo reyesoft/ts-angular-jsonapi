@@ -1,5 +1,6 @@
 /// <reference path="../index.d.ts" />
 
+import './noduplicatedhttpcalls.service';
 import { Core } from '../core';
 // import { Resource } from '../resource';
 
@@ -10,6 +11,7 @@ export class Http {
         protected $http,
         protected $timeout,
         protected rsJsonapiConfig,
+        protected noDuplicatedHttpCallsService,
         protected $q
     ) {
 
@@ -24,20 +26,28 @@ export class Http {
     }
 
     protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true) {
-        let req = {
-            method: method,
-            url: this.rsJsonapiConfig.url + path,
-            headers: {
-                'Content-Type': 'application/vnd.api+json'
-            }
-        };
-        data && (req['data'] = data);
-        let promise = this.$http(req);
+
+        // http request (if we don't have any one yet)
+        if (!this.noDuplicatedHttpCallsService.hasPromises(path)) {
+            let req = {
+                method: method,
+                url: this.rsJsonapiConfig.url + path,
+                headers: {
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            };
+            data && (req['data'] = data);
+            let http_promise = this.$http(req);
+
+            this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_promise);
+        }
+
+        let fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
 
         let deferred = this.$q.defer();
         let self = this;
         Core.Me.refreshLoadings(1);
-        promise.then(
+        fakeHttpPromise.then(
             success => {
                 // timeout just for develop environment
                 self.$timeout( () => {
