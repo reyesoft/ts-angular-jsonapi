@@ -31,5 +31,10 @@ function routesConfig(
     .state('book', {
         url: '/books/book/:bookId',
         template: '<book></book>'
+    })
+
+    .state('noduplicatedcalltests', {
+        url: '/noduplicatedcalltests',
+        template: '<noduplicatedcalltests></noduplicatedcalltests>'
     });
 }

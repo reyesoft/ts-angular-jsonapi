@@ -7,12 +7,12 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
 - [x] Get a simple resource or a collection of resources
 - [x] [Include support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
-- [ ] Two+ equal calls, only one HTTP request.
+- [X] Two+ equal calls, only one HTTP request.
 - [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
 - [x] Cache (on memory): TTL of collections
 - [X] Cache (on memory): TTL of resources
 - [x] Equal requests, return a same ResourceObject
-- [ ] Long time cache (localstorage)
+- [X] Long time cache (localstorage) (BETA)
 - [ ] Sorting
 - [X] Pagination
 - [X] Filtering by attributes through a string or a regular expression
