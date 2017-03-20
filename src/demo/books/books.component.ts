@@ -1,7 +1,7 @@
 import * as Jsonapi from '../../library/index';
 
 class BooksController {
-    public books: any = null;
+    public books: Jsonapi.ICollection;
 
     /** @ngInject */
     constructor(

@@ -1,7 +1,7 @@
 import * as Jsonapi from '../../library/index';
 
 class AuthorsController {
-    public authors: any = null;
+    public authors: Jsonapi.ICollection;
 
     /** @ngInject */
     constructor(

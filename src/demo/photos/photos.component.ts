@@ -1,7 +1,7 @@
 import * as Jsonapi from '../../library/index';
 
 class PhotosController {
-    public photos: any = null;
+    public photos: Jsonapi.ICollection;
 
     /** @ngInject */
     constructor(
