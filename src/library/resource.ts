@@ -77,7 +77,7 @@ export class Resource implements IResource {
         this.id = '';
         this.attributes = {};
         angular.forEach(this.schema.attributes, (value, key) => {
-            self.attributes[key] = value.default ? value.default : undefined;
+            self.attributes[key] = ('default' in value) ? value.default : undefined;
         });
         this.relationships = {};
         angular.forEach(this.schema.relationships, (value, key) => {
