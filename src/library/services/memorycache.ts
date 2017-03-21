@@ -8,7 +8,7 @@ export class MemoryCache implements ICache {
     public resources = {};
 
     public isCollectionExist(url: string): boolean  {
-        return (url in this.collections ? true : false);
+        return (url in this.collections && this.collections[url].$source !== 'new' ? true : false);
     }
 
     public isCollectionLive(url: string, ttl: number): boolean  {
@@ -22,6 +22,7 @@ export class MemoryCache implements ICache {
     public getCollection(url: string): ICollection  {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
+            this.collections[url].$source = 'new';
         }
         return this.collections[url];
     }
