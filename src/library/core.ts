@@ -25,7 +25,7 @@ export class Core implements ICore {
         Core.Services = JsonapiCoreServices;
     }
 
-    public _register(clase): boolean {
+    public _register(clase: IResource): boolean {
         if (clase.type in this.resources) {
             return false;
         }
@@ -33,7 +33,7 @@ export class Core implements ICore {
         return true;
     }
 
-    public getResource(type: string) {
+    public getResource(type: string): IResource {
         return this.resources[type];
     }
 

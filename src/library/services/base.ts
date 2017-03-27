@@ -17,7 +17,17 @@ export class Base {
     static newCollection(): ICollection {
         return Object.defineProperties({}, {
             '$length': {
-                get: function() { return Object.keys(this).length * 1; },
+                get: () => {
+                    return Object.keys(this).length * 1;
+                },
+                enumerable: false
+            },
+            '$toArray': {
+                get: () => {
+                    return $.map(this, (val) => {
+                        return val;
+                    });
+                },
                 enumerable: false
             },
             '$isloading': { value: false, enumerable: false, writable: true },

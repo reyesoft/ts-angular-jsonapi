@@ -441,7 +441,7 @@ export class Resource implements IResource {
         }
     }
 
-    public addRelationships<T extends IResource>(resources: Array<T>, type_alias: string) {
+    public addRelationships(resources: ICollection, type_alias: string) {
         if (!this.schema.relationships[type_alias].hasMany) {
             console.warn('addRelationships not supported on ' + this.type + ' schema.');
         }
@@ -459,6 +459,12 @@ export class Resource implements IResource {
 
         angular.forEach(resources, (resource) => {
             this.relationships[type_alias]['data'][resource.id] = resource;
+        });
+    }
+
+    public addRelationshipsArray<T extends IResource>(resources: Array<T>, type_alias?: string) {
+        resources.forEach((item: IResource) => {
+            this.addRelationship(item, type_alias || item.type);
         });
     }
 
