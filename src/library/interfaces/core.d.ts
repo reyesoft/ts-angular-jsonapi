@@ -2,7 +2,7 @@ import { IResource } from './resource';
 
 export interface ICore {
     rootPath?: string;
-    resources?: Array<IResource>;
+    resources?: Object;
 
     Me?: IResource;
     Services?: any;

@@ -462,7 +462,7 @@ export class Resource implements IResource {
         });
     }
 
-    public addRelationshipsArray<T extends IResource>(resources: Array<T>, type_alias?: string) {
+    public addRelationshipsArray<T extends IResource>(resources: Array<T>, type_alias?: string): void {
         resources.forEach((item: IResource) => {
             this.addRelationship(item, type_alias || item.type);
         });

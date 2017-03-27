@@ -15,6 +15,7 @@ export interface IResource extends IDataResource {
     addRelationship? (resource: IResource, type_alias?: string): void;
     addRelationships? (resources: ICollection, type_alias: string): void;
     removeRelationship? (type_alias: string, id: string): boolean;
+    addRelationshipsArray <T extends IResource>(resources: Array<T>, type_alias?: string): void;
     save? (params?: IParamsResource, fc_success?: Function, fc_error?: Function): any;
     toObject? (params?: IParamsResource): IDataObject;
     register? (): boolean;

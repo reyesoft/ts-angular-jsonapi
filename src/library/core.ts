@@ -5,7 +5,7 @@ import { ICore, IResource } from './interfaces';
 
 export class Core implements ICore {
     public rootPath: string = 'http://url/';
-    public resources: Array<IResource> = [];
+    public resources: Object = {};
 
     public loadingsCounter: number = 0;
     public loadingsStart = () => {};

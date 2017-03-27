@@ -17,15 +17,18 @@ export class Base {
     static newCollection(): ICollection {
         return Object.defineProperties({}, {
             '$length': {
-                get: () => {
+                get: function() {
                     return Object.keys(this).length * 1;
                 },
                 enumerable: false
             },
             '$toArray': {
-                get: () => {
-                    return $.map(this, (val) => {
-                        return val;
+                get: function() {
+                    let self = this;
+                    return Object.keys(this).map(function (key) {
+                        return self[key];
+                        // var value = self[key];
+                        // return Object.defineProperty(value, '$key', { enumerable: false, value: key + 5});
                     });
                 },
                 enumerable: false
