@@ -118,15 +118,27 @@ export class Converter {
             resource_dest.page.total_resources = document_from['meta']['total_resources'] ? document_from['meta']['total_resources'] : null;
         }
 
-        let resource: IDataResource;
-        for (resource of document_from.data) {
-            let service = Converter.getService(resource.type);
-            if (!(resource.id in resource_dest)) {
-                resource_dest[resource.id] = new (<any>service.constructor)();
-                resource_dest[resource.id].reset();
+        // convert and add new dataresoures to final collection
+        let dataresource: IDataResource;
+        let new_ids = {};
+        for (dataresource of document_from.data) {
+            let service = Converter.getService(dataresource.type);
+            if (!(dataresource.id in resource_dest)) {
+                resource_dest[dataresource.id] = new (<any>service.constructor)();
+                resource_dest[dataresource.id].reset();
             }
-            Converter._buildResource(resource, resource_dest[resource.id], schema, included_resources);
+            Converter._buildResource(dataresource, resource_dest[dataresource.id], schema, included_resources);
+            new_ids[dataresource.id] = dataresource.id;
         }
+
+        /*
+        remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
+        */
+        angular.forEach(resource_dest, resource => {
+            if (!(resource.id in new_ids)) {
+                delete resource_dest[resource.id];
+            }
+        });
     }
 
     static _buildResource(

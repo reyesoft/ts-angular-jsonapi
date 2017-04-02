@@ -163,6 +163,11 @@ export class Resource implements IResource {
         return this.__exec(null, params, fc_success, fc_error, 'all');
     }
 
+    // just for debuggin purposes
+    public getCachedResources() {
+        return this.getService().memorycache.resources;
+    }
+
     public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
         return this.__exec(null, params, fc_success, fc_error, 'save');
     }
@@ -406,10 +411,32 @@ export class Resource implements IResource {
                     this.getService().memorycache.clearAllCollections();
                 }
 
-                this.id = success.data.data.id;
+                // is a resource?
+                if ('id' in success.data.data) {
+                    this.id = success.data.data.id;
+                    Converter.build(success.data, this, this.schema);
+                    /*
+                    Si lo guardo en la caché, luego no queda bindeado con la vista
+                    Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
+                    */
+                    // this.getService().memorycache.setResource(this);
+                } else if (angular.isArray(success.data.data)) {
+                    console.warn('Server return a collection when we save()', success.data.data);
 
-                Converter.build(success.data, this, this.schema);
-                this.getService().memorycache.setResource(this);
+                    /*
+                    we request the service again, because server maybe are giving
+                    us another type of resource (getService(resource.type))
+                    */
+                    let tempororay_collection = this.getService().memorycache.getCollection('justAnUpdate');
+                    Converter.build(success.data, tempororay_collection, this.schema);
+                    angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
+                        let res = Converter.getService(resource_value.type).memorycache.resources[resource_value.id];
+                        Converter.getService(resource_value.type).memorycache.setResource(resource_value);
+                        res.id = res.id + 'x';
+                    });
+
+                    console.warn('Temporal collection for a resource_value update', tempororay_collection);
+                }
 
                 this.runFc(fc_success, success);
             },
@@ -434,7 +461,7 @@ export class Resource implements IResource {
             this.relationships[type_alias] = { data: { } };
         }
 
-        if (this.schema.relationships[type_alias].hasMany) {
+        if (type_alias in this.schema.relationships && this.schema.relationships[type_alias].hasMany) {
             this.relationships[type_alias]['data'][object_key] = resource;
         } else {
             this.relationships[type_alias]['data'] = resource;
@@ -442,10 +469,6 @@ export class Resource implements IResource {
     }
 
     public addRelationships(resources: ICollection, type_alias: string) {
-        if (!this.schema.relationships[type_alias].hasMany) {
-            console.warn('addRelationships not supported on ' + this.type + ' schema.');
-        }
-
         if (!(type_alias in this.relationships)) {
             this.relationships[type_alias] = { data: { } };
         } else {

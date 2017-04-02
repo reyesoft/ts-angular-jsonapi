@@ -1,6 +1,7 @@
 import { ICollection, IResource } from '../interfaces';
 import { ICache } from '../interfaces/cache.d';
 import { Base } from './base';
+import { ResourceFunctions } from './resource-functions';
 
 export class MemoryCache implements ICache {
     private collections = {};
@@ -39,13 +40,19 @@ export class MemoryCache implements ICache {
     }
 
     public setResource(resource: IResource): void  {
-        this.resources[resource.id] = resource;
+        /*
+            we cannot redefine object, because view don't update.
+        */
+        if (resource.id in this.resources) {
+            ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
+        } else {
+            this.resources[resource.id] = resource;
+        }
         this.resources[resource.id].lastupdate = Date.now();
     }
 
     public clearAllCollections(): boolean {
         this.collections = {};
-        this.resources = {};
         this.collections_lastupdate = {};
         return true;
     }
