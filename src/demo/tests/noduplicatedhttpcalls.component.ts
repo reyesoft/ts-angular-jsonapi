@@ -6,7 +6,7 @@ class NoDuplicatedHttpCallsComponent {
     /** @ngInject */
     constructor(
         protected JsonapiCore,
-        protected AuthorsService: Jsonapi.IResource
+        protected AuthorsService: Jsonapi.IService
     ) {
         for (let i = 1; i <= 3; i++) {
             this.authors[i] = AuthorsService.all(

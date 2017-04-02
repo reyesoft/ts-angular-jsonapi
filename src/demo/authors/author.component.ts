@@ -7,8 +7,8 @@ class AuthorController {
 
     /** @ngInject */
     constructor(
-        protected AuthorsService: Jsonapi.IResource,
-        protected BooksService: Jsonapi.IResource,
+        protected AuthorsService: Jsonapi.IService,
+        protected BooksService: Jsonapi.IService,
         protected $stateParams
     ) {
         this.author = AuthorsService.get(

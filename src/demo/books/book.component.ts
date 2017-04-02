@@ -5,7 +5,7 @@ export class BookController {
 
     /** @ngInject */
     constructor(
-        protected BooksService: Jsonapi.IResource,
+        protected BooksService: Jsonapi.IService,
         protected $stateParams
     ) {
         this.book = BooksService.get(

@@ -34,4 +34,6 @@ export { Core };
 export { Resource };
 export * from './interfaces';
 import { IResource } from './interfaces';
+import { IService } from './interfaces';
 export { IResource };
+export { IService };

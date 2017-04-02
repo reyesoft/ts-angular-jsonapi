@@ -5,7 +5,7 @@ class PhotosController {
 
     /** @ngInject */
     constructor(
-        protected PhotosService: Jsonapi.IResource
+        protected PhotosService: Jsonapi.IService
     ) {
         // if you check your console, library make only one request
         this.makeRequest(1);

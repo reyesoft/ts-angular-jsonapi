@@ -1,7 +1,7 @@
-// export { ICollection } from 'collection.d'
 export * from './core.d'
 export * from './collection.d'
 export * from './schema.d'
+export * from './service.d'
 export * from './resource.d'
 export * from './cache.d'
 export * from './params-collection.d'
