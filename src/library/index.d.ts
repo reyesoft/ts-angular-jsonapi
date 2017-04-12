@@ -10,6 +10,9 @@
 /// <reference path="./interfaces/errors.d.ts"/>
 /// <reference path="./interfaces/links.d.ts"/>
 
+/// <reference path="./interfaces/relationship.d.ts"/>
+/// <reference path="./interfaces/relationships.d.ts"/>
+
 // Parameters for TS-Jsonapi Classes
 /// <reference path="./interfaces/schema.d.ts"/>
 

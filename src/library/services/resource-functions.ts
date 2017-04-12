@@ -1,4 +1,4 @@
-import { IResource } from '../interfaces';
+import { IResource, ICollection } from '../interfaces';
 
 export class ResourceFunctions {
     static resourceToResource(source: IResource, destination: IResource): void {
@@ -23,9 +23,12 @@ export class ResourceFunctions {
         // add source relationships to destination
         for (let type_alias in source.relationships) {
             if ('id' in source.relationships[type_alias].data) {
-                destination.addRelationship(source.relationships[type_alias].data, source.relationships[type_alias].data.type);
+                destination.addRelationship(
+                        (<IResource>source.relationships[type_alias].data),
+                        (<IResource>source.relationships[type_alias].data).type
+                    );
             } else {
-                destination.addRelationships(source.relationships[type_alias].data, type_alias);
+                destination.addRelationships(<ICollection>source.relationships[type_alias].data, type_alias);
             }
         }
     }

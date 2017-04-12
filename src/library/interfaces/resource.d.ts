@@ -1,4 +1,4 @@
-import { ICollection, ICache, IParamsResource } from './index';
+import { IRelationships, ICollection, ICache, IParamsResource } from './index';
 
 export interface IResource extends IDataResource {
     is_new: boolean;
@@ -7,6 +7,10 @@ export interface IResource extends IDataResource {
     lastupdate?: number;
 
     memorycache: ICache;
+
+    type: string;   // dont work extend?
+
+    relationships: IRelationships;    // redefined from IDataResource
 
     reset? (): void;
     addRelationship? (resource: IResource, type_alias?: string): void;

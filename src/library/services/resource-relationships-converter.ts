@@ -1,21 +1,21 @@
-import * as Jsonapi from '../interfaces';
+import { IResource, IRelationships, ISchema } from '../interfaces';
 import { Base } from '../services/base';
 // import { Converter } from './resource-converter';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
     private relationships_from: Array<any>;
-    private relationships_dest: Array<any>;
+    private relationships_dest: IRelationships;
     private included_resources: Object;
-    private schema: Jsonapi.ISchema;
+    private schema: ISchema;
 
     /** @ngInject */
     public constructor(
         getService: Function,
         relationships_from: Array<any>,
-        relationships_dest: Array<any>,
+        relationships_dest: IRelationships,
         included_resources: Object,
-        schema: Jsonapi.ISchema
+        schema: ISchema
     ) {
         this.getService = getService;
         this.relationships_from = relationships_from;
@@ -102,7 +102,7 @@ export class ResourceRelationshipsConverter {
         // new related resource <> cached related resource <> ? delete!
         if (
             this.relationships_dest[relation_key].data == null ||
-            relation_from_value.data.id !== this.relationships_dest[relation_key].data.id
+            relation_from_value.data.id !== (<IResource>this.relationships_dest[relation_key].data).id
         ) {
             this.relationships_dest[relation_key].data = {};
         }
@@ -110,14 +110,14 @@ export class ResourceRelationshipsConverter {
         // trae datos o cambió resource? actualizamos!
         if (
             'attributes' in relation_from_value.data ||
-            this.relationships_dest[relation_key].data.id !== relation_from_value.data.id
+            (<IResource>this.relationships_dest[relation_key].data).id !== relation_from_value.data.id
         ) {
             let tmp = this.__buildRelationship(relation_from_value.data, this.included_resources);
             this.relationships_dest[relation_key].data = tmp;
         }
     }
 
-    private __buildRelationship(relation: IDataResource, included_array): Jsonapi.IResource | IDataResource {
+    private __buildRelationship(relation: IDataResource, included_array): IResource | IDataResource {
         if (relation.type in included_array &&
             relation.id in included_array[relation.type]
         ) {

@@ -61,7 +61,6 @@ export class MemoryCache implements ICache {
         angular.forEach(this.collections, (value, url) => {
             delete value[id];
         });
-        this.resources[id].id = ''; // just for confirm deletion on view
         this.resources[id].attributes = {}; // just for confirm deletion on view
         this.resources[id].relationships = {}; // just for confirm deletion on view
         delete this.resources[id];

@@ -212,6 +212,12 @@ let authors = AuthorsService.all(
 );
 ```
 
+#### Collection page
+
+- number: number of the current page
+- limit: limit of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
+- information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
+
 ### Include anothers resources (is comming)
 
 ## Demo local

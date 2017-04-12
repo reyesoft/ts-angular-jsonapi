@@ -9,30 +9,23 @@ import { Converter } from './services/resource-converter';
 import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
-import { ISchema, IResource, ICollection, ICache, IParamsCollection, IParamsResource } from './interfaces';
+import { IService, IAttributes, ISchema, IResource, ICollection, ICache, IParamsCollection, IParamsResource } from './interfaces';
+import { IRelationships, IRelationship } from './interfaces';
 
-export class Resource implements IResource {
-    public schema: ISchema;
-    protected path: string;   // without slashes
-
+export class Resource implements IResource, IService {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
+    public schema: ISchema;
+    public memorycache: ICache;
+
     public type: string;
     public id: string;
-    public attributes: any ;
-    public relationships: any = {}; // [];
+    public attributes: IAttributes;
+    public relationships: IRelationships = {};
 
-    public memorycache: ICache;
-    public cache_vars: Object = {};
-
-
-    /*
-    just for fix _delete becouse we duplicate collection before
-    return on _all()
-    this need to go out on the future
-    with this prevent do delete resource on user app next to success
-    */
+    private path: string;   // without slashes
+    public smartfiltertype = 'undefined';
     private tempororay_collection: ICollection;
 
     public clone(): any {
@@ -81,8 +74,10 @@ export class Resource implements IResource {
         });
         this.relationships = {};
         angular.forEach(this.schema.relationships, (value, key) => {
-            self.relationships[key] = {};
-            self.relationships[key]['data'] = this.schema.relationships[key].hasMany ? Base.newCollection() : {};
+            self.relationships[key] = <IRelationship>{ data: {} };
+            if (this.schema.relationships[key].hasMany) {
+                self.relationships[key].data = Base.newCollection();
+            }
         });
         this.is_new = true;
     }
@@ -96,7 +91,7 @@ export class Resource implements IResource {
         let included_ids = [ ]; // just for control don't repeat any resource
 
         // REALTIONSHIPS
-        angular.forEach(this.relationships, (relationship, relation_alias) => {
+        angular.forEach(this.relationships, (relationship: IRelationship, relation_alias) => {
 
             if (this.schema.relationships[relation_alias] && this.schema.relationships[relation_alias].hasMany) {
                 // has many (hasMany:true)
@@ -115,21 +110,23 @@ export class Resource implements IResource {
                 });
             } else {
                 // has one (hasMany:false)
+
+                let relationship_data = (<IResource>relationship.data);
                 if (!('id' in relationship.data) && !angular.equals({}, relationship.data)) {
                     console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                 }
 
-                if (relationship.data.id && relationship.data.type) {
-                    relationships[relation_alias] = { data: { id: relationship.data.id, type: relationship.data.type } };
+                if (relationship_data.id && relationship_data.type) {
+                    relationships[relation_alias] = { data: { id: relationship_data.id, type: relationship_data.type } };
                 } else {
                     relationships[relation_alias] = { data: { } };
                 }
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
-                let temporal_id = relationship.data.type + '_' + relationship.data.id;
-                if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relationship.data.type) !== -1) {
+                let temporal_id = relationship_data.type + '_' + relationship_data.id;
+                if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relationship_data.type) !== -1) {
                     included_ids.push(temporal_id);
-                    included.push(relationship.data.toObject({ }).data);
+                    included.push(relationship_data.toObject({ }).data);
                 }
             }
         });
@@ -150,7 +147,7 @@ export class Resource implements IResource {
         return ret;
     }
 
-    public get<T extends IResource>(id: string, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
+    public get<T extends IResource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
         return this.__exec(id, params, fc_success, fc_error, 'get');
     }
 
@@ -255,6 +252,11 @@ export class Resource implements IResource {
 
     public _all(params: IParamsCollection, fc_success, fc_error): ICollection {
 
+        // check smartfiltertype, and set on remotefilter
+        if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
+            angular.extend(params.remotefilter, params.smartfilter);
+        }
+
         // http request
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
@@ -279,6 +281,11 @@ export class Resource implements IResource {
         if (temporal_ttl >= 0 && this.getService().memorycache.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
             tempororay_collection.$source = 'memorycache';
+
+            // check smartfiltertype, and set on localfilter
+            if (params.smartfilter && this.smartfiltertype === 'localfilter') {
+                angular.extend(params.localfilter, params.smartfilter);
+            }
 
             // fill collection and localfilter
             let localfilter = new LocalFilter();
@@ -349,6 +356,16 @@ export class Resource implements IResource {
                 let localfilter = new LocalFilter();
                 tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
 
+                // trying to define smartfiltertype
+                if (this.smartfiltertype === 'undefined') {
+                    let page = tempororay_collection.page;
+                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
+                        this.smartfiltertype = 'localfilter';
+                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
+                        this.smartfiltertype = 'remotefilter';
+                    }
+                }
+
                 this.runFc(fc_success, success);
             },
             error => {
@@ -370,7 +387,8 @@ export class Resource implements IResource {
         .delete(path.get())
         .then(
             success => {
-                delete this.tempororay_collection[id];
+                // we don't use more temporary_collection
+                // delete this.tempororay_collection[id];
                 this.getService().memorycache.removeResource(id);
                 this.runFc(fc_success, success);
             },
