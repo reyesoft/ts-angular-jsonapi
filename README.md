@@ -51,7 +51,7 @@ app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
 }]);
 
 var MyController = function(JsonapiCore) {
-  // ...
+    // ...
 }
 MyController.$inject = ['JsonapiCore'];
 ```
@@ -61,6 +61,10 @@ MyController.$inject = ['JsonapiCore'];
 Like you know, the better way is with examples. Based on [endpoints example library](https://github.com/endpoints/endpoints-example/).
 
 ### Defining a resource
+
+1. hola
+2. hola 2
+3. hola
 
 `authors.service.ts`
 
@@ -196,9 +200,10 @@ let author = AuthorsService.get('some_author_id');
 this.author.attributes.name += 'New Name';
 this.author.save(success => {
     console.log('author saved!');
-});
+    });
 ````
 
+````
 ### Handling errors
 
 ### Pagination
@@ -256,3 +261,4 @@ gulp dist
 ```
 
 And commit! Don't forget your pull request :)
+````

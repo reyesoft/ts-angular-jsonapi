@@ -22,13 +22,13 @@ export class Http {
     }
 
     public get(path: string) {
-        return this.exec(path, 'GET');
+        return this.exec(path, 'get');
     }
 
     protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true) {
 
-        // http request (if we don't have any one yet)
-        if (!this.noDuplicatedHttpCallsService.hasPromises(path)) {
+        // http request (if we don't have any GET request yet)
+        if (method !== 'get' || !this.noDuplicatedHttpCallsService.hasPromises(path)) {
             let req = {
                 method: method,
                 url: this.rsJsonapiConfig.url + path,
@@ -37,12 +37,17 @@ export class Http {
                 }
             };
             data && (req['data'] = data);
-            let http_promise = this.$http(req);
+            var http_promise = this.$http(req);
 
-            this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_promise);
+            if (method === 'get') {
+                this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_promise);
+            } else {
+                var fakeHttpPromise = http_promise;
+            }
         }
-
-        let fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
+        if (method === 'get') {
+            var fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
+        }
 
         let deferred = this.$q.defer();
         let self = this;
