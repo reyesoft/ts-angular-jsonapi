@@ -26,7 +26,6 @@ export class Resource implements IResource, IService {
 
     private path: string;   // without slashes
     public smartfiltertype = 'undefined';
-    private tempororay_collection: ICollection;
 
     public clone(): any {
         var cloneObj = new (<any>this.constructor)();

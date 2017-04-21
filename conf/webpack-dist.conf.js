@@ -10,6 +10,9 @@ var DeclarationBundlerPlugin = require('declaration-bundler-webpack-plugin');
 
 module.exports = {
     module: {
+        // https://github.com/localForage/localForage#browserify-and-webpack
+        noParse: /node_modules\/localforage\/dist\/localforage.js/,
+
         loaders: [
             {
                 test: /\.ts$/,
