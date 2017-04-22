@@ -215,7 +215,7 @@ export class Resource implements IResource, IService {
         params.include ? path.setInclude(params.include) : null;
 
         // cache
-        let resource = (id in this.getService().memorycache.resources ? this.getService().memorycache.resources[id] : this.new());
+        let resource = Converter.newResource(this.type, id);
         resource.is_loading = true;
         // exit if ttl is not expired
         let temporal_ttl = params.ttl ? params.ttl : 0;

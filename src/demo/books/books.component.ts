@@ -32,11 +32,27 @@ class BooksController {
             },
             success => {
                 console.log('success books controller', success, this.books);
+
+                // TEST 1
+                // this test merge data with cache (this not include author or photos)
+                console.log('book#1', (<IDataResource>this.books[1].relationships.author.data).attributes);
+                // this.books = this.BooksService.all();
+
+                // TEST 2
+                // let book1 = this.BooksService.get(1,
+                //     success => {
+                //         book1.attributes.title += ' :)'; // update view
+                //         console.log('book1', (<IDataResource>book1.relationships.author.data).attributes);
+                //     });
             },
             error => {
                 console.log('error books controller', error);
             }
         );
+    }
+
+    public do() {
+        this.BooksService.all();
     }
 
     public delete(book: Jsonapi.IResource) {
