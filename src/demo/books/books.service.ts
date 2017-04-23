@@ -2,7 +2,7 @@
 
 import * as Jsonapi from '../../library/index';
 
-export class BooksService extends Jsonapi.Resource {
+export class BooksService extends Jsonapi.Service {
     type = 'books';
     public schema: Jsonapi.ISchema = {
         attributes: {

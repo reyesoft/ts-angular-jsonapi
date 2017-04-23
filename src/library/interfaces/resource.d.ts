@@ -1,4 +1,4 @@
-import { IRelationships, ICollection, ICache, IParamsResource } from './index';
+import { IRelationships, ICollection, IParamsResource, IService } from './index';
 
 export interface IResource extends IDataResource {
     is_new: boolean;
@@ -6,12 +6,11 @@ export interface IResource extends IDataResource {
     is_saving: boolean;
     lastupdate?: number;
 
-    memorycache: ICache;
-
     type: string;   // dont work extend?
 
     relationships: IRelationships;    // redefined from IDataResource
 
+    // new? (): IResource;
     reset? (): void;
     addRelationship? (resource: IResource, type_alias?: string): void;
     addRelationships? (resources: ICollection, type_alias: string): void;
@@ -19,4 +18,6 @@ export interface IResource extends IDataResource {
     addRelationshipsArray <T extends IResource>(resources: Array<T>, type_alias?: string): void;
     save? (params?: IParamsResource, fc_success?: Function, fc_error?: Function): any;
     toObject? (params?: IParamsResource): IDataObject;
+
+    getService(): IService;
 }

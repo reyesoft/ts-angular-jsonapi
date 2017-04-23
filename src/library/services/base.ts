@@ -39,10 +39,4 @@ export class Base {
             'page': { value: new Page(), enumerable: false, writable: true  }
         });
     }
-
-    static newResource(): ICollection {
-        return Object.defineProperties({}, {
-            '$isloading': { value: false, enumerable: false, writable: true }
-        });
-    }
 }

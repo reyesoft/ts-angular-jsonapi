@@ -35,6 +35,7 @@ class BooksController {
 
                 // TEST 1
                 // this test merge data with cache (this not include author or photos)
+                console.log('book#1', (<IDataResource>this.books[1].relationships.author.data));
                 console.log('book#1', (<IDataResource>this.books[1].relationships.author.data).attributes);
                 // this.books = this.BooksService.all();
 

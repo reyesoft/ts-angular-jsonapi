@@ -8,47 +8,33 @@ export class Converter {
     /**
     Convert json arrays (like included) to an Resources arrays without [keys]
     **/
-    static json_array2resources_array(
+    private static json_array2resources_array(
         json_array: Array<IDataResource>,
-        destination_array?: Object, // Array<Jsonapi.IResource>,
-        use_id_for_key = false
-    ): Object { // Array<Jsonapi.IResource> {
-        if (!destination_array) {
-            destination_array = [];
-        }
-        let count = 0;
+        destination_array: Jsonapi.IResourcesById = {}
+    ): void {
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
-            if (use_id_for_key) {
-                destination_array[resource.id] = resource;
-            } else {
-                // included for example need a extra parameter
-                destination_array[resource.type + '_' + resource.id] = resource;
-                // destination_array.push(resource.id + resource.type);
-            }
-            count++;
+            destination_array[resource.type + '_' + resource.id] = resource;
         }
-        // destination_array['$count'] = count; // problem with toArray or angular.forEach need a !isObject
-        return destination_array;
     }
 
     /**
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     **/
     static json_array2resources_array_by_type (
-        json_array: Array<IDataResource>,
-        instance_relationships: boolean
-    ): Array<Jsonapi.IResource> {
-        let all_resources:any = { } ;
-        Converter.json_array2resources_array(json_array, all_resources, false);
-        let resources = [];
-        angular.forEach(all_resources, (resource) => {
-            if (!(resource.type in resources)) {
-                resources[resource.type] = { };
+        json_array: Array<IDataResource>
+    ): Jsonapi.IResourcesByType {
+        let all_resources: Jsonapi.IResourcesById = {};
+        let resources_by_type: Jsonapi.IResourcesByType = {};
+
+        Converter.json_array2resources_array(json_array, all_resources);
+        angular.forEach(all_resources, (resource: Jsonapi.IResource) => {
+            if (!(resource.type in resources_by_type)) {
+                resources_by_type[resource.type] = {};
             }
-            resources[resource.type][resource.id] = resource;
+            resources_by_type[resource.type][resource.id] = resource;
         });
-        return resources;
+        return resources_by_type;
     }
 
     static json2resource(json_resource: IDataResource, instance_relationships): Jsonapi.IResource {
@@ -69,9 +55,6 @@ export class Converter {
         let resource_service = Core.Me.getResource(type);
         if (angular.isUndefined(resource_service)) {
             console.warn('`' + type + '`', 'service not found on getService()');
-            // resource_service = new Resource();
-            // resource_service.memorycache = new MemoryCache();
-            // resource_service.reset();
         }
         return resource_service;
     }
@@ -80,41 +63,37 @@ export class Converter {
         if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
             return Converter.getService(type).memorycache.resources[id];
         } else {
-            return Converter.getService(type).new();
+            return Converter.getService(type).new(id);
         }
     }
 
     /* return a resource type(resoruce_service) with data(data) */
-    static procreate(resource_service: Jsonapi.IResource, data: IDataResource): Jsonapi.IResource {
+    private static procreate(resource_service: Jsonapi.IResource, data: IDataResource): Jsonapi.IResource {
         if (!('type' in data && 'id' in data)) {
             console.error('Jsonapi Resource is not correct', data);
         }
 
         let resource: Jsonapi.IResource;
         if (data.id in Converter.getService(data.type).memorycache.resources) {
-            console.log('HAY CACHE!', data.type);
             resource = Converter.getService(data.type).memorycache.resources[data.id];
         } else {
-            // resource = new (<any>resource_service.constructor)();
-            // resource.new();
-            resource = Converter.getService(data.type).clone();
+            resource = Converter.newResource(data.type, data.id);
         }
 
-        resource.id = data.id;
         resource.attributes = data.attributes ? data.attributes : {};
         resource.is_new = false;
         return resource;
     }
 
-    static build(
+    public static build(
         document_from: Jsonapi.ICollection & IDataObject,
         resource_dest: Jsonapi.IResource | Jsonapi.ICollection,
         schema: Jsonapi.ISchema
     ) {
         // instancio los include y los guardo en included arrary
-        let included_resources = [];
+        let included_resources: Jsonapi.IResourcesByType = {};
         if ('included' in document_from) {
-            included_resources = Converter.json_array2resources_array_by_type(document_from.included, false);
+            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
         }
 
         if (angular.isArray(document_from.data)) {
@@ -124,11 +103,11 @@ export class Converter {
         }
     }
 
-    static _buildCollection(
+    private static _buildCollection(
         collection_data_from: IDataCollection,
         collection_dest: Jsonapi.ICollection,
         schema: Jsonapi.ISchema,
-        included_resources: Jsonapi.IResource[]
+        included_resources: Jsonapi.IResourcesByType
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from['meta']) {
@@ -140,18 +119,14 @@ export class Converter {
         // convert and add new dataresoures to final collection
         let new_ids = {};
         for (let dataresource of collection_data_from.data) {
-            let service = Converter.getService(dataresource.type);
             if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] = new (<any>service.constructor)();
-                collection_dest[dataresource.id].reset();
+                collection_dest[dataresource.id] = Converter.newResource(dataresource.type, dataresource.id);
             }
             Converter._buildResource(dataresource, collection_dest[dataresource.id], schema, included_resources);
             new_ids[dataresource.id] = dataresource.id;
         }
 
-        /*
-        remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
-        */
+        // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
         angular.forEach(collection_dest, resource => {
             if (!(resource.id in new_ids)) {
                 delete collection_dest[resource.id];
@@ -159,11 +134,11 @@ export class Converter {
         });
     }
 
-    static _buildResource(
+    private static _buildResource(
         resource_data_from: IDataResource,
         resource_dest: Jsonapi.IResource,
         schema: Jsonapi.ISchema,
-        included_resources: Jsonapi.IResource[]
+        included_resources: Jsonapi.IResourcesByType
     ) {
         resource_dest.attributes = resource_data_from.attributes;
         resource_dest.id = resource_data_from.id;

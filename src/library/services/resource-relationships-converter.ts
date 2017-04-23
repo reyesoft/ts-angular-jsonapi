@@ -1,4 +1,4 @@
-import { IResource, IRelationships, ISchema } from '../interfaces';
+import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { Base } from '../services/base';
 // import { Converter } from './resource-converter';
 
@@ -6,7 +6,7 @@ export class ResourceRelationshipsConverter {
     private getService: Function;
     private relationships_from: Array<any>;
     private relationships_dest: IRelationships;
-    private included_resources: IResource[];
+    private included_resources: IResourcesByType;
     private schema: ISchema;
 
     /** @ngInject */
@@ -14,7 +14,7 @@ export class ResourceRelationshipsConverter {
         getService: Function,
         relationships_from: Array<any>,
         relationships_dest: IRelationships,
-        included_resources: IResource[],
+        included_resources: IResourcesByType,
         schema: ISchema
     ) {
         this.getService = getService;
@@ -24,7 +24,7 @@ export class ResourceRelationshipsConverter {
         this.schema = schema;
     }
 
-    public buildRelationships() {
+    public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
         angular.forEach(this.relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
 
@@ -117,7 +117,7 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource, included_array: IResource[]): IResource | IDataResource {
+    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): IResource | IDataResource {
         if (resource_data_from.type in included_array &&
             resource_data_from.id in included_array[resource_data_from.type]
         ) {

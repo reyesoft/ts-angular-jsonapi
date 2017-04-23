@@ -26,12 +26,14 @@ angular.module('rsJsonapi', [
 ]);
 
 import { Core } from './core';
+import { Service } from './service';
 import { Resource } from './resource';
 
 // just for bootstrap this library on demo.
 // On dist version, all is exported inside a Jsonapi module
 export { Core };
 export { Resource };
+export { Service };
 export * from './interfaces';
 import { IResource } from './interfaces';
 import { IService } from './interfaces';
