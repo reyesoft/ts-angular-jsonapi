@@ -36,7 +36,7 @@ class BooksController {
                 // TEST 1
                 // this test merge data with cache (this not include author or photos)
                 console.log('BooksRequest#1 received (author data from server)',
-                    (<IDataResource>this.books[1].relationships.author.data).attributes
+                    (<IDataResource>this.books[2].relationships.author.data).attributes
                 );
 
                 console.log('BooksRequest#2 requested');
