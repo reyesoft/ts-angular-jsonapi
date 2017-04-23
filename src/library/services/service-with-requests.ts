@@ -1,26 +1,26 @@
 import { Base } from '../services/base';
-import { IParamsResource } from '../interfaces';
+import { IExecParams } from '../interfaces';
 
 export abstract class ServiceWithRequests {
     /**
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(id: string, params: IParamsResource, fc_success, fc_error, exec_type: string): any {
+    protected __exec(exec_params: IExecParams): any {
         // makes `params` optional
-        if (angular.isFunction(params)) {
-            fc_error = fc_success;
-            fc_success = params;
-            params = angular.extend({}, Base.Params);
+        if (angular.isFunction(exec_params.params)) {
+            exec_params.fc_error = exec_params.fc_success;
+            exec_params.fc_success = <Function>exec_params.params;
+            exec_params.params = angular.extend({}, Base.Params);
         } else {
-            if (angular.isUndefined(params)) {
-                params = angular.extend({}, Base.Params);
+            if (angular.isUndefined(exec_params.params)) {
+                exec_params.params = angular.extend({}, Base.Params);
             } else {
-                params = angular.extend({}, Base.Params, params);
+                exec_params.params = angular.extend({}, Base.Params, exec_params.params);
             }
         }
 
-        fc_success = angular.isFunction(fc_success) ? fc_success : angular.noop();
-        fc_error = angular.isFunction(fc_error) ? fc_error : undefined;
+        exec_params.fc_success = angular.isFunction(exec_params.fc_success) ? exec_params.fc_success : function() {};
+        exec_params.fc_error = angular.isFunction(exec_params.fc_error) ? exec_params.fc_error : undefined;
     }
 
     protected runFc(some_fc, param) {

@@ -11,7 +11,7 @@ import { Converter } from './services/resource-converter';
 import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
-import { IService, ISchema, IResource, ICollection, ICache, IParamsCollection, IParamsResource } from './interfaces';
+import { IService, ISchema, IResource, ICollection, IExecParams, ICache, IParamsCollection, IParamsResource } from './interfaces';
 // import { IRelationships, IRelationship } from './interfaces';
 
 export class Service extends ServiceWithRequests implements IService {
@@ -54,32 +54,34 @@ export class Service extends ServiceWithRequests implements IService {
     }
 
     public get<T extends IResource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
-        return this.__exec(id, params, fc_success, fc_error, 'get');
+        // return this.__exec({ id, params, fc_success, fc_error, 'get' });
+        return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'get' });
     }
 
     public delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
-        this.__exec(id, params, fc_success, fc_error, 'delete');
+        // this.__exec(id, params, fc_success, fc_error, 'delete');
+        return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'delete' });
     }
 
     public all(params?: IParamsCollection | Function, fc_success?: Function, fc_error?: Function): ICollection {
-        return this.__exec(null, params, fc_success, fc_error, 'all');
+        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'all' });
     }
 
     /**
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(id: string, params: IParamsResource, fc_success, fc_error, exec_type: string): any {
-        super.__exec(id, params, fc_success, fc_error, exec_type);
+    protected __exec(exec_params: IExecParams): any {
+        super.__exec(exec_params);
 
         this.schema = angular.extend({}, Base.Schema, this.schema);
 
-        switch (exec_type) {
+        switch (exec_params.exec_type) {
             case 'get':
-            return this._get(id, params, fc_success, fc_error);
+            return this._get(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
             case 'delete':
-            return this._delete(id, params, fc_success, fc_error);
+            return this._delete(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
             case 'all':
-            return this._all(params, fc_success, fc_error);
+            return this._all(exec_params.params, exec_params.fc_success, exec_params.fc_error);
         }
     }
 

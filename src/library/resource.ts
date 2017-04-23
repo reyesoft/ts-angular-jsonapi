@@ -10,7 +10,7 @@ import { Converter } from './services/resource-converter';
 // import { LocalFilter } from './services/localfilter';
 // import { MemoryCache } from './services/memorycache';
 
-import { IAttributes, IResource, ICollection, IParamsResource } from './interfaces';
+import { IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
 import { IRelationships, IRelationship } from './interfaces';
 
 export class Resource extends ServiceWithRequests implements IResource {
@@ -105,18 +105,19 @@ export class Resource extends ServiceWithRequests implements IResource {
     }
 
     public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
-        return this.__exec(null, params, fc_success, fc_error, 'save');
+        // return this.__exec(null, params, fc_success, fc_error, 'save');
+        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
     /**
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(id: string, params: IParamsResource, fc_success, fc_error, exec_type: string): any {
-        super.__exec(id, params, fc_success, fc_error, exec_type);
+    protected __exec(exec_params: IExecParams): any {
+        super.__exec(exec_params);
 
-        switch (exec_type) {
+        switch (exec_params.exec_type) {
             case 'save':
-            return this._save(params, fc_success, fc_error);
+            return this._save(exec_params.params, exec_params.fc_success, exec_params.fc_error);
         }
     }
 

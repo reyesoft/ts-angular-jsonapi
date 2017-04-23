@@ -31,18 +31,16 @@ export class MemoryCache implements ICache {
     public setCollection(url: string, collection: ICollection): void  {
         // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
-        angular.forEach(collection, (value: IResource, key: string) => {
-            this.collections[url][key] = value;
-            this.setResource(value);
+        angular.forEach(collection, (resource: IResource, resource_id: string) => {
+            this.collections[url][resource_id] = resource;
+            this.setResource(resource);
         });
         this.collections[url]['page'] = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }
 
     public setResource(resource: IResource): void  {
-        /*
-            we cannot redefine object, because view don't update.
-        */
+        // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
             ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
         } else {

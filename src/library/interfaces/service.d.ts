@@ -9,7 +9,6 @@ export interface IService {
     delete (id: String, params?: IParamsResource | Function, success?: Function, error?: Function): void;
     getService? (): any;    // any, becouse depends of extended class
     clearMemoryCache? (): boolean;
-
     new? (): IResource;
     memorycache: ICache;
 }

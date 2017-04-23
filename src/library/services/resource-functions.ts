@@ -25,7 +25,7 @@ export class ResourceFunctions {
             if ('id' in source.relationships[type_alias].data) {
                 destination.addRelationship(
                         (<IResource>source.relationships[type_alias].data),
-                        (<IResource>source.relationships[type_alias].data).type
+                        type_alias
                     );
             } else {
                 destination.addRelationships(<ICollection>source.relationships[type_alias].data, type_alias);
