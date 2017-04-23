@@ -34,6 +34,7 @@ import { Resource } from './resource';
 export { Core };
 export { Resource };
 export { Service };
+
 export * from './interfaces';
 import { IResource } from './interfaces';
 import { IService } from './interfaces';

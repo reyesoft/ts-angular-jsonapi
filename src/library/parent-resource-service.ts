@@ -1,7 +1,7 @@
-import { Base } from '../services/base';
-import { IExecParams } from '../interfaces';
+import { Base } from './services/base';
+import { IExecParams } from './interfaces';
 
-export abstract class ServiceWithRequests {
+export class ParentResourceService {
     /**
     This method sort params for all(), get(), delete() and save()
     */

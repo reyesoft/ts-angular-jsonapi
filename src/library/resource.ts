@@ -3,17 +3,15 @@
 // import * as Jsonapi from './core';
 import { Core } from './core';
 import { Base } from './services/base';
-import { ServiceWithRequests } from './services/service-with-requests';
+import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 // import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/resource-converter';
-// import { LocalFilter } from './services/localfilter';
-// import { MemoryCache } from './services/memorycache';
 
 import { IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
 import { IRelationships, IRelationship } from './interfaces';
 
-export class Resource extends ServiceWithRequests implements IResource {
+export class Resource extends ParentResourceService implements IResource {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;

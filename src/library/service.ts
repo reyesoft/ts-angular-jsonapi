@@ -4,7 +4,7 @@
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';
-import { ServiceWithRequests } from './services/service-with-requests';
+import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/resource-converter';
@@ -12,9 +12,8 @@ import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
 import { IService, ISchema, IResource, ICollection, IExecParams, ICache, IParamsCollection, IParamsResource } from './interfaces';
-// import { IRelationships, IRelationship } from './interfaces';
 
-export class Service extends ServiceWithRequests implements IService {
+export class Service extends ParentResourceService implements IService {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
