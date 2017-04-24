@@ -14,9 +14,6 @@ import { MemoryCache } from './services/memorycache';
 import { IService, ISchema, IResource, ICollection, IExecParams, ICache, IParamsCollection, IParamsResource } from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
-    public is_new = true;
-    public is_loading = false;
-    public is_saving = false;
     public schema: ISchema;
     public memorycache: ICache;
     public type: string;
@@ -34,6 +31,7 @@ export class Service extends ParentResourceService implements IService {
         }
         // only when service is registered, not cloned object
         this.memorycache = new MemoryCache();
+        this.schema = angular.extend({}, Base.Schema, this.schema);
         return Core.Me._register(this);
     }
 
@@ -53,12 +51,10 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public get<T extends IResource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
-        // return this.__exec({ id, params, fc_success, fc_error, 'get' });
         return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'get' });
     }
 
     public delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
-        // this.__exec(id, params, fc_success, fc_error, 'delete');
         return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'delete' });
     }
 
@@ -66,13 +62,8 @@ export class Service extends ParentResourceService implements IService {
         return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'all' });
     }
 
-    /**
-    This method sort params for all(), get(), delete() and save()
-    */
     protected __exec(exec_params: IExecParams): any {
         super.__exec(exec_params);
-
-        this.schema = angular.extend({}, Base.Schema, this.schema);
 
         switch (exec_params.exec_type) {
             case 'get':
@@ -265,8 +256,6 @@ export class Service extends ParentResourceService implements IService {
         .delete(path.get())
         .then(
             success => {
-                // we don't use more temporary_collection
-                // delete this.tempororay_collection[id];
                 this.getService().memorycache.removeResource(id);
                 this.runFc(fc_success, success);
             },
@@ -279,11 +268,11 @@ export class Service extends ParentResourceService implements IService {
     /**
     @return This resource like a service
     **/
-    public getService() {
+    public getService(): IService {
         return Converter.getService(this.type);
     }
 
-    public clearMemoryCache() {
+    public clearMemoryCache(): boolean {
         return this.getService().memorycache.clearAllCollections();
     }
 }

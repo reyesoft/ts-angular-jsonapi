@@ -3,6 +3,8 @@ import { ISchema, IResource, ICollection, IParamsCollection, ICache, IParamsReso
 export interface IService {
     smartfilter?: string;
     schema?: ISchema;
+    getPrePath(): string;
+    getPath(): string;
     register? (): boolean;
     get<T extends IResource>(id: string | number, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T;
     all(params?: IParamsCollection | Function, success?: Function, error?: Function): ICollection;

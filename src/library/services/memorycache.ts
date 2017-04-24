@@ -8,19 +8,19 @@ export class MemoryCache implements ICache {
     private collections_lastupdate = {};
     public resources = {};
 
-    public isCollectionExist(url: string): boolean  {
+    public isCollectionExist(url: string): boolean {
         return (url in this.collections && this.collections[url].$source !== 'new' ? true : false);
     }
 
-    public isCollectionLive(url: string, ttl: number): boolean  {
+    public isCollectionLive(url: string, ttl: number): boolean {
         return (Date.now() <= (this.collections_lastupdate[url] + ttl * 1000));
     }
 
-    public isResourceLive(id: string, ttl: number): boolean  {
+    public isResourceLive(id: string, ttl: number): boolean {
         return this.resources[id] && (Date.now() <= (this.resources[id].lastupdate + ttl * 1000));
     }
 
-    public getCollection(url: string): ICollection  {
+    public getCollection(url: string): ICollection {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';

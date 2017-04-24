@@ -8,38 +8,21 @@ import { PathBuilder } from './services/path-builder';
 // import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/resource-converter';
 
-import { IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
+import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
 import { IRelationships, IRelationship } from './interfaces';
 
 export class Resource extends ParentResourceService implements IResource {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
-
     public id: string = '';
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
 
-    public reset(): void {
-        this.id = '';
-        this.attributes = {};
-        angular.forEach(this.getService().schema.attributes, (value, key) => {
-            this.attributes[key] = ('default' in value) ? value.default : undefined;
-        });
-        this.relationships = {};
-        angular.forEach(this.getService().schema.relationships, (value, key) => {
-            this.relationships[key] = <IRelationship>{ data: {} };
-            if (this.getService().schema.relationships[key].hasMany) {
-                this.relationships[key].data = Base.newCollection();
-            }
-        });
-        this.is_new = true;
-    }
-
     public toObject(params?: IParamsResource): IDataObject {
         params = angular.extend({}, Base.Params, params);
-        this.getService().schema = angular.extend({}, Base.Schema, this.getService().schema);
+        // this.getService().schema = angular.extend({}, Base.Schema, this.getService().schema);
 
         let relationships = { };
         let included = [ ];
@@ -103,13 +86,9 @@ export class Resource extends ParentResourceService implements IResource {
     }
 
     public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
-        // return this.__exec(null, params, fc_success, fc_error, 'save');
         return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    /**
-    This method sort params for all(), get(), delete() and save()
-    */
     protected __exec(exec_params: IExecParams): any {
         super.__exec(exec_params);
 
@@ -247,7 +226,7 @@ export class Resource extends ParentResourceService implements IResource {
     /**
     @return This resource like a service
     **/
-    public getService() {
+    public getService(): IService {
         return Converter.getService(this.type);
     }
 }

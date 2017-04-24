@@ -1,13 +1,13 @@
 export class PathBuilder {
-    public paths: Array<String> = [];
-    public includes: Array<String> = [];
-    private get_params: Array<String> = [];
+    public paths: Array<string> = [];
+    public includes: Array<string> = [];
+    private get_params: Array<string> = [];
 
-    public prependPath(value: String) {
+    public prependPath(value: string) {
         this.paths.unshift(value);
     }
 
-    public appendPath(value: String) {
+    public appendPath(value: string) {
         if (value !== '') {
             this.paths.push(value);
         }
@@ -17,15 +17,15 @@ export class PathBuilder {
         this.get_params.push(param);
     }
 
-    public setInclude(strings_array: Array<String>) {
+    public setInclude(strings_array: Array<string>) {
         this.includes = strings_array;
     }
 
-    public getForCache(): String {
+    public getForCache(): string {
         return this.paths.join('/') + this.get_params.join('/');
     }
 
-    public get(): String {
+    public get(): string {
         var params = [];
         angular.copy(this.get_params, params);
 
