@@ -7,6 +7,7 @@ import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 // import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/resource-converter';
+import { IDataObject } from './interfaces/data-object';
 
 import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
 import { IRelationships, IRelationship } from './interfaces';

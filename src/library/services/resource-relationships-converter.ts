@@ -1,6 +1,8 @@
 import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IDataObject } from '../interfaces/data-object';
+import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
-// import { Converter } from './resource-converter';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;

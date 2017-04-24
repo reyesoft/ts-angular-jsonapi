@@ -1,4 +1,6 @@
 import { IRelationships, ICollection, IParamsResource, IService } from './index';
+import { IDataResource } from './data-resource';
+import { IDataObject } from './data-object';
 
 export interface IResource extends IDataResource {
     is_new: boolean;

@@ -2,6 +2,9 @@ import { Core } from '../core';
 import { Resource } from '../resource';
 import * as Jsonapi from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
+import { IDataObject } from '../interfaces/data-object';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IDataResource } from '../interfaces/data-resource';
 
 export class Converter {
 

@@ -1,4 +1,5 @@
 import { ICollection, IResource } from '../interfaces';
+import { IDataResource } from './data-resource';
 
 interface IRelationship {
     // IDataResource added for this reason:

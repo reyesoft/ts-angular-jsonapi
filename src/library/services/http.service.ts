@@ -1,4 +1,5 @@
 /// <reference path="../index.d.ts" />
+import { IDataObject } from '../interfaces/data-object';
 
 import './noduplicatedhttpcalls.service';
 import { Core } from '../core';

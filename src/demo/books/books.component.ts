@@ -36,14 +36,14 @@ class BooksController {
                 // TEST 1
                 // this test merge data with cache (this not include author or photos)
                 console.log('BooksRequest#1 received (author data from server)',
-                    (<IDataResource>this.books[2].relationships.author.data).attributes
+                    (<Jsonapi.IResource>this.books[2].relationships.author.data).attributes
                 );
 
                 console.log('BooksRequest#2 requested');
                 let books2 = this.BooksService.all(
                     success => {
                         console.log('BooksRequest#2 received (author data from cache)',
-                            (<IDataResource>books2[1].relationships.author.data)
+                            (<Jsonapi.IResource>books2[1].relationships.author.data)
                         );
                     }
                 );
@@ -53,7 +53,7 @@ class BooksController {
                 let book1 = this.BooksService.get(1,
                     success => {
                         console.log('BookRequest#3 received (author data from cache)',
-                            (<IDataResource>book1.relationships.author.data).attributes
+                            (<Jsonapi.IResource>book1.relationships.author.data).attributes
                         );
                     });
             },

@@ -35,12 +35,11 @@ export class Service extends ParentResourceService implements IService {
         return Core.Me._register(this);
     }
 
-    // public new<T extends IResource>(): T {
-    public new(id = ''): IResource {
+    public new<T extends IResource>(id: string = ''): T {
         let resource: IResource = new Resource();
         resource.type = this.type;
         resource.id = id;
-        return resource;
+        return <T>resource;
     }
 
     public getPrePath(): string {
@@ -268,7 +267,7 @@ export class Service extends ParentResourceService implements IService {
     /**
     @return This resource like a service
     **/
-    public getService(): IService {
+    public getService<T extends IService>(): T {
         return Converter.getService(this.type);
     }
 
