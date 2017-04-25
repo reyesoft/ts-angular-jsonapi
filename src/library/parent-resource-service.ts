@@ -1,11 +1,11 @@
 import { Base } from './services/base';
-import { IExecParams } from './interfaces';
+import { IResource, ICollection, IExecParams } from './interfaces';
 
 export class ParentResourceService {
     /**
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(exec_params: IExecParams): any {
+    protected __exec(exec_params: IExecParams): IResource | ICollection | void {
         // makes `params` optional
         if (angular.isFunction(exec_params.params)) {
             exec_params.fc_error = exec_params.fc_success;

@@ -3,7 +3,6 @@ import { IDataObject } from '../interfaces/data-object';
 
 import './noduplicatedhttpcalls.service';
 import { Core } from '../core';
-// import { Resource } from '../resource';
 
 export class Http {
 
@@ -52,24 +51,24 @@ export class Http {
 
         let deferred = this.$q.defer();
         let self = this;
-        Core.Me.refreshLoadings(1);
+        Core.me.refreshLoadings(1);
         fakeHttpPromise.then(
             success => {
                 // timeout just for develop environment
                 self.$timeout( () => {
-                    Core.Me.refreshLoadings(-1);
+                    Core.me.refreshLoadings(-1);
                     deferred.resolve(success);
                 }, self.rsJsonapiConfig.delay);
             },
             error => {
-                Core.Me.refreshLoadings(-1);
+                Core.me.refreshLoadings(-1);
                 if (error.status <= 0) {
                     // offline?
-                    if (!Core.Me.loadingsOffline(error)) {
+                    if (!Core.me.loadingsOffline(error)) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
                 } else {
-                    if (call_loadings_error && !Core.Me.loadingsError(error)) {
+                    if (call_loadings_error && !Core.me.loadingsError(error)) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                     }
                 }

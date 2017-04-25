@@ -21,6 +21,23 @@ export class Resource extends ParentResourceService implements IResource {
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
 
+    public reset(): void {
+        let self = this;
+        this.id = '';
+        this.attributes = {};
+        angular.forEach(this.getService().schema.attributes, (value, key) => {
+            self.attributes[key] = ('default' in value) ? value.default : undefined;
+        });
+        this.relationships = {};
+        angular.forEach(this.getService().schema.relationships, (value, key) => {
+            self.relationships[key] = <IRelationship>{ data: {} };
+            if (this.getService().schema.relationships[key].hasMany) {
+                self.relationships[key].data = Base.newCollection();
+            }
+        });
+        this.is_new = true;
+    }
+
     public toObject(params?: IParamsResource): IDataObject {
         params = angular.extend({}, Base.Params, params);
         // this.getService().schema = angular.extend({}, Base.Schema, this.getService().schema);
@@ -86,11 +103,11 @@ export class Resource extends ParentResourceService implements IResource {
         return ret;
     }
 
-    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Array<T> {
-        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
+    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
+        return <T>this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    protected __exec(exec_params: IExecParams): any {
+    protected __exec(exec_params: IExecParams): IResource {
         super.__exec(exec_params);
 
         switch (exec_params.exec_type) {
@@ -116,7 +133,7 @@ export class Resource extends ParentResourceService implements IResource {
 
         let resource = Converter.newResource(this.type, this.id);
 
-        let promise = Core.Services.JsonapiHttp.exec(
+        let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',
             object, !(angular.isFunction(fc_error))
         );

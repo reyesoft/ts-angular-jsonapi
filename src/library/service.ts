@@ -26,19 +26,19 @@ export class Service extends ParentResourceService implements IService {
     @return true if the resource don't exist and registered ok
     **/
     public register(): boolean {
-        if (Core.Me === null) {
+        if (Core.me === null) {
             throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
         }
         // only when service is registered, not cloned object
         this.memorycache = new MemoryCache();
         this.schema = angular.extend({}, Base.Schema, this.schema);
-        return Core.Me._register(this);
+        return Core.me._register(this);
     }
 
-    public new<T extends IResource>(id: string = ''): T {
+    public new<T extends IResource>(): T {
         let resource: IResource = new Resource();
         resource.type = this.type;
-        resource.id = id;
+        resource.reset();
         return <T>resource;
     }
 
@@ -50,18 +50,18 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public get<T extends IResource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
-        return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'get' });
+        return <T>this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'get' });
     }
 
     public delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): void {
-        return this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'delete' });
+        return <void>this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'delete' });
     }
 
     public all(params?: IParamsCollection | Function, fc_success?: Function, fc_error?: Function): ICollection {
-        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'all' });
+        return <ICollection>this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'all' });
     }
 
-    protected __exec(exec_params: IExecParams): any {
+    protected __exec(exec_params: IExecParams): IResource | ICollection | void {
         super.__exec(exec_params);
 
         switch (exec_params.exec_type) {
@@ -90,7 +90,7 @@ export class Service extends ParentResourceService implements IService {
         if (this.getService().memorycache.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
-            var deferred = Core.Services.$q.defer();
+            var deferred = Core.injectedServices.$q.defer();
             deferred.resolve(fc_success);
             deferred.promise.then(fc_success => {
                 this.runFc(fc_success, 'memorycache');
@@ -100,7 +100,7 @@ export class Service extends ParentResourceService implements IService {
         }
 
 
-        Core.Services.JsonapiHttp
+        Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
             success => {
@@ -134,9 +134,9 @@ export class Service extends ParentResourceService implements IService {
         params.remotefilter ? path.addParam(paramsurl.toparams( { filter: params.remotefilter } )) : null;
         if (params.page) {
             params.page.number > 1 ? path.addParam(
-                Core.Services.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
+                Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
             params.page.limit ? path.addParam(
-                Core.Services.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
+                Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
         }
 
         // make request
@@ -162,7 +162,7 @@ export class Service extends ParentResourceService implements IService {
             if (this.getService().memorycache.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
-                var deferred = Core.Services.$q.defer();
+                var deferred = Core.injectedServices.$q.defer();
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'memorycache');
@@ -174,7 +174,7 @@ export class Service extends ParentResourceService implements IService {
         tempororay_collection['$isloading'] = true;
 
         // STORAGE_CACHE
-        Core.Services.JsonapiHttpStorage
+        Core.injectedServices.JsonapiHttpStorage
         .get(path.getForCache(), params.storage_ttl)
         .then(
             success => {
@@ -188,7 +188,7 @@ export class Service extends ParentResourceService implements IService {
 
                 this.runFc(fc_success, { data: success});
 
-                var deferred = Core.Services.$q.defer();
+                var deferred = Core.injectedServices.$q.defer();
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'httpstorage');
@@ -205,7 +205,7 @@ export class Service extends ParentResourceService implements IService {
 
     private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection) {
         // SERVER REQUEST
-        Core.Services.JsonapiHttp
+        Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
             success => {
@@ -217,7 +217,7 @@ export class Service extends ParentResourceService implements IService {
                 this.getService().memorycache.setCollection(path.getForCache(), tempororay_collection);
 
                 if (params.storage_ttl > 0) {
-                    Core.Services.JsonapiHttpStorage.save(path.getForCache(), success.data);
+                    Core.injectedServices.JsonapiHttpStorage.save(path.getForCache(), success.data);
                 }
 
                 // localfilter getted data
@@ -251,7 +251,7 @@ export class Service extends ParentResourceService implements IService {
         path.appendPath(this.getPath());
         path.appendPath(id);
 
-        Core.Services.JsonapiHttp
+        Core.injectedServices.JsonapiHttp
         .delete(path.get())
         .then(
             success => {
@@ -268,7 +268,7 @@ export class Service extends ParentResourceService implements IService {
     @return This resource like a service
     **/
     public getService<T extends IService>(): T {
-        return Converter.getService(this.type);
+        return <T>Converter.getService(this.type);
     }
 
     public clearMemoryCache(): boolean {
