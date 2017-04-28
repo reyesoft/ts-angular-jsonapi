@@ -32,6 +32,30 @@ class BooksController {
             },
             success => {
                 console.log('success books controller', success, this.books);
+
+                // TEST 1
+                // this test merge data with cache (this not include author or photos)
+                console.log('BooksRequest#1 received (author data from server)',
+                    (<Jsonapi.IResource>this.books[2].relationships.author.data).attributes
+                );
+
+                console.log('BooksRequest#2 requested');
+                let books2 = this.BooksService.all(
+                    success => {
+                        console.log('BooksRequest#2 received (author data from cache)',
+                            (<Jsonapi.IResource>books2[1].relationships.author.data)
+                        );
+                    }
+                );
+
+                // TEST 2
+                console.log('BookRequest#3 requested');
+                let book1 = this.BooksService.get(1,
+                    success => {
+                        console.log('BookRequest#3 received (author data from cache)',
+                            (<Jsonapi.IResource>book1.relationships.author.data).attributes
+                        );
+                    });
             },
             error => {
                 console.log('error books controller', error);

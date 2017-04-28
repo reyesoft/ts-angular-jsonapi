@@ -1,12 +1,14 @@
-import { IResource, IRelationships, ISchema } from '../interfaces';
+import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IDataObject } from '../interfaces/data-object';
+import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
-// import { Converter } from './resource-converter';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
     private relationships_from: Array<any>;
     private relationships_dest: IRelationships;
-    private included_resources: Object;
+    private included_resources: IResourcesByType;
     private schema: ISchema;
 
     /** @ngInject */
@@ -14,7 +16,7 @@ export class ResourceRelationshipsConverter {
         getService: Function,
         relationships_from: Array<any>,
         relationships_dest: IRelationships,
-        included_resources: Object,
+        included_resources: IResourcesByType,
         schema: ISchema
     ) {
         this.getService = getService;
@@ -24,7 +26,7 @@ export class ResourceRelationshipsConverter {
         this.schema = schema;
     }
 
-    public buildRelationships() {
+    public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
         angular.forEach(this.relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
 
@@ -96,36 +98,41 @@ export class ResourceRelationshipsConverter {
     }
 
     private __buildRelationshipHasOne(
-        relation_from_value: IDataObject,
-        relation_key: number
-    ) {
+        relation_data_from: IDataObject,
+        relation_data_key: number
+    ): void {
         // new related resource <> cached related resource <> ? delete!
         if (
-            this.relationships_dest[relation_key].data == null ||
-            relation_from_value.data.id !== (<IResource>this.relationships_dest[relation_key].data).id
+            this.relationships_dest[relation_data_key].data == null ||
+            relation_data_from.data.id !== (<IResource>this.relationships_dest[relation_data_key].data).id
         ) {
-            this.relationships_dest[relation_key].data = {};
+            this.relationships_dest[relation_data_key].data = {};
         }
 
         // trae datos o cambió resource? actualizamos!
         if (
-            'attributes' in relation_from_value.data ||
-            (<IResource>this.relationships_dest[relation_key].data).id !== relation_from_value.data.id
+            'attributes' in relation_data_from.data ||
+            (<IResource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
-            let tmp = this.__buildRelationship(relation_from_value.data, this.included_resources);
-            this.relationships_dest[relation_key].data = tmp;
+            let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
+            this.relationships_dest[relation_data_key].data = resource_data;
         }
     }
 
-    private __buildRelationship(relation: IDataResource, included_array): IResource | IDataResource {
-        if (relation.type in included_array &&
-            relation.id in included_array[relation.type]
+    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): IResource | IDataResource {
+        if (resource_data_from.type in included_array &&
+            resource_data_from.id in included_array[resource_data_from.type]
         ) {
             // it's in included
-            return included_array[relation.type][relation.id];
+            return included_array[resource_data_from.type][resource_data_from.id];
         } else {
-            // resource not included, return directly the object
-            return relation;
+            // OPTIONAL: return cached IResource
+            let service = this.getService(resource_data_from.type);
+            if (service && resource_data_from.id in service.memorycache.resources) {
+                return service.memorycache.resources[resource_data_from.id];
+            } else {
+                return resource_data_from;
+            }
         }
     }
 }

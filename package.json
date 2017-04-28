@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.4.15",
+  "version": "0.5.12",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -51,7 +51,6 @@
     "gulp-typescript": "^2.13.6",
     "gulp-util": "^3.0.7",
     "html-webpack-plugin": "^2.9.0",
-    "isparta-loader": "^2.0.0",
     "jasmine": "^2.4.1",
     "json-loader": "^0.5.4",
     "karma": "^0.13.14",

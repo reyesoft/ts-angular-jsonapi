@@ -1,5 +1,6 @@
 import { IResource } from './resource';
 import { IPage } from './page';
+import { IDataResource } from './data-resource';
 
 export interface ICollection extends Array<IResource> {
     $length: number;

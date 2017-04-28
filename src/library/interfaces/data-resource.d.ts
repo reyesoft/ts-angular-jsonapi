@@ -1,8 +1,10 @@
-    interface IDataResource {
-        type: string;
-        id: string;
-        attributes?: any;
-        relationships?: any;
-        links?: ILinks;
-        meta?: any;
-    }
+import { IAttributes } from '../interfaces';
+
+interface IDataResource {
+    type: string;
+    id: string;
+    attributes?: IAttributes;
+    relationships?: any;
+    links?: ILinks;
+    meta?: any;
+}

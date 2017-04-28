@@ -8,19 +8,19 @@ export class MemoryCache implements ICache {
     private collections_lastupdate = {};
     public resources = {};
 
-    public isCollectionExist(url: string): boolean  {
+    public isCollectionExist(url: string): boolean {
         return (url in this.collections && this.collections[url].$source !== 'new' ? true : false);
     }
 
-    public isCollectionLive(url: string, ttl: number): boolean  {
+    public isCollectionLive(url: string, ttl: number): boolean {
         return (Date.now() <= (this.collections_lastupdate[url] + ttl * 1000));
     }
 
-    public isResourceLive(id: string, ttl: number): boolean  {
+    public isResourceLive(id: string, ttl: number): boolean {
         return this.resources[id] && (Date.now() <= (this.resources[id].lastupdate + ttl * 1000));
     }
 
-    public getCollection(url: string): ICollection  {
+    public getCollection(url: string): ICollection {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';
@@ -31,18 +31,16 @@ export class MemoryCache implements ICache {
     public setCollection(url: string, collection: ICollection): void  {
         // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
-        angular.forEach(collection, (value: IResource, key: string) => {
-            this.collections[url][key] = value;
-            this.setResource(value);
+        angular.forEach(collection, (resource: IResource, resource_id: string) => {
+            this.collections[url][resource_id] = resource;
+            this.setResource(resource);
         });
         this.collections[url]['page'] = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }
 
     public setResource(resource: IResource): void  {
-        /*
-            we cannot redefine object, because view don't update.
-        */
+        // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
             ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
         } else {

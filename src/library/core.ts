@@ -1,11 +1,8 @@
-/// <reference path="./index.d.ts" />
-
 import './services/core-services.service';
-import { ICore, IResource } from './interfaces';
+import { ICore, IService } from './interfaces';
 
 export class Core implements ICore {
-    public rootPath: string = 'http://url/';
-    public resources: Object = {};
+    private resourceServices: Object = {};
 
     public loadingsCounter: number = 0;
     public loadingsStart = () => {};
@@ -13,28 +10,28 @@ export class Core implements ICore {
     public loadingsError = () => {};
     public loadingsOffline = () => {};
 
-    public static Me: ICore = null;
-    public static Services: any = null;
+    public static me: ICore;
+    public static injectedServices: any;
 
     /** @ngInject */
     public constructor(
         protected rsJsonapiConfig,
         protected JsonapiCoreServices
     ) {
-        Core.Me = this;
-        Core.Services = JsonapiCoreServices;
+        Core.me = this;
+        Core.injectedServices = JsonapiCoreServices;
     }
 
-    public _register(clase: IResource): boolean {
-        if (clase.type in this.resources) {
+    public _register(clase: IService): boolean {
+        if (clase.type in this.resourceServices) {
             return false;
         }
-        this.resources[clase.type] = clase;
+        this.resourceServices[clase.type] = clase;
         return true;
     }
 
-    public getResource(type: string): IResource {
-        return this.resources[type];
+    public getResourceService(type: string): IService {
+        return this.resourceServices[type];
     }
 
     public refreshLoadings(factor: number): void {
@@ -46,4 +43,5 @@ export class Core implements ICore {
         }
     }
 }
+
 angular.module('Jsonapi.services').service('JsonapiCore', Core);
