@@ -1,6 +1,6 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
-import { ICollection, IResource, IService, ISchema, IResourcesById, IResourcesByType } from '../interfaces';
+import { ICollection, IResource, IService, IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -62,12 +62,17 @@ export class Converter {
         return resource_service;
     }
 
-    static newResource(type: string, id: string): IResource {
+    static newResource(type: string, id: string, use_store = false): IResource {
         if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
-            return Converter.getService(type).memorycache.resources[id];
+            return Converter.getService(type).memorycache.getResource(id);
         } else {
             let resource = Converter.getService(type).new();
             resource.id = id;
+
+            if (id && use_store) {
+                Converter.getService(type).memorycache.getResourceFromStore(resource);
+            }
+
             return resource;
         }
     }
@@ -91,9 +96,8 @@ export class Converter {
     }
 
     public static build(
-        document_from: ICollection & IDataObject,
-        resource_dest: IResource | ICollection,
-        schema: ISchema
+        document_from: IDataCollection & IDataObject,
+        resource_dest: IResource | ICollection
     ) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
@@ -102,16 +106,15 @@ export class Converter {
         }
 
         if (angular.isArray(document_from.data)) {
-            Converter._buildCollection(document_from, <ICollection>resource_dest, schema, included_resources);
+            Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
         } else {
-            Converter._buildResource(document_from.data, <IResource>resource_dest, schema, included_resources);
+            Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources);
         }
     }
 
     private static _buildCollection(
         collection_data_from: IDataCollection,
         collection_dest: ICollection,
-        schema: ISchema,
         included_resources: IResourcesByType
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
@@ -127,7 +130,7 @@ export class Converter {
             if (!(dataresource.id in collection_dest)) {
                 collection_dest[dataresource.id] = Converter.newResource(dataresource.type, dataresource.id);
             }
-            Converter._buildResource(dataresource, collection_dest[dataresource.id], schema, included_resources);
+            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -142,12 +145,12 @@ export class Converter {
     private static _buildResource(
         resource_data_from: IDataResource,
         resource_dest: IResource,
-        schema: ISchema,
         included_resources: IResourcesByType
     ) {
         resource_dest.attributes = resource_data_from.attributes;
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
+        let schema = Converter.getService(resource_data_from.type).schema;
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,

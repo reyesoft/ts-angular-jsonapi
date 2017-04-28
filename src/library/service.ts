@@ -83,7 +83,7 @@ export class Service extends ParentResourceService implements IService {
         params.include ? path.setInclude(params.include) : null;
 
         // cache
-        let resource = Converter.newResource(this.type, id);
+        let resource = Converter.newResource(this.type, id, true);
         resource.is_loading = true;
         // exit if ttl is not expired
         let temporal_ttl = params.ttl ? params.ttl : 0;
@@ -104,7 +104,7 @@ export class Service extends ParentResourceService implements IService {
         .get(path.get())
         .then(
             success => {
-                Converter.build(success.data, resource, this.schema);
+                Converter.build(success.data, resource);
                 resource.is_loading = false;
                 this.getService().memorycache.setResource(resource);
                 this.runFc(fc_success, success);
@@ -141,7 +141,7 @@ export class Service extends ParentResourceService implements IService {
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().memorycache.getCollection(path.getForCache());
+        let tempororay_collection = this.getService().memorycache.getCollection(path.getForCache(), true);
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
@@ -171,7 +171,7 @@ export class Service extends ParentResourceService implements IService {
             }
         }
 
-        tempororay_collection['$isloading'] = true;
+        tempororay_collection['$is_loading'] = true;
 
         // STORAGE_CACHE
         Core.injectedServices.JsonapiHttpStorage
@@ -179,8 +179,8 @@ export class Service extends ParentResourceService implements IService {
         .then(
             success => {
                 tempororay_collection.$source = 'httpstorage';
-                tempororay_collection.$isloading = false;
-                Converter.build(success, tempororay_collection, this.schema);
+                tempororay_collection.$is_loading = false;
+                Converter.build(success, tempororay_collection);
 
                 // localfilter getted data
                 let localfilter = new LocalFilter();
@@ -210,9 +210,9 @@ export class Service extends ParentResourceService implements IService {
         .then(
             success => {
                 tempororay_collection.$source = 'server';
-                tempororay_collection.$isloading = false;
+                tempororay_collection.$is_loading = false;
 
-                Converter.build(success.data, tempororay_collection, this.schema);
+                Converter.build(success.data, tempororay_collection);
 
                 this.getService().memorycache.setCollection(path.getForCache(), tempororay_collection);
 
@@ -238,7 +238,7 @@ export class Service extends ParentResourceService implements IService {
             },
             error => {
                 tempororay_collection.$source = 'server';
-                tempororay_collection.$isloading = false;
+                tempororay_collection.$is_loading = false;
                 this.runFc(fc_error, error);
             }
         );

@@ -150,7 +150,7 @@ export class Resource extends ParentResourceService implements IResource {
                 // is a resource?
                 if ('id' in success.data.data) {
                     this.id = success.data.data.id;
-                    Converter.build(success.data, this, this.getService().schema);
+                    Converter.build(success.data, this);
                     /*
                     Si lo guardo en la caché, luego no queda bindeado con la vista
                     Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
@@ -164,7 +164,7 @@ export class Resource extends ParentResourceService implements IResource {
                     us another type of resource (getService(resource.type))
                     */
                     let tempororay_collection = this.getService().memorycache.getCollection('justAnUpdate');
-                    Converter.build(success.data, tempororay_collection, this.getService().schema);
+                    Converter.build(success.data, tempororay_collection);
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
                         let res = Converter.getService(resource_value.type).memorycache.resources[resource_value.id];
                         Converter.getService(resource_value.type).memorycache.setResource(resource_value);

@@ -19,7 +19,7 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [X] Filtering by regular expression
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
 - [x] Default values for a new resource
-- [x] [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$isloading` or `$source` (_`empty`_ |`cache`|`server`)
+- [x] [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
