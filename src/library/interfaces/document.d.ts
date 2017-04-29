@@ -1,4 +1,5 @@
 import { IDataResource } from '../interfaces/data-resource';
+import { ILinks } from '../interfaces/links.d';
 
 // http://org/format/#document-top-level
 interface IDocument {

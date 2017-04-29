@@ -1,4 +1,3 @@
-/// <reference path="../index.d.ts" />
 import * as angular from 'angular';
 
 export class HttpStorage {
