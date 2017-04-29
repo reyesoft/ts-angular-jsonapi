@@ -6,8 +6,7 @@ export class CacheStore {
 
     /** @ngInject */
     public constructor(
-        protected $localForage,
-        protected $q
+        protected $localForage
     ) {
         this.globalstore = $localForage.createInstance({ name: 'jsonapiglobal' });
         this.allstore = $localForage.createInstance({ name: 'allstore' });

@@ -11,7 +11,7 @@
     ],
     "curly": true,
     "eofline": true,
-    "forin": true,
+    "forin": false,
     "indent": [true, 2],
     "interface-name": true,
     "label-position": true,

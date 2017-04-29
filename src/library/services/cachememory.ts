@@ -55,7 +55,6 @@ export class CacheMemory implements ICache {
             resource.id = id;
 
             if (id && use_store) {
-                console.log('pido al cachestore');
                 Converter.getService(type).cachememory.getResourceFromStore(resource);
             }
 
@@ -96,16 +95,19 @@ export class CacheMemory implements ICache {
 
     // -------- STORE ---------------------------------
 
-    public getResourceFromStore(resource: IResource): void {
-        let promise = Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
-        promise.then (
-            success => {
-                if (success) {
-                    console.log('recibí del cachestore, actualizo');
-                    Converter.build({ data: success }, resource);
-                }
+    public getResourceFromStore(resource: IResource): Promise<any> {
+        let promise = this.fetchResourceFromStore(resource);
+        promise.then (success => {
+            if (success) {
+                Converter.build({ data: success }, resource);
+                console.log('recibí resource del cachestore, actualizo', resource);
             }
-        );
+        });
+        return promise;
+    }
+
+    private fetchResourceFromStore(resource: IResource): Promise<any> {
+        return Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
     }
 
     private saveResourceStore(resource: IResource) {
@@ -117,16 +119,49 @@ export class CacheMemory implements ICache {
 
     private getCollectionFromStore(url:string, collection: ICollection): void {
         let promise = Core.injectedServices.JsonapiCacheStore.getObjet('collection.' + url);
-        promise.then (
-            success => {
-                if (success) {
-                    collection.$source = 'cachestore';
-                    angular.forEach(success.data, (dataresource: IDataResource) => {
-                        collection[dataresource.id] = this.getOrCreateResource(dataresource.type, dataresource.id, true);
-                    });
+        promise.then(success => {
+            if (success) {
+                let all_ok = true;
+                for (let key in success.data) {
+                    let dataresource: IDataResource = success.data[key];
+                    let resource = this.getOrCreateResource(dataresource.type, dataresource.id);
+                    if (resource.is_new) {
+                        all_ok = false;
+                        break;
+                    }
+                    collection[dataresource.id] = resource;
                 }
+
+                // collection full with resources
+                if (all_ok) {
+                    collection.$source = 'cachestore';  // collection from cachestore, resources from memory
+                    return;
+                }
+
+                let temporalcollection = {};
+                let promises = [];
+                for (let key in success.data) {
+                    let dataresource: IDataResource = success.data[key];
+                    temporalcollection[dataresource.id] = this.getOrCreateResource(dataresource.type, dataresource.id);
+                    promises.push(
+                        this.getResourceFromStore(temporalcollection[dataresource.id])
+                    );
+                }
+
+                // we have all resources from store
+                Core.injectedServices.$q.all(promises).then(success => {
+                    // just for precaution, we not rewrite server data
+                    if (collection.$source !== 'new') {
+                        return ;
+                    }
+                    for (let key in temporalcollection) {
+                        let resource: IResource = temporalcollection[key];
+                        collection.$source = 'cachestore';  // collection and resources from cachestore
+                        collection[resource.id] = resource;  // collection from cachestore, resources from memory
+                    }
+                });
             }
-        );
+        });
     }
 
     private saveCollectionStore(url: string, collection: ICollection) {
