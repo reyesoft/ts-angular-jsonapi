@@ -70,10 +70,10 @@ export class Converter {
         }
 
         let resource: IResource;
-        if (data.id in Converter.getService(data.type).memorycache.resources) {
-            resource = Converter.getService(data.type).memorycache.resources[data.id];
+        if (data.id in Converter.getService(data.type).cachememory.resources) {
+            resource = Converter.getService(data.type).cachememory.resources[data.id];
         } else {
-            resource = Converter.getService(data.type).memorycache.getOrCreateResource(data.type, data.id);
+            resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
         }
 
         resource.attributes = data.attributes ? data.attributes : {};
@@ -115,7 +115,7 @@ export class Converter {
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
                 collection_dest[dataresource.id] =
-                    Converter.getService(dataresource.type).memorycache.getOrCreateResource(dataresource.type, dataresource.id);
+                    Converter.getService(dataresource.type).cachememory.getOrCreateResource(dataresource.type, dataresource.id);
             }
             Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;

@@ -130,8 +130,8 @@ export class ResourceRelationshipsConverter {
         } else {
             // OPTIONAL: return cached IResource
             let service = this.getService(resource_data_from.type);
-            if (service && resource_data_from.id in service.memorycache.resources) {
-                return service.memorycache.resources[resource_data_from.id];
+            if (service && resource_data_from.id in service.cachememory.resources) {
+                return service.cachememory.resources[resource_data_from.id];
             } else {
                 return resource_data_from;
             }

@@ -127,7 +127,7 @@ export class Resource extends ParentResourceService implements IResource {
         path.applyParams(this.getService(), params);
         this.id && path.appendPath(this.id);
 
-        let resource = this.getService().memorycache.getOrCreateResource(this.type, this.id);
+        let resource = this.getService().cachememory.getOrCreateResource(this.type, this.id);
         // Converter.getOrCreateResource(this.type, this.id);
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
@@ -141,7 +141,7 @@ export class Resource extends ParentResourceService implements IResource {
 
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
-                    this.getService().memorycache.clearAllCollections();
+                    this.getService().cachememory.clearAllCollections();
                 }
 
                 // is a resource?
@@ -152,7 +152,7 @@ export class Resource extends ParentResourceService implements IResource {
                     Si lo guardo en la caché, luego no queda bindeado con la vista
                     Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
                     */
-                    // this.getService().memorycache.setResource(this);
+                    // this.getService().cachememory.setResource(this);
                 } else if (angular.isArray(success.data.data)) {
                     console.warn('Server return a collection when we save()', success.data.data);
 
@@ -160,11 +160,11 @@ export class Resource extends ParentResourceService implements IResource {
                     we request the service again, because server maybe are giving
                     us another type of resource (getService(resource.type))
                     */
-                    let tempororay_collection = this.getService().memorycache.getOrCreateCollection('justAnUpdate');
+                    let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
                     Converter.build(success.data, tempororay_collection);
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
-                        let res = Converter.getService(resource_value.type).memorycache.resources[resource_value.id];
-                        Converter.getService(resource_value.type).memorycache.setResource(resource_value);
+                        let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
+                        Converter.getService(resource_value.type).cachememory.setResource(resource_value);
                         res.id = res.id + 'x';
                     });
 

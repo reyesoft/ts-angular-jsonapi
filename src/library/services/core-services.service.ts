@@ -1,6 +1,7 @@
 import * as angular from 'angular';
 import './http.service';
 import './http-storage.service';
+import './cachestore.service';
 
 export class CoreServices {
 
@@ -9,7 +10,8 @@ export class CoreServices {
         protected JsonapiHttp,
         protected rsJsonapiConfig,
         protected $q,
-        protected JsonapiHttpStorage
+        protected JsonapiHttpStorage,
+        protected JsonapiCacheStore
     ) {
 
     }

@@ -7,7 +7,7 @@ import { Base } from './base';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
-export class MemoryCache implements ICache {
+export class CacheMemory implements ICache {
     private collections = {};
     private collections_lastupdate = {};
     public resources = {};
@@ -48,15 +48,15 @@ export class MemoryCache implements ICache {
     }
 
     public getOrCreateResource(type: string, id: string, use_store = false): IResource {
-        if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
-            return Converter.getService(type).memorycache.getResource(id);
+        if (Converter.getService(type).cachememory && id in Converter.getService(type).cachememory.resources) {
+            return Converter.getService(type).cachememory.getResource(id);
         } else {
             let resource = Converter.getService(type).new();
             resource.id = id;
 
             if (id && use_store) {
-                console.log('pido al store');
-                Converter.getService(type).memorycache.getResourceFromStore(resource);
+                console.log('pido al cachestore');
+                Converter.getService(type).cachememory.getResourceFromStore(resource);
             }
 
             return resource;
@@ -97,11 +97,11 @@ export class MemoryCache implements ICache {
     // -------- STORE ---------------------------------
 
     public getResourceFromStore(resource: IResource): void {
-        let promise = Core.injectedServices.JsonapiHttpStorage.getObjet(resource.type + '.' + resource.id);
+        let promise = Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
         promise.then (
             success => {
                 if (success) {
-                    console.log('recibí del store, actualizo');
+                    console.log('recibí del cachestore, actualizo');
                     Converter.build({ data: success }, resource);
                 }
             }
@@ -109,18 +109,18 @@ export class MemoryCache implements ICache {
     }
 
     private saveResourceStore(resource: IResource) {
-        Core.injectedServices.JsonapiHttpStorage.saveObject(
+        Core.injectedServices.JsonapiCacheStore.saveObject(
             resource.type + '.' + resource.id,
             resource.toObject().data
         );
     }
 
     private getCollectionFromStore(url:string, collection: ICollection): void {
-        let promise = Core.injectedServices.JsonapiHttpStorage.getObjet('collection.' + url);
+        let promise = Core.injectedServices.JsonapiCacheStore.getObjet('collection.' + url);
         promise.then (
             success => {
                 if (success) {
-                    collection.$source = 'store';
+                    collection.$source = 'cachestore';
                     angular.forEach(success.data, (dataresource: IDataResource) => {
                         collection[dataresource.id] = this.getOrCreateResource(dataresource.type, dataresource.id, true);
                     });
@@ -134,7 +134,7 @@ export class MemoryCache implements ICache {
         angular.forEach(collection, (resource: IResource) => {
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
         });
-        Core.injectedServices.JsonapiHttpStorage.saveObject(
+        Core.injectedServices.JsonapiCacheStore.saveObject(
             'collection.' + url,
             tmp
         );

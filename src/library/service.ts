@@ -7,13 +7,13 @@ import { PathBuilder } from './services/path-builder';
 import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
-import { MemoryCache } from './services/memorycache';
+import { CacheMemory } from './services/cachememory';
 
 import { IService, ISchema, IResource, ICollection, IExecParams, ICache, IParamsCollection, IParamsResource } from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
     public schema: ISchema;
-    public memorycache: ICache;
+    public cachememory: ICache;
     public type: string;
 
     private path: string;   // without slashes
@@ -28,7 +28,7 @@ export class Service extends ParentResourceService implements IService {
             throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
         }
         // only when service is registered, not cloned object
-        this.memorycache = new MemoryCache();
+        this.cachememory = new CacheMemory();
         this.schema = angular.extend({}, Base.Schema, this.schema);
         return Core.me._register(this);
     }
@@ -79,17 +79,17 @@ export class Service extends ParentResourceService implements IService {
         path.appendPath(id);
 
         // cache
-        let resource = this.getService().memorycache.getOrCreateResource(this.type, id, true);
+        let resource = this.getService().cachememory.getOrCreateResource(this.type, id, true);
         resource.is_loading = true;
         // exit if ttl is not expired
         let temporal_ttl = params.ttl ? params.ttl : 0;
-        if (this.getService().memorycache.isResourceLive(id, temporal_ttl)) {
+        if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
             var deferred = Core.injectedServices.$q.defer();
             deferred.resolve(fc_success);
             deferred.promise.then(fc_success => {
-                this.runFc(fc_success, 'memorycache');
+                this.runFc(fc_success, 'cachememory');
             });
             resource.is_loading = false;
             return resource;
@@ -102,7 +102,7 @@ export class Service extends ParentResourceService implements IService {
             success => {
                 Converter.build(success.data, resource);
                 resource.is_loading = false;
-                this.getService().memorycache.setResource(resource);
+                this.getService().cachememory.setResource(resource);
                 this.runFc(fc_success, success);
             },
             error => {
@@ -134,13 +134,13 @@ export class Service extends ParentResourceService implements IService {
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().memorycache.getOrCreateCollection(path.getForCache(), true);
+        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache(), true);
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
-        if (temporal_ttl >= 0 && this.getService().memorycache.isCollectionExist(path.getForCache())) {
+        if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
-            tempororay_collection.$source = 'memorycache';
+            tempororay_collection.$source = 'cachememory';
 
             // check smartfiltertype, and set on localfilter
             if (params.smartfilter && this.smartfiltertype === 'localfilter') {
@@ -152,13 +152,13 @@ export class Service extends ParentResourceService implements IService {
             tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
 
             // exit if ttl is not expired
-            if (this.getService().memorycache.isCollectionLive(path.getForCache(), temporal_ttl)) {
+            if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
                 var deferred = Core.injectedServices.$q.defer();
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
-                    this.runFc(fc_success, 'memorycache');
+                    this.runFc(fc_success, 'cachememory');
                 });
                 return tempororay_collection;
             }
@@ -207,7 +207,7 @@ export class Service extends ParentResourceService implements IService {
 
                 Converter.build(success.data, tempororay_collection);
 
-                this.getService().memorycache.setCollection(path.getForCache(), tempororay_collection);
+                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
 
                 if (params.storage_ttl > 0) {
                     Core.injectedServices.JsonapiHttpStorage.save(path.getForCache(), success.data);
@@ -247,7 +247,7 @@ export class Service extends ParentResourceService implements IService {
         .delete(path.get())
         .then(
             success => {
-                this.getService().memorycache.removeResource(id);
+                this.getService().cachememory.removeResource(id);
                 this.runFc(fc_success, success);
             },
             error => {
@@ -263,7 +263,7 @@ export class Service extends ParentResourceService implements IService {
         return <T>Converter.getService(this.type);
     }
 
-    public clearMemoryCache(): boolean {
-        return this.getService().memorycache.clearAllCollections();
+    public clearCacheMemory(): boolean {
+        return this.getService().cachememory.clearAllCollections();
     }
 }
