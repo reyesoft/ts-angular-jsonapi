@@ -58,9 +58,9 @@ function webpackWrapper(watch, conf, done) {
     gulp.src('dist/*', {read: false})
     .pipe(clean());
 
-    var tsProjectDts = ts.createProject('conf/ts.conf.json', { sortOutput: true });
+    var tsProjectDts = ts.createProject('conf/ts.conf.json');
     var tsResult = gulp.src('src/library/**.ts')
-    .pipe(ts(tsProjectDts));
+    .pipe(tsProjectDts());
     tsResult.dts
     .pipe(deleteLines({
       'filters': [ /^\/\/\//i]
