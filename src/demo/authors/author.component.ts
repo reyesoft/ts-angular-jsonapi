@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import 'angular-ui-router';
 import * as Jsonapi from '../../library/index';
 

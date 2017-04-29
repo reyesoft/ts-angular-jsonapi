@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import { Core } from '../core';
 import { Resource } from '../resource';
 import { ICollection, IResource, IService, IResourcesById, IResourcesByType } from '../interfaces';

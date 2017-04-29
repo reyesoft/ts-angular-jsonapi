@@ -1,5 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
-
 // Jsonapi interfaces part of top level
 /// <reference path="./interfaces/document.d.ts"/>
 /// <reference path="./interfaces/data-collection.d.ts"/>

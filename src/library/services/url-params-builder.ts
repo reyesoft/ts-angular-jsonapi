@@ -1,3 +1,5 @@
+import * as angular from 'angular';
+
 export class UrlParamsBuilder {
 
     private toparamsarray(params, add = ''): string {

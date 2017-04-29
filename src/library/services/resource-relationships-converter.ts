@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';

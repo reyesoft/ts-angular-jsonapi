@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import * as Jsonapi from '../interfaces';
 
 export class LocalFilter {

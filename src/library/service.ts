@@ -1,6 +1,5 @@
 /// <reference path="./index.d.ts" />
-
-// import * as Jsonapi from './core';
+import * as angular from 'angular';
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';

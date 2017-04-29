@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import { ICollection, IResource } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { ICache } from '../interfaces/cache.d';

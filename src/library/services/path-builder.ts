@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 export class PathBuilder {
     public paths: Array<string> = [];
     public includes: Array<string> = [];

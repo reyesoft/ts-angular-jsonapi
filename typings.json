@@ -1,9 +1,0 @@
-{
-  "globalDependencies": {
-    "angular": "registry:dt/angular#1.5.0+20160802155123",
-    "angular-mocks": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-mocks.d.ts#dc9dabe74a5be62613b17a3605309783a12ff28a",
-    "angular-ui-router": "registry:dt/angular-ui-router#1.1.5+20160707113237",
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#dc9dabe74a5be62613b17a3605309783a12ff28a",
-    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#dc9dabe74a5be62613b17a3605309783a12ff28a"
-  }
-}

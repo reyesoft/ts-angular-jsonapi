@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import './services/core-services.service';
 import { ICore, IService } from './interfaces';
 
