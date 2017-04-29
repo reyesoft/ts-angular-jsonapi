@@ -112,7 +112,8 @@ export class ResourceRelationshipsConverter {
 
         // trae datos o cambió resource? actualizamos!
         if (
-            'attributes' in relation_data_from.data ||
+            // 'attributes' in relation_data_from.data ||  // ???
+            !(<IResource>this.relationships_dest[relation_data_key].data).attributes ||     // we have only a  dataresource
             (<IResource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);

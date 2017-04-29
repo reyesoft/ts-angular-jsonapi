@@ -55,6 +55,7 @@ export class MemoryCache implements ICache {
             resource.id = id;
 
             if (id && use_store) {
+                console.log('pido al store');
                 Converter.getService(type).memorycache.getResourceFromStore(resource);
             }
 
@@ -100,6 +101,7 @@ export class MemoryCache implements ICache {
         promise.then (
             success => {
                 if (success) {
+                    console.log('recibí del store, actualizo');
                     Converter.build({ data: success }, resource);
                 }
             }
