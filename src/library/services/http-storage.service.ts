@@ -12,7 +12,10 @@ export class HttpStorage {
     ) {
         this.globalstore = $localForage.createInstance({ name: 'jsonapiglobal' });
         this.allstore = $localForage.createInstance({ name: 'allstore' });
+        this.checkIfIsTimeToClean();
+    }
 
+    private checkIfIsTimeToClean() {
         // check if is time to check store
         this.globalstore.getItem('_lastclean_time').then(success => {
             if (success) {
@@ -31,15 +34,13 @@ export class HttpStorage {
         this.allstore.keys().then(success => {
             angular.forEach(success, (key) => {
                 // recorremos cada item y vemos si es tiempo de removerlo
-                this.allstore.getItem(key).then(
-                    success2 => {
-                        // es tiempo de removerlo?
-                        if (Date.now() >= (success2._lastupdate_time + 12 * 3600 * 1000)) {
-                            // removemos!!
-                            this.allstore.removeItem(key);
-                        }
+                this.allstore.getItem(key).then(success2 => {
+                    // es tiempo de removerlo?
+                    if (Date.now() >= (success2._lastupdate_time + 12 * 3600 * 1000)) {
+                        // removemos!!
+                        this.allstore.removeItem(key);
                     }
-                );
+                });
             });
         });
     }
