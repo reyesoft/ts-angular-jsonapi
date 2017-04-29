@@ -5,7 +5,7 @@ import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 // import { UrlParamsBuilder } from './services/url-params-builder';
-import { Converter } from './services/resource-converter';
+import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
 
 import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
@@ -125,12 +125,11 @@ export class Resource extends ParentResourceService implements IResource {
 
         // http request
         let path = new PathBuilder();
-        path.appendPath(this.getService().getPrePath());
-        path.appendPath(this.getService().getPath());
+        path.applyParams(this.getService(), params);
         this.id && path.appendPath(this.id);
-        params.include ? path.setInclude(params.include) : null;
 
-        let resource = Converter.newResource(this.type, this.id);
+        let resource = this.getService().memorycache.getOrCreateResource(this.type, this.id);
+        // Converter.getOrCreateResource(this.type, this.id);
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',
@@ -162,7 +161,7 @@ export class Resource extends ParentResourceService implements IResource {
                     we request the service again, because server maybe are giving
                     us another type of resource (getService(resource.type))
                     */
-                    let tempororay_collection = this.getService().memorycache.getCollection('justAnUpdate');
+                    let tempororay_collection = this.getService().memorycache.getOrCreateCollection('justAnUpdate');
                     Converter.build(success.data, tempororay_collection);
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
                         let res = Converter.getService(resource_value.type).memorycache.resources[resource_value.id];

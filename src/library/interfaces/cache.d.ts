@@ -5,10 +5,12 @@ export interface ICache {
 
     isCollectionExist(url: string): boolean;
     isCollectionLive(url: string, ttl: number): boolean;
-    getCollection(url: string, use_store?: boolean): ICollection;
+    getOrCreateCollection(url: string, use_store?: boolean): ICollection;
     setCollection(url: string, collection: ICollection): void;
     clearAllCollections(): boolean;
+
     isResourceLive(id: string, ttl: number): boolean;
+    getOrCreateResource(type: string, id: string, use_store?: boolean): IResource;
     getResource(id: string): IResource;
     getResourceFromStore(resource: IResource): void;
     setResource(resource: IResource): void;

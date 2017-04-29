@@ -6,7 +6,7 @@ import { Resource } from './resource';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 import { UrlParamsBuilder } from './services/url-params-builder';
-import { Converter } from './services/resource-converter';
+import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
 import { MemoryCache } from './services/memorycache';
 
@@ -76,13 +76,11 @@ export class Service extends ParentResourceService implements IService {
     public _get(id: string, params: IParamsResource, fc_success, fc_error): IResource {
         // http request
         let path = new PathBuilder();
-        path.appendPath(this.getPrePath());
-        path.appendPath(this.getPath());
+        path.applyParams(this, params);
         path.appendPath(id);
-        params.include ? path.setInclude(params.include) : null;
 
         // cache
-        let resource = Converter.newResource(this.type, id, true);
+        let resource = this.getService().memorycache.getOrCreateResource(this.type, id, true);
         resource.is_loading = true;
         // exit if ttl is not expired
         let temporal_ttl = params.ttl ? params.ttl : 0;
@@ -126,10 +124,7 @@ export class Service extends ParentResourceService implements IService {
         // http request
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
-        path.appendPath(this.getPrePath());
-        params.beforepath ? path.appendPath(params.beforepath) : null;
-        path.appendPath(this.getPath());
-        params.include ? path.setInclude(params.include) : null;
+        path.applyParams(this, params);
         params.remotefilter ? path.addParam(paramsurl.toparams( { filter: params.remotefilter } )) : null;
         if (params.page) {
             params.page.number > 1 ? path.addParam(
@@ -140,7 +135,7 @@ export class Service extends ParentResourceService implements IService {
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().memorycache.getCollection(path.getForCache(), true);
+        let tempororay_collection = this.getService().memorycache.getOrCreateCollection(path.getForCache(), true);
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
@@ -246,8 +241,7 @@ export class Service extends ParentResourceService implements IService {
     private _delete(id: string, params, fc_success, fc_error): void {
         // http request
         let path = new PathBuilder();
-        path.appendPath(this.getPrePath());
-        path.appendPath(this.getPath());
+        path.applyParams(this, params);
         path.appendPath(id);
 
         Core.injectedServices.JsonapiHttp

@@ -4,7 +4,7 @@ import { IDataResource } from '../interfaces/data-resource';
 import { ICache } from '../interfaces/cache.d';
 import { Core } from '../core';
 import { Base } from './base';
-import { Converter } from './resource-converter';
+import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
 export class MemoryCache implements ICache {
@@ -24,7 +24,7 @@ export class MemoryCache implements ICache {
         return this.resources[id] && (Date.now() <= (this.resources[id].lastupdate + ttl * 1000));
     }
 
-    public getCollection(url: string, use_store = false): ICollection {
+    public getOrCreateCollection(url: string, use_store = false): ICollection {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';
@@ -47,6 +47,22 @@ export class MemoryCache implements ICache {
         this.collections_lastupdate[url] = Date.now();
     }
 
+    public getOrCreateResource(type: string, id: string, use_store = false): IResource {
+        if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
+            return Converter.getService(type).memorycache.getResource(id);
+        } else {
+            let resource = Converter.getService(type).new();
+            resource.id = id;
+
+            if (id && use_store) {
+                Converter.getService(type).memorycache.getResourceFromStore(resource);
+            }
+
+            return resource;
+        }
+    }
+
+    /* @deprecated */
     public getResource(id: string): IResource  {
         return this.resources[id];
     }
@@ -104,7 +120,7 @@ export class MemoryCache implements ICache {
                 if (success) {
                     collection.$source = 'store';
                     angular.forEach(success.data, (dataresource: IDataResource) => {
-                        collection[dataresource.id] = Converter.newResource(dataresource.type, dataresource.id, true);
+                        collection[dataresource.id] = this.getOrCreateResource(dataresource.type, dataresource.id, true);
                     });
                 }
             }

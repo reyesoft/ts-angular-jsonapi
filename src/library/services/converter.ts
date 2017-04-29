@@ -63,21 +63,6 @@ export class Converter {
         return resource_service;
     }
 
-    static newResource(type: string, id: string, use_store = false): IResource {
-        if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
-            return Converter.getService(type).memorycache.getResource(id);
-        } else {
-            let resource = Converter.getService(type).new();
-            resource.id = id;
-
-            if (id && use_store) {
-                Converter.getService(type).memorycache.getResourceFromStore(resource);
-            }
-
-            return resource;
-        }
-    }
-
     /* return a resource type(resoruce_service) with data(data) */
     private static procreate(data: IDataResource): IResource {
         if (!('type' in data && 'id' in data)) {
@@ -88,7 +73,7 @@ export class Converter {
         if (data.id in Converter.getService(data.type).memorycache.resources) {
             resource = Converter.getService(data.type).memorycache.resources[data.id];
         } else {
-            resource = Converter.newResource(data.type, data.id);
+            resource = Converter.getService(data.type).memorycache.getOrCreateResource(data.type, data.id);
         }
 
         resource.attributes = data.attributes ? data.attributes : {};
@@ -129,7 +114,8 @@ export class Converter {
         let new_ids = {};
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] = Converter.newResource(dataresource.type, dataresource.id);
+                collection_dest[dataresource.id] =
+                    Converter.getService(dataresource.type).memorycache.getOrCreateResource(dataresource.type, dataresource.id);
             }
             Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;
