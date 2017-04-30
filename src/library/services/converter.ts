@@ -83,7 +83,8 @@ export class Converter {
 
     public static build(
         document_from: IDataCollection & IDataObject,
-        resource_dest: IResource | ICollection
+        resource_dest: IResource | ICollection,
+        build_relationships = true
     ) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
@@ -94,14 +95,15 @@ export class Converter {
         if (angular.isArray(document_from.data)) {
             Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
         } else {
-            Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources);
+            build_relationships ? Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources) : null;
         }
     }
 
     private static _buildCollection(
         collection_data_from: IDataCollection,
         collection_dest: ICollection,
-        included_resources: IResourcesByType
+        included_resources: IResourcesByType,
+        build_relationships = true
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from['meta']) {
@@ -117,7 +119,7 @@ export class Converter {
                 collection_dest[dataresource.id] =
                     Converter.getService(dataresource.type).cachememory.getOrCreateResource(dataresource.type, dataresource.id);
             }
-            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
+            build_relationships ? Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources) : null;
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -138,6 +140,11 @@ export class Converter {
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
         let schema = Converter.getService(resource_data_from.type).schema;
+
+        // esto previene la creación indefinida de resources
+        if (!resource_dest.relationships) {
+            return;
+        }
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,

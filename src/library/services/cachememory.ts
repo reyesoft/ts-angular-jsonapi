@@ -96,18 +96,13 @@ export class CacheMemory implements ICache {
     // -------- STORE ---------------------------------
 
     public getResourceFromStore(resource: IResource): Promise<any> {
-        let promise = this.fetchResourceFromStore(resource);
-        promise.then (success => {
+        let promise = Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
+        promise.then(success => {
             if (success) {
                 Converter.build({ data: success }, resource);
-                console.log('recibí resource del cachestore, actualizo', resource);
             }
         });
         return promise;
-    }
-
-    private fetchResourceFromStore(resource: IResource): Promise<any> {
-        return Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
     }
 
     private saveResourceStore(resource: IResource) {
@@ -121,6 +116,7 @@ export class CacheMemory implements ICache {
         let promise = Core.injectedServices.JsonapiCacheStore.getObjet('collection.' + url);
         promise.then(success => {
             if (success) {
+                // build collection from store and resources from memory
                 let all_ok = true;
                 for (let key in success.data) {
                     let dataresource: IDataResource = success.data[key];
@@ -131,13 +127,12 @@ export class CacheMemory implements ICache {
                     }
                     collection[dataresource.id] = resource;
                 }
-
-                // collection full with resources
                 if (all_ok) {
                     collection.$source = 'cachestore';  // collection from cachestore, resources from memory
                     return;
                 }
 
+                // request resources from store
                 let temporalcollection = {};
                 let promises = [];
                 for (let key in success.data) {
@@ -148,7 +143,7 @@ export class CacheMemory implements ICache {
                     );
                 }
 
-                // we have all resources from store
+                // build collection and resources from store
                 Core.injectedServices.$q.all(promises).then(success => {
                     // just for precaution, we not rewrite server data
                     if (collection.$source !== 'new') {

@@ -38,11 +38,10 @@ export class Resource extends ParentResourceService implements IResource {
 
     public toObject(params?: IParamsResource): IDataObject {
         params = angular.extend({}, Base.Params, params);
-        // this.getService().schema = angular.extend({}, Base.Schema, this.getService().schema);
 
-        let relationships = { };
-        let included = [ ];
-        let included_ids = [ ]; // just for control don't repeat any resource
+        let relationships = {};
+        let included = [];
+        let included_ids = []; // just for control don't repeat any resource
 
         // REALTIONSHIPS
         angular.forEach(this.relationships, (relationship: IRelationship, relation_alias) => {
@@ -128,7 +127,6 @@ export class Resource extends ParentResourceService implements IResource {
         this.id && path.appendPath(this.id);
 
         let resource = this.getService().cachememory.getOrCreateResource(this.type, this.id);
-        // Converter.getOrCreateResource(this.type, this.id);
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',

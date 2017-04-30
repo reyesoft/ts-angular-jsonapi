@@ -133,6 +133,10 @@ export class ResourceRelationshipsConverter {
             if (service && resource_data_from.id in service.cachememory.resources) {
                 return service.cachememory.resources[resource_data_from.id];
             } else {
+                // we dont have information on included or memory. try pass to store
+                if (service) {
+                    service.cachememory.getResourceFromStore(resource_data_from, false);
+                }
                 return resource_data_from;
             }
         }
