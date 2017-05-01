@@ -19,7 +19,7 @@ export class LocalFilter {
         return false;
     }
 
-    public filterCollection(collection: Jsonapi.ICollection, filter_object: any): Jsonapi.ICollection {
+    public filterCollection(collection: Jsonapi.ICollection, filter_object: object): Jsonapi.ICollection {
         if (filter_object && Object.keys(filter_object).length) {
             let localfilter = new LocalFilter();
             angular.forEach(collection, (resource, key) => {

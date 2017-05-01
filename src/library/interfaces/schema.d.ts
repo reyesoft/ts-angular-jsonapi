@@ -1,6 +1,6 @@
 export interface ISchema {
-    attributes?: any;
-    relationships?: any;
+    attributes?: object;
+    relationships?: object;
     ttl?: number;
     path?: string;
 }

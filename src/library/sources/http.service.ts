@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import { IDataObject } from '../interfaces/data-object';
-import './noduplicatedhttpcalls.service';
+import '../services/noduplicatedhttpcalls.service';
 import { Core } from '../core';
 
 export class Http {

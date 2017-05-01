@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 
-export class CacheStore {
+export class StoreService {
     private globalstore;
     private allstore;
 
@@ -55,5 +55,10 @@ export class CacheStore {
         value['_lastupdate_time'] = Date.now();
         this.allstore.setItem('jsonapi.' + key, value);
     }
+
+    public clearCache() {
+        this.allstore.clear();
+        this.globalstore.clear();
+    }
 }
-angular.module('Jsonapi.services').service('JsonapiCacheStore', CacheStore);
+angular.module('Jsonapi.services').service('JsonapiStoreService', StoreService);

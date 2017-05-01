@@ -139,10 +139,11 @@ export class Converter {
         resource_dest.attributes = resource_data_from.attributes;
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
-        let schema = Converter.getService(resource_data_from.type).schema;
+        let service = Converter.getService(resource_data_from.type);
 
         // esto previene la creación indefinida de resources
-        if (!resource_dest.relationships) {
+        // el servicio debe estar sino no tenemos el schema
+        if (!resource_dest.relationships || !service) {
             return;
         }
 
@@ -151,7 +152,7 @@ export class Converter {
             resource_data_from.relationships,
             resource_dest.relationships,
             included_resources,
-            schema
+            service.schema
         );
         relationships_converter.buildRelationships();
     }

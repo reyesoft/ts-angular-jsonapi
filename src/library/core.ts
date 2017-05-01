@@ -43,6 +43,11 @@ export class Core implements ICore {
             this.loadingsStart();
         }
     }
+
+    public clearCache(): boolean {
+        Core.injectedServices.JsonapiStoreService.clear();
+        return true;
+    }
 }
 
 angular.module('Jsonapi.services').service('JsonapiCore', Core);

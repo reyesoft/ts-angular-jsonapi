@@ -7,7 +7,7 @@ import { Base } from '../services/base';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
-    private relationships_from: Array<any>;
+    private relationships_from: object;
     private relationships_dest: IRelationships;
     private included_resources: IResourcesByType;
     private schema: ISchema;
@@ -15,7 +15,7 @@ export class ResourceRelationshipsConverter {
     /** @ngInject */
     public constructor(
         getService: Function,
-        relationships_from: Array<any>,
+        relationships_from: object,
         relationships_dest: IRelationships,
         included_resources: IResourcesByType,
         schema: ISchema
@@ -103,6 +103,11 @@ export class ResourceRelationshipsConverter {
         relation_data_key: number
     ): void {
         // new related resource <> cached related resource <> ? delete!
+        if (!('type' in relation_data_from.data)) {
+            this.relationships_dest[relation_data_key].data = {};
+            return;
+        }
+
         if (
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<IResource>this.relationships_dest[relation_data_key].data).id

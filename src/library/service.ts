@@ -140,7 +140,7 @@ export class Service extends ParentResourceService implements IService {
         let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
         if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
-            tempororay_collection.$source = 'cachememory';
+            tempororay_collection.$source = 'memory';
 
             // check smartfiltertype, and set on localfilter
             if (params.smartfilter && this.smartfiltertype === 'localfilter') {

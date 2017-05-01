@@ -96,7 +96,7 @@ export class CacheMemory implements ICache {
     // -------- STORE ---------------------------------
 
     public getResourceFromStore(resource: IResource): Promise<any> {
-        let promise = Core.injectedServices.JsonapiCacheStore.getObjet(resource.type + '.' + resource.id);
+        let promise = Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id);
         promise.then(success => {
             if (success) {
                 Converter.build({ data: success }, resource);
@@ -106,14 +106,14 @@ export class CacheMemory implements ICache {
     }
 
     private saveResourceStore(resource: IResource) {
-        Core.injectedServices.JsonapiCacheStore.saveObject(
+        Core.injectedServices.JsonapiStoreService.saveObject(
             resource.type + '.' + resource.id,
             resource.toObject().data
         );
     }
 
     private getCollectionFromStore(url:string, collection: ICollection): void {
-        let promise = Core.injectedServices.JsonapiCacheStore.getObjet('collection.' + url);
+        let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise.then(success => {
             if (success) {
                 // build collection from store and resources from memory
@@ -128,7 +128,7 @@ export class CacheMemory implements ICache {
                     collection[dataresource.id] = resource;
                 }
                 if (all_ok) {
-                    collection.$source = 'cachestore';  // collection from cachestore, resources from memory
+                    collection.$source = 'store';  // collection from storeservice, resources from memory
                     return;
                 }
 
@@ -149,10 +149,11 @@ export class CacheMemory implements ICache {
                     if (collection.$source !== 'new') {
                         return ;
                     }
+                    success.page ? collection.page = success.page : null;
                     for (let key in temporalcollection) {
                         let resource: IResource = temporalcollection[key];
-                        collection.$source = 'cachestore';  // collection and resources from cachestore
-                        collection[resource.id] = resource;  // collection from cachestore, resources from memory
+                        collection.$source = 'store';  // collection and resources from storeservice
+                        collection[resource.id] = resource;  // collection from storeservice, resources from memory
                     }
                 });
             }
@@ -160,11 +161,12 @@ export class CacheMemory implements ICache {
     }
 
     private saveCollectionStore(url: string, collection: ICollection) {
-        let tmp = { data: {} };
+        let tmp = { data: {}, page: {} };
         angular.forEach(collection, (resource: IResource) => {
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
         });
-        Core.injectedServices.JsonapiCacheStore.saveObject(
+        tmp.page = collection.page;
+        Core.injectedServices.JsonapiStoreService.saveObject(
             'collection.' + url,
             tmp
         );

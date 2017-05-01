@@ -9,6 +9,4 @@ interface IDocument {
     links?: ILinks;
     included?: Array<IDataResource>;
     meta?: Object;
-
-    promise?: any;
 }
