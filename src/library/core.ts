@@ -45,7 +45,7 @@ export class Core implements ICore {
     }
 
     public clearCache(): boolean {
-        Core.injectedServices.JsonapiStoreService.clear();
+        Core.injectedServices.JsonapiStoreService.clearCache();
         return true;
     }
 }
