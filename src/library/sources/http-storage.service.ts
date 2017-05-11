@@ -1,15 +1,16 @@
-/// <reference path="../index.d.ts" />
+import * as angular from 'angular';
 
 export class HttpStorage {
-
     /** @ngInject */
     public constructor(
         protected $localForage,
         protected $q
     ) {
-
     }
 
+    /**
+    @deprecated Used by old http response cache
+    **/
     public get(path: string, storage_ttl: number): ng.IPromise<void> {
         let defered = this.$q.defer();
 
@@ -42,7 +43,10 @@ export class HttpStorage {
         return defered.promise;
     }
 
-    public save(path: string, data: string) {
+    /**
+    @deprecated Used by old http response cache
+    **/
+    public save(path: string, data: any) {
         this.$localForage.setItem('jsonapi.' + path, data);
         this.$localForage.setItem('jsonapi.' + path + '_lastupdate_time', Date.now());
     }

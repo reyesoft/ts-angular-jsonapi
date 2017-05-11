@@ -3,6 +3,7 @@ const conf = require('./gulp.conf');
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FailPlugin = require('webpack-fail-plugin');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
@@ -10,72 +11,81 @@ module.exports = {
     // https://github.com/localForage/localForage#browserify-and-webpack
     noParse: /node_modules\/localforage\/dist\/localforage.js/,
 
-    preLoaders: [
+    loaders: [
+      {
+        test: /\.json$/,
+        loaders: [
+          'json-loader'
+        ]
+      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        loader: 'tslint'
-      }
-    ],
-
-    loaders: [
-      {
-        test: /.json$/,
-        loaders: [
-          'json'
-        ]
+        loader: 'tslint-loader',
+        enforce: 'pre'
       },
       {
         test: /\.(css|scss)$/,
         loaders: [
-          'style',
-          'css',
-          'sass',
-          'postcss'
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+          'postcss-loader'
         ]
       },
       {
-          test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: "file-loader"
+        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: "file-loader"
       },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
         loaders: [
-          'ng-annotate',
-          'ts'
+          'ng-annotate-loader',
+          'ts-loader'
+        ]
+      },
+      {
+        test: /\.html$/,
+        loaders: [
+          'html-loader'
         ]
       }
     ]
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    FailPlugin,
     new HtmlWebpackPlugin({
-      template: conf.path.src('demo/index.html'),
-      inject: true
+      template: conf.path.src('demo/index.html') // ,
+      // inject: true
+    }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: () => [autoprefixer],
+        resolve: {},
+        ts: {
+          configFileName: 'tsconfig.json'
+        },
+        tslint: {
+          configuration: require('../tslint.json')
+        }
+      },
+      debug: true
     })
   ],
-  postcss: () => [autoprefixer],
-  debug: true,
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   output: {
     path: path.join(process.cwd(), conf.paths.tmp),
     filename: 'index.js'
   },
   resolve: {
     extensions: [
-      '',
       '.webpack.js',
       '.web.js',
       '.js',
       '.ts'
     ]
   },
-  entry: `./${conf.path.src('demo/index')}`,
-  ts: {
-    configFileName: 'tsconfig.json'
-  },
-  tslint: {
-    configuration: require('../tslint.json')
-  }
+  entry: `./${conf.path.src('demo/index')}`
 };

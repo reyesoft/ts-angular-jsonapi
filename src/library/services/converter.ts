@@ -1,6 +1,7 @@
+import * as angular from 'angular';
 import { Core } from '../core';
 import { Resource } from '../resource';
-import { ICollection, IResource, IService, ISchema, IResourcesById, IResourcesByType } from '../interfaces';
+import { ICollection, IResource, IService, IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -62,16 +63,6 @@ export class Converter {
         return resource_service;
     }
 
-    static newResource(type: string, id: string): IResource {
-        if (Converter.getService(type).memorycache && id in Converter.getService(type).memorycache.resources) {
-            return Converter.getService(type).memorycache.resources[id];
-        } else {
-            let resource = Converter.getService(type).new();
-            resource.id = id;
-            return resource;
-        }
-    }
-
     /* return a resource type(resoruce_service) with data(data) */
     private static procreate(data: IDataResource): IResource {
         if (!('type' in data && 'id' in data)) {
@@ -79,10 +70,10 @@ export class Converter {
         }
 
         let resource: IResource;
-        if (data.id in Converter.getService(data.type).memorycache.resources) {
-            resource = Converter.getService(data.type).memorycache.resources[data.id];
+        if (data.id in Converter.getService(data.type).cachememory.resources) {
+            resource = Converter.getService(data.type).cachememory.resources[data.id];
         } else {
-            resource = Converter.newResource(data.type, data.id);
+            resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
         }
 
         resource.attributes = data.attributes ? data.attributes : {};
@@ -91,9 +82,9 @@ export class Converter {
     }
 
     public static build(
-        document_from: ICollection & IDataObject,
+        document_from: IDataCollection & IDataObject,
         resource_dest: IResource | ICollection,
-        schema: ISchema
+        build_relationships = true
     ) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
@@ -102,17 +93,17 @@ export class Converter {
         }
 
         if (angular.isArray(document_from.data)) {
-            Converter._buildCollection(document_from, <ICollection>resource_dest, schema, included_resources);
+            Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
         } else {
-            Converter._buildResource(document_from.data, <IResource>resource_dest, schema, included_resources);
+            build_relationships ? Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources) : null;
         }
     }
 
     private static _buildCollection(
         collection_data_from: IDataCollection,
         collection_dest: ICollection,
-        schema: ISchema,
-        included_resources: IResourcesByType
+        included_resources: IResourcesByType,
+        build_relationships = true
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from['meta']) {
@@ -125,9 +116,10 @@ export class Converter {
         let new_ids = {};
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] = Converter.newResource(dataresource.type, dataresource.id);
+                collection_dest[dataresource.id] =
+                    Converter.getService(dataresource.type).cachememory.getOrCreateResource(dataresource.type, dataresource.id);
             }
-            Converter._buildResource(dataresource, collection_dest[dataresource.id], schema, included_resources);
+            build_relationships ? Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources) : null;
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -142,19 +134,25 @@ export class Converter {
     private static _buildResource(
         resource_data_from: IDataResource,
         resource_dest: IResource,
-        schema: ISchema,
         included_resources: IResourcesByType
     ) {
         resource_dest.attributes = resource_data_from.attributes;
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
+        let service = Converter.getService(resource_data_from.type);
+
+        // esto previene la creación indefinida de resources
+        // el servicio debe estar sino no tenemos el schema
+        if (!resource_dest.relationships || !service) {
+            return;
+        }
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,
             resource_data_from.relationships,
             resource_dest.relationships,
             included_resources,
-            schema
+            service.schema
         );
         relationships_converter.buildRelationships();
     }

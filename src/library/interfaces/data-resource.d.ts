@@ -1,10 +1,11 @@
 import { IAttributes } from '../interfaces';
+import { ILinks } from '../interfaces/links.d';
 
 interface IDataResource {
     type: string;
     id: string;
     attributes?: IAttributes;
-    relationships?: any;
+    relationships?: object;
     links?: ILinks;
-    meta?: any;
+    meta?: object;
 }

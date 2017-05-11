@@ -33,7 +33,7 @@ export class Base {
                 },
                 enumerable: false
             },
-            '$isloading': { value: false, enumerable: false, writable: true },
+            '$is_loading': { value: false, enumerable: false, writable: true },
             '$source': { value: '', enumerable: false, writable: true  },
             '$cache_last_update': { value: 0, enumerable: false, writable: true  },
             'page': { value: new Page(), enumerable: false, writable: true  }

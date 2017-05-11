@@ -5,8 +5,8 @@ import { IDataResource } from './data-resource';
 export interface ICollection extends Array<IResource> {
     $length: number;
     $toArray: Array<IResource>;
-    $isloading: boolean;
-    $source: string;
+    $is_loading: boolean;
+    $source: 'new' | 'memory' | 'store' | 'server' | 'httpstorage';
     $cache_last_update: number;
     data: Array<IDataResource>; // this need disapear is for datacollection
     page: IPage;

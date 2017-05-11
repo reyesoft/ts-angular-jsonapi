@@ -1,12 +1,10 @@
-/// <reference path="./index.d.ts" />
-
-// import * as Jsonapi from './core';
+import * as angular from 'angular';
 import { Core } from './core';
 import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 // import { UrlParamsBuilder } from './services/url-params-builder';
-import { Converter } from './services/resource-converter';
+import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
 
 import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
@@ -40,11 +38,10 @@ export class Resource extends ParentResourceService implements IResource {
 
     public toObject(params?: IParamsResource): IDataObject {
         params = angular.extend({}, Base.Params, params);
-        // this.getService().schema = angular.extend({}, Base.Schema, this.getService().schema);
 
-        let relationships = { };
-        let included = [ ];
-        let included_ids = [ ]; // just for control don't repeat any resource
+        let relationships = {};
+        let included = [];
+        let included_ids = []; // just for control don't repeat any resource
 
         // REALTIONSHIPS
         angular.forEach(this.relationships, (relationship: IRelationship, relation_alias) => {
@@ -126,12 +123,10 @@ export class Resource extends ParentResourceService implements IResource {
 
         // http request
         let path = new PathBuilder();
-        path.appendPath(this.getService().getPrePath());
-        path.appendPath(this.getService().getPath());
+        path.applyParams(this.getService(), params);
         this.id && path.appendPath(this.id);
-        params.include ? path.setInclude(params.include) : null;
 
-        let resource = Converter.newResource(this.type, this.id);
+        let resource = this.getService().cachememory.getOrCreateResource(this.type, this.id);
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',
@@ -144,18 +139,18 @@ export class Resource extends ParentResourceService implements IResource {
 
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
-                    this.getService().memorycache.clearAllCollections();
+                    this.getService().cachememory.clearAllCollections();
                 }
 
                 // is a resource?
                 if ('id' in success.data.data) {
                     this.id = success.data.data.id;
-                    Converter.build(success.data, this, this.getService().schema);
+                    Converter.build(success.data, this);
                     /*
                     Si lo guardo en la caché, luego no queda bindeado con la vista
                     Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
                     */
-                    // this.getService().memorycache.setResource(this);
+                    // this.getService().cachememory.setResource(this);
                 } else if (angular.isArray(success.data.data)) {
                     console.warn('Server return a collection when we save()', success.data.data);
 
@@ -163,11 +158,11 @@ export class Resource extends ParentResourceService implements IResource {
                     we request the service again, because server maybe are giving
                     us another type of resource (getService(resource.type))
                     */
-                    let tempororay_collection = this.getService().memorycache.getCollection('justAnUpdate');
-                    Converter.build(success.data, tempororay_collection, this.getService().schema);
+                    let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
+                    Converter.build(success.data, tempororay_collection);
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
-                        let res = Converter.getService(resource_value.type).memorycache.resources[resource_value.id];
-                        Converter.getService(resource_value.type).memorycache.setResource(resource_value);
+                        let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
+                        Converter.getService(resource_value.type).cachememory.setResource(resource_value);
                         res.id = res.id + 'x';
                     });
 

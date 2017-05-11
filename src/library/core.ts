@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import './services/core-services.service';
 import { ICore, IService } from './interfaces';
 
@@ -41,6 +42,11 @@ export class Core implements ICore {
         } else if (this.loadingsCounter === 1) {
             this.loadingsStart();
         }
+    }
+
+    public clearCache(): boolean {
+        Core.injectedServices.JsonapiStoreService.clearCache();
+        return true;
     }
 }
 

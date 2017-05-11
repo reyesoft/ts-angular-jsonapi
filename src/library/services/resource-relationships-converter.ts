@@ -1,3 +1,4 @@
+import * as angular from 'angular';
 import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
@@ -6,7 +7,7 @@ import { Base } from '../services/base';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
-    private relationships_from: Array<any>;
+    private relationships_from: object;
     private relationships_dest: IRelationships;
     private included_resources: IResourcesByType;
     private schema: ISchema;
@@ -14,7 +15,7 @@ export class ResourceRelationshipsConverter {
     /** @ngInject */
     public constructor(
         getService: Function,
-        relationships_from: Array<any>,
+        relationships_from: object,
         relationships_dest: IRelationships,
         included_resources: IResourcesByType,
         schema: ISchema
@@ -102,6 +103,11 @@ export class ResourceRelationshipsConverter {
         relation_data_key: number
     ): void {
         // new related resource <> cached related resource <> ? delete!
+        if (!('type' in relation_data_from.data)) {
+            this.relationships_dest[relation_data_key].data = {};
+            return;
+        }
+
         if (
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<IResource>this.relationships_dest[relation_data_key].data).id
@@ -111,7 +117,8 @@ export class ResourceRelationshipsConverter {
 
         // trae datos o cambió resource? actualizamos!
         if (
-            'attributes' in relation_data_from.data ||
+            // 'attributes' in relation_data_from.data ||  // ???
+            !(<IResource>this.relationships_dest[relation_data_key].data).attributes ||     // we have only a  dataresource
             (<IResource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
@@ -128,9 +135,13 @@ export class ResourceRelationshipsConverter {
         } else {
             // OPTIONAL: return cached IResource
             let service = this.getService(resource_data_from.type);
-            if (service && resource_data_from.id in service.memorycache.resources) {
-                return service.memorycache.resources[resource_data_from.id];
+            if (service && resource_data_from.id in service.cachememory.resources) {
+                return service.cachememory.resources[resource_data_from.id];
             } else {
+                // we dont have information on included or memory. try pass to store
+                if (service) {
+                    service.cachememory.getResourceFromStore(resource_data_from);
+                }
                 return resource_data_from;
             }
         }

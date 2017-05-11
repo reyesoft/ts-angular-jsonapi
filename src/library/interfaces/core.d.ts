@@ -9,9 +9,10 @@ export interface ICore {
     loadingsError: Function;
     loadingsOffline: Function;
 
-    _register (clase: IService): boolean;
-    getResourceService (type: string): IService;
-    refreshLoadings (factor: number): void;
+    _register(clase: IService): boolean;
+    getResourceService(type: string): IService;
+    refreshLoadings(factor: number): void;
+    clearCache(): void;
 
     // static
     me?: IService;

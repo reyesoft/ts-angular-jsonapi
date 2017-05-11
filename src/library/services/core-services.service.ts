@@ -1,7 +1,7 @@
-/// <reference path="../index.d.ts" />
-
-import './http.service';
-import './http-storage.service';
+import * as angular from 'angular';
+import '../sources/http.service';
+import '../sources/http-storage.service';
+import '../sources/store.service';
 
 export class CoreServices {
 
@@ -9,8 +9,9 @@ export class CoreServices {
     public constructor(
         protected JsonapiHttp,
         protected rsJsonapiConfig,
-        protected $q,
-        protected JsonapiHttpStorage
+        protected $q: ng.IQService,
+        protected JsonapiHttpStorage,
+        protected JsonapiStoreService
     ) {
 
     }

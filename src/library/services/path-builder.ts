@@ -1,10 +1,16 @@
+import * as angular from 'angular';
+import { IService, IParamsCollection, IParamsResource } from '../interfaces';
+
 export class PathBuilder {
     public paths: Array<string> = [];
     public includes: Array<string> = [];
     private get_params: Array<string> = [];
 
-    public prependPath(value: string) {
-        this.paths.unshift(value);
+    public applyParams(service: IService, params: IParamsResource | IParamsCollection) {
+        this.appendPath(service.getPrePath());
+        params.beforepath ? this.appendPath(params.beforepath) : null;
+        this.appendPath(service.getPath());
+        params.include ? this.setInclude(params.include) : null;
     }
 
     public appendPath(value: string) {
@@ -17,7 +23,7 @@ export class PathBuilder {
         this.get_params.push(param);
     }
 
-    public setInclude(strings_array: Array<string>) {
+    private setInclude(strings_array: Array<string>) {
         this.includes = strings_array;
     }
 
