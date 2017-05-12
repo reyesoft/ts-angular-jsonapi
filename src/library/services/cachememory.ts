@@ -24,13 +24,10 @@ export class CacheMemory implements ICache {
         return this.resources[id] && (Date.now() <= (this.resources[id].lastupdate + ttl * 1000));
     }
 
-    public getOrCreateCollection(url: string, use_store = false): ICollection {
+    public getOrCreateCollection(url: string): ICollection {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';
-            if (use_store) {
-                this.getCollectionFromStore(url, this.collections[url]);
-            }
         }
         return this.collections[url];
     }
@@ -112,10 +109,20 @@ export class CacheMemory implements ICache {
         );
     }
 
-    private getCollectionFromStore(url:string, collection: ICollection): void {
+    public getCollectionFromStorePromise(url:string, collection: ICollection): ng.IPromise<object> {
+        var deferred = Core.injectedServices.$q.defer();
+        this.getCollectionFromStore(url, collection, deferred);
+        return deferred.promise;
+    }
+
+    private getCollectionFromStore(url:string, collection: ICollection, job_deferred: ng.IDeferred<ICollection> = null): void {
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise.then(success => {
-            if (success) {
+            try {
+                if (!success) {
+                    throw '';
+                }
+
                 // build collection from store and resources from memory
                 let all_ok = true;
                 for (let key in success.data) {
@@ -129,7 +136,8 @@ export class CacheMemory implements ICache {
                 }
                 if (all_ok) {
                     collection.$source = 'store';  // collection from storeservice, resources from memory
-                    return;
+                    job_deferred.resolve(collection);
+                    return ;
                 }
 
                 // request resources from store
@@ -144,19 +152,26 @@ export class CacheMemory implements ICache {
                 }
 
                 // build collection and resources from store
-                Core.injectedServices.$q.all(promises).then(success => {
+                Core.injectedServices.$q.all(promises).then(success2 => {
                     // just for precaution, we not rewrite server data
                     if (collection.$source !== 'new') {
-                        return ;
+                        throw '';
                     }
                     success.page ? collection.page = success.page : null;
                     for (let key in temporalcollection) {
                         let resource: IResource = temporalcollection[key];
                         collection.$source = 'store';  // collection and resources from storeservice
+                        collection.$cache_last_update = success._lastupdate_time;
                         collection[resource.id] = resource;  // collection from storeservice, resources from memory
                     }
+                    job_deferred.resolve(collection);
                 });
+            } catch (e) {
+                job_deferred.reject();
             }
+        },
+        error => {
+            job_deferred.reject();
         });
     }
 

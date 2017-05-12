@@ -34,7 +34,7 @@ export class StoreService {
                 // recorremos cada item y vemos si es tiempo de removerlo
                 this.allstore.getItem(key).then(success2 => {
                     // es tiempo de removerlo?
-                    if (Date.now() >= (success2._lastupdate_time + 12 * 3600 * 1000)) {
+                    if (Date.now() >= (success2._lastupdate_time + 24 * 3600 * 1000)) {
                         // removemos!!
                         this.allstore.removeItem(key);
                     }
@@ -43,11 +43,11 @@ export class StoreService {
         });
     }
 
-    public getObjet(key: string): any /* Promise<void> */ {
+    public getObjet(key: string): Promise<object> {
         return this.allstore.getItem('jsonapi.' + key);
     }
 
-    public getObjets(keys: Array<string>): any /* Promise<void> */ {
+    public getObjets(keys: Array<string>): Promise<object> {
         return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 

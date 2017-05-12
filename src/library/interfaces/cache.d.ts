@@ -5,7 +5,8 @@ export interface ICache {
 
     isCollectionExist(url: string): boolean;
     isCollectionLive(url: string, ttl: number): boolean;
-    getOrCreateCollection(url: string, use_store?: boolean): ICollection;
+    getOrCreateCollection(url: string): ICollection;
+    getCollectionFromStorePromise(url:string, collection: ICollection): ng.IPromise<ICollection>;
     setCollection(url: string, collection: ICollection): void;
     clearAllCollections(): boolean;
 

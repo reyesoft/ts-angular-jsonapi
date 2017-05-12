@@ -82,7 +82,7 @@ export class Service extends ParentResourceService implements IService {
         let resource = this.getService().cachememory.getOrCreateResource(this.type, id, true);
         resource.is_loading = true;
         // exit if ttl is not expired
-        let temporal_ttl = params.ttl ? params.ttl : 0;
+        let temporal_ttl = params.ttl || 0; // this.schema.ttl
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
@@ -134,10 +134,10 @@ export class Service extends ParentResourceService implements IService {
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache(), true);
+        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache());
 
         // MEMORY_CACHE
-        let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
+        let temporal_ttl = params.ttl || this.schema.ttl;
         if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
             tempororay_collection.$source = 'memory';
@@ -162,8 +162,38 @@ export class Service extends ParentResourceService implements IService {
                 });
                 return tempororay_collection;
             }
+        } else {
+            // STORE
+            this.getService().cachememory.getCollectionFromStorePromise(path.getForCache(), tempororay_collection)
+            .then(
+                success => {
+                    tempororay_collection.$source = 'store';
+                    tempororay_collection.$is_loading = false;
+
+                    // localfilter getted data
+                    let localfilter = new LocalFilter();
+                    tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
+
+                    if (temporal_ttl >= 0 && Date.now() <= (tempororay_collection.$cache_last_update + temporal_ttl * 1000)) {
+                        this.runFc(fc_success, { data: success});
+                    } else {
+                        this.getAllFromHttpStorage(path, params, fc_success, fc_error, tempororay_collection);
+                    }
+                },
+                error => {
+                    this.getAllFromHttpStorage(path, params, fc_success, fc_error, tempororay_collection);
+                }
+            );
         }
 
+        return tempororay_collection;
+    }
+
+    /**
+    @deprecated
+    **/
+    private getAllFromHttpStorage(path, params, fc_success, fc_error, tempororay_collection: ICollection) {
+        // SERVER REQUEST
         tempororay_collection['$is_loading'] = true;
 
         // STORAGE_CACHE
@@ -192,8 +222,6 @@ export class Service extends ParentResourceService implements IService {
                 this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection);
             }
         );
-
-        return tempororay_collection;
     }
 
     private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection) {
