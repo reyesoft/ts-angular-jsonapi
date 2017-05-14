@@ -4,7 +4,6 @@ import { Page } from './page';
 export class Base {
     static Params: IParamsCollection | IParamsResource = {
         id: '',
-        storage_ttl: 0,
         include: []
     };
 
@@ -38,5 +37,9 @@ export class Base {
             '$cache_last_update': { value: 0, enumerable: false, writable: true  },
             'page': { value: new Page(), enumerable: false, writable: true  }
         });
+    }
+
+    static isObjectLive(ttl: number, last_update: number) {
+        return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
     }
 }

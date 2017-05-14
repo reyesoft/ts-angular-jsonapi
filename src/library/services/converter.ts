@@ -58,7 +58,7 @@ export class Converter {
     static getService(type: string): IService {
         let resource_service = Core.me.getResourceService(type);
         if (angular.isUndefined(resource_service)) {
-            console.warn('`' + type + '`', 'service not found on getService()');
+            // console.warn('`' + type + '`', 'service not found on getService()');
         }
         return resource_service;
     }

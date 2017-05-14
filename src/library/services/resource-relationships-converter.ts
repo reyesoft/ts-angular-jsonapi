@@ -140,7 +140,7 @@ export class ResourceRelationshipsConverter {
             } else {
                 // we dont have information on included or memory. try pass to store
                 if (service) {
-                    service.cachememory.getResourceFromStore(resource_data_from);
+                    service.cachestore.getResource(resource_data_from);
                 }
                 return resource_data_from;
             }

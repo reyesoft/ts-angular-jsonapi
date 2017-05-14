@@ -1,16 +1,14 @@
 import * as angular from 'angular';
 import { ICollection, IResource } from '../interfaces';
-import { IDataResource } from '../interfaces/data-resource';
-import { ICache } from '../interfaces/cache.d';
-import { Core } from '../core';
+import { ICacheMemory } from '../interfaces/cachememory.d';
 import { Base } from './base';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
-export class CacheMemory implements ICache {
-    private collections = {};
-    private collections_lastupdate = {};
-    public resources = {};
+export class CacheMemory implements ICacheMemory {
+    private collections: { [url: string]: ICollection } = {};
+    private collections_lastupdate: { [url: string]: number } = {};
+    public resources: { [id: string]: IResource } = {};
 
     public isCollectionExist(url: string): boolean {
         return (url in this.collections && this.collections[url].$source !== 'new' ? true : false);
@@ -40,21 +38,15 @@ export class CacheMemory implements ICache {
             this.setResource(resource);
         });
         this.collections[url]['page'] = collection.page;
-        this.saveCollectionStore(url, collection);
         this.collections_lastupdate[url] = Date.now();
     }
 
-    public getOrCreateResource(type: string, id: string, use_store = false): IResource {
+    public getOrCreateResource(type: string, id: string): IResource {
         if (Converter.getService(type).cachememory && id in Converter.getService(type).cachememory.resources) {
             return Converter.getService(type).cachememory.getResource(id);
         } else {
             let resource = Converter.getService(type).new();
             resource.id = id;
-
-            if (id && use_store) {
-                Converter.getService(type).cachememory.getResourceFromStore(resource);
-            }
-
             return resource;
         }
     }
@@ -72,7 +64,6 @@ export class CacheMemory implements ICache {
             this.resources[resource.id] = resource;
         }
         this.resources[resource.id].lastupdate = Date.now();
-        this.saveResourceStore(resource);
     }
 
     public clearAllCollections(): boolean {
@@ -88,102 +79,5 @@ export class CacheMemory implements ICache {
         this.resources[id].attributes = {}; // just for confirm deletion on view
         this.resources[id].relationships = {}; // just for confirm deletion on view
         delete this.resources[id];
-    }
-
-    // -------- STORE ---------------------------------
-
-    public getResourceFromStore(resource: IResource): Promise<any> {
-        let promise = Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id);
-        promise.then(success => {
-            if (success) {
-                Converter.build({ data: success }, resource);
-            }
-        });
-        return promise;
-    }
-
-    private saveResourceStore(resource: IResource) {
-        Core.injectedServices.JsonapiStoreService.saveObject(
-            resource.type + '.' + resource.id,
-            resource.toObject().data
-        );
-    }
-
-    public getCollectionFromStorePromise(url:string, collection: ICollection): ng.IPromise<object> {
-        var deferred = Core.injectedServices.$q.defer();
-        this.getCollectionFromStore(url, collection, deferred);
-        return deferred.promise;
-    }
-
-    private getCollectionFromStore(url:string, collection: ICollection, job_deferred: ng.IDeferred<ICollection> = null): void {
-        let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
-        promise.then(success => {
-            try {
-                if (!success) {
-                    throw '';
-                }
-
-                // build collection from store and resources from memory
-                let all_ok = true;
-                for (let key in success.data) {
-                    let dataresource: IDataResource = success.data[key];
-                    let resource = this.getOrCreateResource(dataresource.type, dataresource.id);
-                    if (resource.is_new) {
-                        all_ok = false;
-                        break;
-                    }
-                    collection[dataresource.id] = resource;
-                }
-                if (all_ok) {
-                    collection.$source = 'store';  // collection from storeservice, resources from memory
-                    job_deferred.resolve(collection);
-                    return ;
-                }
-
-                // request resources from store
-                let temporalcollection = {};
-                let promises = [];
-                for (let key in success.data) {
-                    let dataresource: IDataResource = success.data[key];
-                    temporalcollection[dataresource.id] = this.getOrCreateResource(dataresource.type, dataresource.id);
-                    promises.push(
-                        this.getResourceFromStore(temporalcollection[dataresource.id])
-                    );
-                }
-
-                // build collection and resources from store
-                Core.injectedServices.$q.all(promises).then(success2 => {
-                    // just for precaution, we not rewrite server data
-                    if (collection.$source !== 'new') {
-                        throw '';
-                    }
-                    success.page ? collection.page = success.page : null;
-                    for (let key in temporalcollection) {
-                        let resource: IResource = temporalcollection[key];
-                        collection.$source = 'store';  // collection and resources from storeservice
-                        collection.$cache_last_update = success._lastupdate_time;
-                        collection[resource.id] = resource;  // collection from storeservice, resources from memory
-                    }
-                    job_deferred.resolve(collection);
-                });
-            } catch (e) {
-                job_deferred.reject();
-            }
-        },
-        error => {
-            job_deferred.reject();
-        });
-    }
-
-    private saveCollectionStore(url: string, collection: ICollection) {
-        let tmp = { data: {}, page: {} };
-        angular.forEach(collection, (resource: IResource) => {
-            tmp.data[resource.id] = { id: resource.id, type: resource.type };
-        });
-        tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveObject(
-            'collection.' + url,
-            tmp
-        );
     }
 }

@@ -2,6 +2,14 @@ import * as angular from 'angular';
 import * as Jsonapi from '../interfaces';
 
 export class LocalFilter {
+    private localfilterparams;
+
+    /** @ngInject */
+    public constructor(
+        localfilter: object
+    ) {
+        this.localfilterparams = localfilter || {};
+    }
 
     private passFilter(resource: Jsonapi.IResource, localfilter): boolean {
         for (let attribute in localfilter) {
@@ -19,15 +27,13 @@ export class LocalFilter {
         return false;
     }
 
-    public filterCollection(collection: Jsonapi.ICollection, filter_object: object): Jsonapi.ICollection {
-        if (filter_object && Object.keys(filter_object).length) {
-            let localfilter = new LocalFilter();
-            angular.forEach(collection, (resource, key) => {
-                if (!localfilter.passFilter(resource, filter_object)) {
-                    delete collection[key];
+    public filterCollection(source_collection: Jsonapi.ICollection, dest_collection: Jsonapi.ICollection) {
+        if (Object.keys(this.localfilterparams).length) {
+            angular.forEach(source_collection, (resource, key) => {
+                if (this.passFilter(resource, this.localfilterparams)) {
+                    dest_collection[key] = resource;
                 }
             });
         }
-        return collection;
     }
 }

@@ -163,6 +163,7 @@ export class Resource extends ParentResourceService implements IResource {
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
                         let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
                         Converter.getService(resource_value.type).cachememory.setResource(resource_value);
+                        Converter.getService(resource_value.type).cachestore.setResource(resource_value);
                         res.id = res.id + 'x';
                     });
 
