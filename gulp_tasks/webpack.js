@@ -59,13 +59,14 @@ function webpackWrapper(watch, conf, done) {
     .pipe(clean());
 
     var tsProjectDts = ts.createProject('conf/ts.conf.json');
-    var tsResult = gulp.src('src/library/**.ts')
-    .pipe(tsProjectDts());
-    tsResult.dts
-    .pipe(deleteLines({
-      'filters': [ /^\/\/\//i]
-    }))
-    .pipe(addsrc.prepend('src/library/interfaces/**.d.ts'))
+    // var tsResult = gulp.src('src/library/**.ts')
+    // .pipe(tsProjectDts());
+    // tsResult.dts
+    // .pipe(deleteLines({
+    //   'filters': [ /^\/\/\//i]
+    // }))
+    // .pipe(addsrc.prepend('src/library/interfaces/**.d.ts'))
+    var tsResult = gulp.src('src/library/interfaces/**.d.ts')
     .pipe(concat('index.d.ts'))
     .pipe(deleteLines({
       'filters': [ /^import/i]
@@ -74,8 +75,17 @@ function webpackWrapper(watch, conf, done) {
       'filters': [ /^export [\*|\{]/i]
       }))
 
-      .pipe(replace(/export declare class/g, 'export class')) // because all is on a "export module Jsonapi"
-      .pipe(inject.wrap("export module Jsonapi { \n", '}'))
+      // .pipe(replace(/export declare class/g, 'export class')) // because all is on a "export module Jsonapi"
+      // .pipe(inject.wrap("export module Jsonapi { \n", '}'))
+
+      .pipe(replace(/export interface/g, 'interface')) // because all is on a "export module Jsonapi"
+
+      .pipe(inject.wrap(
+          "import * as angular from 'angular';\n" +
+          "declare module 'angular' {\n" +
+            "namespace jsonapi {\n",
+            "}\n" +
+          "}"))
 
       .pipe(gulp.dest('dist'));
       ;
