@@ -11,7 +11,7 @@ import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
 
 import { IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
-    IParamsCollection, IParamsResource } from './interfaces';
+    IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
     public schema: ISchema;
@@ -37,8 +37,13 @@ export class Service extends ParentResourceService implements IService {
         return Core.me._register(this);
     }
 
-    public new<T extends IResource>(): T {
+    public newResource(): IResource {
         let resource: IResource = new Resource();
+        return resource;
+    }
+
+    public new<T extends IResource>(): T {
+        let resource = this.newResource();
         resource.type = this.type;
         resource.reset();
         return <T>resource;
@@ -145,7 +150,10 @@ export class Service extends ParentResourceService implements IService {
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
-        params.remotefilter ? path.addParam(paramsurl.toparams( { filter: params.remotefilter } )) : null;
+        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
+            this.getService().parseToServer(params.remotefilter);
+            path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
+        }
         if (params.page) {
             params.page.number > 1 ? path.addParam(
                 Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
@@ -194,6 +202,7 @@ export class Service extends ParentResourceService implements IService {
             }
         } else {
             // STORE
+            tempororay_collection.$is_loading = true;
             this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), tempororay_collection)
             .then(
                 success => {
@@ -220,6 +229,7 @@ export class Service extends ParentResourceService implements IService {
 
     private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection, cached_collection: ICollection) {
         // SERVER REQUEST
+        tempororay_collection.$is_loading = true;
         Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
@@ -285,5 +295,13 @@ export class Service extends ParentResourceService implements IService {
 
     public clearCacheMemory(): boolean {
         return this.getService().cachememory.clearAllCollections();
+    }
+
+    public parseFromServer(attributes: IAttributes): void {
+
+    }
+
+    public parseToServer(attributes: IAttributes): void {
+
     }
 }

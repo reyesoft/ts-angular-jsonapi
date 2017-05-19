@@ -84,11 +84,14 @@ export class Resource extends ParentResourceService implements IResource {
             }
         });
 
+        let attributes = angular.copy(this.attributes);
+        this.getService().parseToServer(attributes);
+
         let ret: IDataObject = {
             data: {
                 type: this.type,
                 id: this.id,
-                attributes: this.attributes,
+                attributes: attributes,
                 relationships: relationships
             }
         };

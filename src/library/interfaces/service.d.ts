@@ -1,4 +1,4 @@
-import { ISchema, IResource, ICollection, ICacheMemory, ICacheStore, IParamsCollection, IParamsResource } from './index';
+import { ISchema, IResource, ICollection, ICacheMemory, IAttributes, ICacheStore, IParamsCollection, IParamsResource } from './index';
 
 export interface IService {
     type: string;
@@ -14,4 +14,6 @@ export interface IService {
     new?<T extends IResource>(): T;
     cachememory: ICacheMemory;
     cachestore: ICacheStore;
+    parseFromServer(attributes: IAttributes): void;
+    parseToServer(attributes: IAttributes): void;
 }

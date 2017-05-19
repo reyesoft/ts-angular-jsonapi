@@ -22,4 +22,14 @@ export class AuthorsService extends Jsonapi.Service {
         },
         ttl: 10
     };
+
+    // executed before get data from server
+    public parseFromServer(attributes): void {
+        attributes.name = attributes.name + ' ♥';
+    }
+
+    // executed before send to server
+    public parseToServer(attributes): void {
+        attributes.name = attributes.name.replace('♥', '').trim();
+    }
 }

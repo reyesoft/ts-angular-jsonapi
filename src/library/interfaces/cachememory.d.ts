@@ -4,7 +4,6 @@ import { ICache } from '../interfaces/cache.d';
 export interface ICacheMemory extends ICache {
     resources: { [id: string]: IResource };
 
-    getResource(id: string): IResource;
     getOrCreateCollection(url: string): ICollection;
     isCollectionExist(url: string): boolean;
     isCollectionLive(url: string, ttl: number): boolean;
@@ -12,7 +11,6 @@ export interface ICacheMemory extends ICache {
 
     isResourceLive(id: string, ttl: number): boolean;
     getOrCreateResource(type: string, id: string): IResource;
-    getResource(id: string): IResource;
 
     removeResource(id: string): void;
 }

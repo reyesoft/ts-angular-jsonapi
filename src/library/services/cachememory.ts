@@ -43,27 +43,24 @@ export class CacheMemory implements ICacheMemory {
 
     public getOrCreateResource(type: string, id: string): IResource {
         if (Converter.getService(type).cachememory && id in Converter.getService(type).cachememory.resources) {
-            return Converter.getService(type).cachememory.getResource(id);
+            return Converter.getService(type).cachememory.resources[id];
         } else {
             let resource = Converter.getService(type).new();
             resource.id = id;
+            // needed for a lot of request (all and get, tested on multinexo.com)
+            this.setResource(resource, false);
             return resource;
         }
     }
 
-    /* @deprecated */
-    public getResource(id: string): IResource  {
-        return this.resources[id];
-    }
-
-    public setResource(resource: IResource): void  {
+    public setResource(resource: IResource, update_lastupdate = false): void  {
         // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
             ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
         } else {
             this.resources[resource.id] = resource;
         }
-        this.resources[resource.id].lastupdate = Date.now();
+        this.resources[resource.id].lastupdate = (update_lastupdate ? Date.now() : 0);
     }
 
     public clearAllCollections(): boolean {
