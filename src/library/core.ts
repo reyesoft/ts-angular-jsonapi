@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import './services/core-services.service';
-import { ICore, IService } from './interfaces';
+import { ICore, IResource, ICollection, IService } from './interfaces';
 
 export class Core implements ICore {
     private resourceServices: Object = {};
@@ -47,6 +47,33 @@ export class Core implements ICore {
     public clearCache(): boolean {
         Core.injectedServices.JsonapiStoreService.clearCache();
         return true;
+    }
+
+    // just an helper
+    public duplicateResource(resource: IResource, ...relations_alias_to_duplicate_too: Array<string>): IResource {
+        let newresource = this.getResourceService(resource.type).new();
+        angular.merge(newresource.attributes, resource.attributes);
+        newresource.attributes.name = newresource.attributes.name + ' xXx';
+        angular.forEach(resource.relationships, (relationship, alias) => {
+            if ('id' in relationship.data) {
+                // relation hasOne
+                if (alias in relations_alias_to_duplicate_too) {
+                    newresource.addRelationship(this.duplicateResource(<IResource>relationship.data), alias);
+                } else {
+                    newresource.addRelationship(<IResource>relationship.data, alias);
+                }
+            } else {
+                // relation hasMany
+                if (alias in relations_alias_to_duplicate_too) {
+                    angular.forEach(relationship.data, relationresource => {
+                        newresource.addRelationship(this.duplicateResource(relationresource), alias);
+                    });
+                } else {
+                    newresource.addRelationships(<ICollection>relationship.data, alias);
+                }
+            }
+        });
+        return newresource;
     }
 }
 

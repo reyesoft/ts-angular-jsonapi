@@ -5,7 +5,7 @@ class AuthorsController {
 
     /** @ngInject */
     constructor(
-        protected JsonapiCore,
+        protected JsonapiCore: Jsonapi.ICore,
         protected AuthorsService: Jsonapi.IService
     ) {
         this.authors = AuthorsService.all(
