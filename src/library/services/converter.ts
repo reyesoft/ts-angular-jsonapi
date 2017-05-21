@@ -136,8 +136,6 @@ export class Converter {
     ) {
         resource_dest.attributes = resource_data_from.attributes;
 
-        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
-
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
         let service = Converter.getService(resource_data_from.type);
@@ -147,6 +145,8 @@ export class Converter {
         if (!resource_dest.relationships || !service) {
             return;
         }
+
+        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,
