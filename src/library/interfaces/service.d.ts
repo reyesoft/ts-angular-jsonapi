@@ -15,5 +15,5 @@ export interface IService {
     cachememory: ICacheMemory;
     cachestore: ICacheStore;
     parseFromServer(attributes: IAttributes): void;
-    parseToServer(attributes: IAttributes): void;
+    parseToServer?(attributes: IAttributes): void;
 }

@@ -151,7 +151,7 @@ export class Service extends ParentResourceService implements IService {
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
         if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
-            this.getService().parseToServer(params.remotefilter);
+            this.getService().parseToServer ? this.getService().parseToServer(params.remotefilter) : null;
             path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
         }
         if (params.page) {
@@ -298,10 +298,6 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public parseFromServer(attributes: IAttributes): void {
-
-    }
-
-    public parseToServer(attributes: IAttributes): void {
 
     }
 }
