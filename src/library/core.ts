@@ -57,14 +57,14 @@ export class Core implements ICore {
         angular.forEach(resource.relationships, (relationship, alias) => {
             if ('id' in relationship.data) {
                 // relation hasOne
-                if (alias in relations_alias_to_duplicate_too) {
+                if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
                     newresource.addRelationship(this.duplicateResource(<IResource>relationship.data), alias);
                 } else {
                     newresource.addRelationship(<IResource>relationship.data, alias);
                 }
             } else {
                 // relation hasMany
-                if (alias in relations_alias_to_duplicate_too) {
+                if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
                     angular.forEach(relationship.data, relationresource => {
                         newresource.addRelationship(this.duplicateResource(relationresource), alias);
                     });
