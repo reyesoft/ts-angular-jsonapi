@@ -24,13 +24,13 @@ export class CacheStore implements ICacheStore {
         );
     }
 
-    public getCollectionFromStorePromise(url:string, collection: ICollection): ng.IPromise<object> {
+    public getCollectionFromStorePromise(url: string, collection: ICollection): ng.IPromise<object> {
         var deferred = Core.injectedServices.$q.defer();
         this.getCollectionFromStore(url, collection, deferred);
         return deferred.promise;
     }
 
-    private getCollectionFromStore(url:string, collection: ICollection, job_deferred: ng.IDeferred<ICollection> = null): void {
+    private getCollectionFromStore(url: string, collection: ICollection, job_deferred: ng.IDeferred<ICollection> = null): void {
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise.then(success => {
             try {
@@ -54,6 +54,7 @@ export class CacheStore implements ICacheStore {
                 }
                 if (all_ok) {
                     collection.$source = 'store';  // collection from storeservice, resources from memory
+                    collection.$cache_last_update = success._lastupdate_time;
                     job_deferred.resolve(collection);
                     return ;
                 }

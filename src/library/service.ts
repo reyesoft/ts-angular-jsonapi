@@ -146,6 +146,8 @@ export class Service extends ParentResourceService implements IService {
             angular.extend(params.remotefilter, params.smartfilter);
         }
 
+        params.cachehash = params.cachehash || '';
+
         // http request
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
@@ -236,6 +238,14 @@ export class Service extends ParentResourceService implements IService {
             success => {
                 tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
+
+                // this create a new ID for every resource (for caching proposes)
+                // for example, two URL return same objects but with different attributes
+                if (params.cachehash) {
+                    angular.forEach(success.data.data, resource => {
+                        resource.id = resource.id + params.cachehash;
+                    });
+                }
 
                 Converter.build(success.data, tempororay_collection);
 
