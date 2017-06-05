@@ -108,9 +108,9 @@ export class CacheStore implements ICacheStore {
         );
     }
 
-    public deprecateCollections(collection_type: string) {
+    public deprecateCollections(path_start_with: string) {
         Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey(
-            'collection.' + collection_type
+            'collection.' + path_start_with
         );
         return true;
     }

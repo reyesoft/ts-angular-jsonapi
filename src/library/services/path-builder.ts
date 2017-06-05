@@ -6,7 +6,7 @@ export class PathBuilder {
     public includes: Array<string> = [];
     private get_params: Array<string> = [];
 
-    public applyParams(service: IService, params: IParamsResource | IParamsCollection) {
+    public applyParams(service: IService, params: IParamsResource | IParamsCollection = {}) {
         this.appendPath(service.getPrePath());
         params.beforepath ? this.appendPath(params.beforepath) : null;
         this.appendPath(service.getPath());
