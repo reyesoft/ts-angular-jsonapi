@@ -16,15 +16,15 @@ export class Http {
 
     }
 
-    public delete(path: string) {
+    public delete(path: string): ng.IPromise<IDataObject> {
         return this.exec(path, 'DELETE');
     }
 
-    public get(path: string) {
+    public get(path: string): ng.IPromise<IDataObject> {
         return this.exec(path, 'get');
     }
 
-    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true) {
+    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true): ng.IPromise<IDataObject> {
 
         // http request (if we don't have any GET request yet)
         if (method !== 'get' || !this.noDuplicatedHttpCallsService.hasPromises(path)) {

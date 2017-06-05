@@ -58,7 +58,7 @@ export class Converter {
     static getService(type: string): IService {
         let resource_service = Core.me.getResourceService(type);
         if (angular.isUndefined(resource_service)) {
-            console.warn('`' + type + '`', 'service not found on getService()');
+            // console.warn('`' + type + '`', 'service not found on getService()');
         }
         return resource_service;
     }
@@ -76,15 +76,14 @@ export class Converter {
             resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
         }
 
-        resource.attributes = data.attributes ? data.attributes : {};
+        resource.attributes = data.attributes || {};
         resource.is_new = false;
         return resource;
     }
 
     public static build(
         document_from: IDataCollection & IDataObject,
-        resource_dest: IResource | ICollection,
-        build_relationships = true
+        resource_dest: IResource | ICollection
     ) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
@@ -95,15 +94,14 @@ export class Converter {
         if (angular.isArray(document_from.data)) {
             Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
         } else {
-            build_relationships ? Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources) : null;
+            Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources);
         }
     }
 
     private static _buildCollection(
         collection_data_from: IDataCollection,
         collection_dest: ICollection,
-        included_resources: IResourcesByType,
-        build_relationships = true
+        included_resources: IResourcesByType
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from['meta']) {
@@ -119,7 +117,7 @@ export class Converter {
                 collection_dest[dataresource.id] =
                     Converter.getService(dataresource.type).cachememory.getOrCreateResource(dataresource.type, dataresource.id);
             }
-            build_relationships ? Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources) : null;
+            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -137,6 +135,7 @@ export class Converter {
         included_resources: IResourcesByType
     ) {
         resource_dest.attributes = resource_data_from.attributes;
+
         resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
         let service = Converter.getService(resource_data_from.type);
@@ -146,6 +145,8 @@ export class Converter {
         if (!resource_dest.relationships || !service) {
             return;
         }
+
+        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,

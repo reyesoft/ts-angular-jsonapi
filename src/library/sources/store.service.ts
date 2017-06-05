@@ -34,7 +34,7 @@ export class StoreService {
                 // recorremos cada item y vemos si es tiempo de removerlo
                 this.allstore.getItem(key).then(success2 => {
                     // es tiempo de removerlo?
-                    if (Date.now() >= (success2._lastupdate_time + 12 * 3600 * 1000)) {
+                    if (Date.now() >= (success2._lastupdate_time + 24 * 3600 * 1000)) {
                         // removemos!!
                         this.allstore.removeItem(key);
                     }
@@ -43,11 +43,11 @@ export class StoreService {
         });
     }
 
-    public getObjet(key: string): any /* Promise<void> */ {
+    public getObjet(key: string): Promise<object> {
         return this.allstore.getItem('jsonapi.' + key);
     }
 
-    public getObjets(keys: Array<string>): any /* Promise<void> */ {
+    public getObjets(keys: Array<string>): Promise<object> {
         return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 
@@ -60,5 +60,20 @@ export class StoreService {
         this.allstore.clear();
         this.globalstore.clear();
     }
+
+    public deprecateObjectsWithKey(key_start_with: string) {
+        this.allstore.keys().then(success => {
+            angular.forEach(success, (key: string) => {
+                if (key.startsWith(key_start_with)) {
+                    // key of stored object starts with key_start_with
+                    this.allstore.getItem(key).then(success2 => {
+                        success2['_lastupdate_time'] = 0;
+                        this.allstore.setItem(key, success2);
+                    });
+                }
+            });
+        });
+    }
 }
+
 angular.module('Jsonapi.services').service('JsonapiStoreService', StoreService);

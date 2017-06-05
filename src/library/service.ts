@@ -8,12 +8,15 @@ import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
+import { CacheStore } from './services/cachestore';
 
-import { IService, ISchema, IResource, ICollection, IExecParams, ICache, IParamsCollection, IParamsResource } from './interfaces';
+import { IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
     public schema: ISchema;
-    public cachememory: ICache;
+    public cachememory: ICacheMemory;
+    public cachestore: ICacheStore;
     public type: string;
 
     private path: string;   // without slashes
@@ -29,12 +32,18 @@ export class Service extends ParentResourceService implements IService {
         }
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
+        this.cachestore = new CacheStore();
         this.schema = angular.extend({}, Base.Schema, this.schema);
         return Core.me._register(this);
     }
 
-    public new<T extends IResource>(): T {
+    public newResource(): IResource {
         let resource: IResource = new Resource();
+        return resource;
+    }
+
+    public new<T extends IResource>(): T {
+        let resource = this.newResource();
         resource.type = this.type;
         resource.reset();
         return <T>resource;
@@ -78,11 +87,11 @@ export class Service extends ParentResourceService implements IService {
         path.applyParams(this, params);
         path.appendPath(id);
 
-        // cache
-        let resource = this.getService().cachememory.getOrCreateResource(this.type, id, true);
+        // CACHEMEMORY
+        let resource = this.getService().cachememory.getOrCreateResource(this.type, id);
         resource.is_loading = true;
         // exit if ttl is not expired
-        let temporal_ttl = params.ttl ? params.ttl : 0;
+        let temporal_ttl = params.ttl || 0; // this.schema.ttl
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
@@ -95,7 +104,25 @@ export class Service extends ParentResourceService implements IService {
             return resource;
         }
 
+        // CACHESTORE
+        this.getService().cachestore.getResource(resource)
+        .then(
+            success => {
+                if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
+                    this.runFc(fc_success, { data: success});
+                } else {
+                    this.getGetFromServer(path, fc_success, fc_error, resource);
+                }
+            },
+            error => {
+                this.getGetFromServer(path, fc_success, fc_error, resource);
+            }
+        );
 
+        return resource;
+    }
+
+    private getGetFromServer(path, fc_success, fc_error, resource: IResource) {
         Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
@@ -103,14 +130,13 @@ export class Service extends ParentResourceService implements IService {
                 Converter.build(success.data, resource);
                 resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
+                this.getService().cachestore.setResource(resource);
                 this.runFc(fc_success, success);
             },
             error => {
                 this.runFc(fc_error, error);
             }
         );
-
-        return resource;
     }
 
     private _all(params: IParamsCollection, fc_success, fc_error): ICollection {
@@ -120,11 +146,16 @@ export class Service extends ParentResourceService implements IService {
             angular.extend(params.remotefilter, params.smartfilter);
         }
 
+        params.cachehash = params.cachehash || '';
+
         // http request
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
-        params.remotefilter ? path.addParam(paramsurl.toparams( { filter: params.remotefilter } )) : null;
+        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
+            this.getService().parseToServer ? this.getService().parseToServer(params.remotefilter) : null;
+            path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
+        }
         if (params.page) {
             params.page.number > 1 ? path.addParam(
                 Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
@@ -134,10 +165,19 @@ export class Service extends ParentResourceService implements IService {
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache(), true);
+        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache());
+
+        // creamos otra colleción si luego será filtrada
+        let localfilter = new LocalFilter(params.localfilter);
+        let cached_collection: ICollection;
+        if (params.localfilter && Object.keys(params.localfilter).length > 0) {
+             cached_collection = Base.newCollection();
+        } else {
+             cached_collection = tempororay_collection;
+        }
 
         // MEMORY_CACHE
-        let temporal_ttl = params.ttl ? params.ttl : this.schema.ttl;
+        let temporal_ttl = params.ttl || this.schema.ttl;
         if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
             tempororay_collection.$source = 'memory';
@@ -148,8 +188,7 @@ export class Service extends ParentResourceService implements IService {
             }
 
             // fill collection and localfilter
-            let localfilter = new LocalFilter();
-            tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
+            localfilter.filterCollection(tempororay_collection, cached_collection);
 
             // exit if ttl is not expired
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
@@ -160,44 +199,42 @@ export class Service extends ParentResourceService implements IService {
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'cachememory');
                 });
-                return tempororay_collection;
+            } else {
+                this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
             }
+        } else {
+            // STORE
+            tempororay_collection.$is_loading = true;
+            this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), tempororay_collection)
+            .then(
+                success => {
+                    tempororay_collection.$source = 'store';
+                    tempororay_collection.$is_loading = false;
+
+                    // when load collection from store, we save collection on memory
+                    this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+
+                    // localfilter getted data
+                    localfilter.filterCollection(tempororay_collection, cached_collection);
+
+                    if (Base.isObjectLive(temporal_ttl, tempororay_collection.$cache_last_update)) {
+                        this.runFc(fc_success, { data: success});
+                    } else {
+                        this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
+                    }
+                },
+                error => {
+                    this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
+                }
+            );
         }
 
-        tempororay_collection['$is_loading'] = true;
-
-        // STORAGE_CACHE
-        Core.injectedServices.JsonapiHttpStorage
-        .get(path.getForCache(), params.storage_ttl)
-        .then(
-            success => {
-                tempororay_collection.$source = 'httpstorage';
-                tempororay_collection.$is_loading = false;
-                Converter.build(success, tempororay_collection);
-
-                // localfilter getted data
-                let localfilter = new LocalFilter();
-                tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
-
-                this.runFc(fc_success, { data: success});
-
-                var deferred = Core.injectedServices.$q.defer();
-                deferred.resolve(fc_success);
-                deferred.promise.then(fc_success => {
-                    this.runFc(fc_success, 'httpstorage');
-                });
-                return tempororay_collection;
-            },
-            error => {
-                this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection);
-            }
-        );
-
-        return tempororay_collection;
+        return cached_collection;
     }
 
-    private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection) {
+    private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection: ICollection, cached_collection: ICollection) {
         // SERVER REQUEST
+        tempororay_collection.$is_loading = true;
         Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
@@ -205,17 +242,22 @@ export class Service extends ParentResourceService implements IService {
                 tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
 
+                // this create a new ID for every resource (for caching proposes)
+                // for example, two URL return same objects but with different attributes
+                if (params.cachehash) {
+                    angular.forEach(success.data.data, resource => {
+                        resource.id = resource.id + params.cachehash;
+                    });
+                }
+
                 Converter.build(success.data, tempororay_collection);
 
                 this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-
-                if (params.storage_ttl > 0) {
-                    Core.injectedServices.JsonapiHttpStorage.save(path.getForCache(), success.data);
-                }
+                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection);
 
                 // localfilter getted data
-                let localfilter = new LocalFilter();
-                tempororay_collection = localfilter.filterCollection(tempororay_collection, params.localfilter);
+                let localfilter = new LocalFilter(params.localfilter);
+                localfilter.filterCollection(tempororay_collection, cached_collection);
 
                 // trying to define smartfiltertype
                 if (this.smartfiltertype === 'undefined') {
@@ -265,6 +307,11 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public clearCacheMemory(): boolean {
-        return this.getService().cachememory.clearAllCollections();
+        return this.getService().cachememory.deprecateCollections(this.type) &&
+            this.getService().cachestore.deprecateCollections(this.type);
+    }
+
+    public parseFromServer(attributes: IAttributes): void {
+
     }
 }

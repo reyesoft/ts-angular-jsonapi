@@ -1,4 +1,4 @@
-import { IService } from './index';
+import { IService, IResource } from './index';
 
 export interface ICore {
     // jsonapiServices: Object;
@@ -13,6 +13,7 @@ export interface ICore {
     getResourceService(type: string): IService;
     refreshLoadings(factor: number): void;
     clearCache(): void;
+    duplicateResource(resource: IResource, ...relations_types: Array<string>): IResource;
 
     // static
     me?: IService;

@@ -84,11 +84,20 @@ export class Resource extends ParentResourceService implements IResource {
             }
         });
 
+        // just for performance dont copy if not necessary
+        let attributes;
+        if (this.getService().parseToServer) {
+            attributes = angular.copy(this.attributes);
+            this.getService().parseToServer(attributes);
+        } else {
+            attributes = this.attributes;
+        }
+
         let ret: IDataObject = {
             data: {
                 type: this.type,
                 id: this.id,
-                attributes: this.attributes,
+                attributes: attributes,
                 relationships: relationships
             }
         };
@@ -139,7 +148,8 @@ export class Resource extends ParentResourceService implements IResource {
 
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
-                    this.getService().cachememory.clearAllCollections();
+                    this.getService().cachememory.deprecateCollections(path.get());
+                    this.getService().cachestore.deprecateCollections(path.get());
                 }
 
                 // is a resource?
@@ -163,6 +173,7 @@ export class Resource extends ParentResourceService implements IResource {
                     angular.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
                         let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
                         Converter.getService(resource_value.type).cachememory.setResource(resource_value);
+                        Converter.getService(resource_value.type).cachestore.setResource(resource_value);
                         res.id = res.id + 'x';
                     });
 
