@@ -63,9 +63,13 @@ export class CacheMemory implements ICacheMemory {
         this.resources[resource.id].lastupdate = (update_lastupdate ? Date.now() : 0);
     }
 
-    public clearAllCollections(): boolean {
-        this.collections = {};
-        this.collections_lastupdate = {};
+    public deprecateCollections(path_start_with: string): boolean {
+        angular.forEach(this.collections_lastupdate, (lastupdate: number, key: string) => {
+            // we don't need check, memorycache has one collection per resoure type
+            // if (key.startsWith(path_start_with) === true) {
+                this.collections_lastupdate[key] = 0;
+            // }
+        });
         return true;
     }
 

@@ -60,5 +60,20 @@ export class StoreService {
         this.allstore.clear();
         this.globalstore.clear();
     }
+
+    public deprecateObjectsWithKey(key_start_with: string) {
+        this.allstore.keys().then(success => {
+            angular.forEach(success, (key: string) => {
+                if (key.startsWith(key_start_with)) {
+                    // key of stored object starts with key_start_with
+                    this.allstore.getItem(key).then(success2 => {
+                        success2['_lastupdate_time'] = 0;
+                        this.allstore.setItem(key, success2);
+                    });
+                }
+            });
+        });
+    }
 }
+
 angular.module('Jsonapi.services').service('JsonapiStoreService', StoreService);

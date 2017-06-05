@@ -304,7 +304,8 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public clearCacheMemory(): boolean {
-        return this.getService().cachememory.clearAllCollections();
+        return this.getService().cachememory.deprecateCollections(this.type) &&
+            this.getService().cachestore.deprecateCollections(this.type);
     }
 
     public parseFromServer(attributes: IAttributes): void {

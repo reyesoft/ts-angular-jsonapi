@@ -148,7 +148,8 @@ export class Resource extends ParentResourceService implements IResource {
 
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
-                    this.getService().cachememory.clearAllCollections();
+                    this.getService().cachememory.deprecateCollections(path.get());
+                    this.getService().cachestore.deprecateCollections(path.get());
                 }
 
                 // is a resource?
