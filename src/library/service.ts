@@ -211,6 +211,9 @@ export class Service extends ParentResourceService implements IService {
                     tempororay_collection.$source = 'store';
                     tempororay_collection.$is_loading = false;
 
+                    // when load collection from store, we save collection on memory
+                    this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+
                     // localfilter getted data
                     localfilter.filterCollection(tempororay_collection, cached_collection);
 
