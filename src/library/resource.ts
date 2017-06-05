@@ -240,10 +240,15 @@ export class Resource extends ParentResourceService implements IResource {
         if (!('data' in this.relationships[type_alias])) {
             return false;
         }
-        if (!(id in this.relationships[type_alias]['data'])) {
-            return false;
+
+        if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
+            if (!(id in this.relationships[type_alias]['data'])) {
+                return false;
+            }
+            delete this.relationships[type_alias]['data'][id];
+        } else {
+            this.relationships[type_alias]['data'] = { };
         }
-        delete this.relationships[type_alias]['data'][id];
         return true;
     }
 
