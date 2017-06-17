@@ -12,7 +12,12 @@ export class Core implements ICore {
     public loadingsOffline = () => {};
 
     public static me: ICore;
-    public static injectedServices: any;
+    public static injectedServices: {
+        $q: ng.IQService,
+        JsonapiStoreService: any,
+        JsonapiHttp: any,
+        rsJsonapiConfig: any
+    };
 
     /** @ngInject */
     public constructor(

@@ -6,7 +6,8 @@ export class StoreService {
 
     /** @ngInject */
     public constructor(
-        protected $localForage
+        protected $localForage,
+        protected $q
     ) {
         this.globalstore = $localForage.createInstance({ name: 'jsonapiglobal' });
         this.allstore = $localForage.createInstance({ name: 'allstore' });
@@ -44,7 +45,22 @@ export class StoreService {
     }
 
     public getObjet(key: string): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + key);
+        let deferred = this.$q.defer();
+
+        this.allstore.getItem('jsonapi.' + key)
+        .then (success => {
+            // problem on localForage
+            if (success) {
+                deferred.resolve(success);
+            } else {
+                deferred.reject(success);
+            }
+        })
+        .catch(error => {
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
     }
 
     public getObjets(keys: Array<string>): Promise<object> {

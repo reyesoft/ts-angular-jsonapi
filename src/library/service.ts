@@ -102,22 +102,20 @@ export class Service extends ParentResourceService implements IService {
             });
             resource.is_loading = false;
             return resource;
-        }
-
-        // CACHESTORE
-        this.getService().cachestore.getResource(resource)
-        .then(
-            success => {
+        } else {
+            // CACHESTORE
+            this.getService().cachestore.getResource(resource)
+            .then(success => {
                 if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
                     this.runFc(fc_success, { data: success});
                 } else {
                     this.getGetFromServer(path, fc_success, fc_error, resource);
                 }
-            },
-            error => {
+            })
+            .catch(error => {
                 this.getGetFromServer(path, fc_success, fc_error, resource);
-            }
-        );
+            });
+        }
 
         return resource;
     }
@@ -205,7 +203,8 @@ export class Service extends ParentResourceService implements IService {
         } else {
             // STORE
             tempororay_collection.$is_loading = true;
-            this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), tempororay_collection)
+
+            this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
             .then(
                 success => {
                     tempororay_collection.$source = 'store';
@@ -253,7 +252,7 @@ export class Service extends ParentResourceService implements IService {
                 Converter.build(success.data, tempororay_collection);
 
                 this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection);
+                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
 
                 // localfilter getted data
                 let localfilter = new LocalFilter(params.localfilter);
@@ -307,8 +306,10 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public clearCacheMemory(): boolean {
-        return this.getService().cachememory.deprecateCollections(this.type) &&
-            this.getService().cachestore.deprecateCollections(this.type);
+        let path = new PathBuilder();
+        path.applyParams(this);
+        return this.getService().cachememory.deprecateCollections(path.getForCache()) &&
+            this.getService().cachestore.deprecateCollections(path.getForCache());
     }
 
     public parseFromServer(attributes: IAttributes): void {
