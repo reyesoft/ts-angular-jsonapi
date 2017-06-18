@@ -1,4 +1,4 @@
-import { ICollection, IResource } from '../interfaces';
+import { IResource } from '../interfaces';
 
 export interface ICache {
     setResource(resource: IResource): void;

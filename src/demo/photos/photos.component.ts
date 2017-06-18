@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class PhotosController {
+class PhotosController implements ng.IController {
     public photos: Jsonapi.ICollection;
 
     /** @ngInject */
@@ -15,6 +15,10 @@ class PhotosController {
         this.makeRequest(5);
     }
 
+    public $onInit() {
+
+    }
+
     public makeRequest(id) {
         this.photos = this.PhotosService.all(
             succes => {
@@ -24,7 +28,7 @@ class PhotosController {
     }
 }
 
-export const Photos = {
-    templateUrl: 'demo/photos/photos.html',
-    controller: PhotosController
+export class Photos {
+    public templateUrl = 'demo/photos/photos.html';
+    public controller = PhotosController;
 };

@@ -1,5 +1,4 @@
-export class AppController {
-
+class AppController implements ng.IController {
     /** @ngInject */
     constructor(
         protected JsonapiCore,
@@ -31,10 +30,14 @@ export class AppController {
             self.$scope.loading = 'No connection 2!!!';
         };
     }
+
+    public $onInit() {
+
+    }
 }
 
-export const App = {
-    templateUrl: 'demo/containers/app.html',
-    controller: AppController,
-    transclude: true
+export class App implements ng.IComponentOptions {
+    public templateUrl: 'demo/containers/app.html';
+    public controller: ng.Injectable<ng.IControllerConstructor> = AppController;
+    public transclude: true;
 };

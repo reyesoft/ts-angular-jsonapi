@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class BooksController {
+class BooksController implements ng.IController {
     public books: Jsonapi.ICollection;
 
     /** @ngInject */
@@ -63,12 +63,16 @@ class BooksController {
         );
     }
 
+    public $onInit() {
+
+    }
+
     public delete(book: Jsonapi.IResource) {
         this.BooksService.delete(book.id);
     }
 }
 
-export const Books = {
-    templateUrl: 'demo/books/books.html',
-    controller: BooksController
+export class Books {
+    public templateUrl = 'demo/books/books.html';
+    public controller = BooksController;
 };

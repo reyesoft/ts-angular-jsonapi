@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-export class BookController {
+export class BookController implements ng.IController {
     public book: any = null;
 
     /** @ngInject */
@@ -22,9 +22,13 @@ export class BookController {
             }
         );
     }
+
+    public $onInit() {
+
+    }
 }
 
-export const Book = {
-    templateUrl: 'demo/books/book.html',
-    controller: BookController
+export class Book {
+    public templateUrl = 'demo/books/book.html';
+    public controller = BookController;
 };

@@ -2,7 +2,7 @@ import * as angular from 'angular';
 import 'angular-ui-router';
 import * as Jsonapi from '../../library/index';
 
-class AuthorController {
+class AuthorController implements ng.IController {
     public author: Jsonapi.IResource;
     public relatedbooks: Jsonapi.IResource[];
 
@@ -29,6 +29,10 @@ class AuthorController {
                 console.log('Books from authors relationship', this.relatedbooks);
             }
         );
+    }
+
+    public $onInit() {
+
     }
 
     /**
@@ -64,14 +68,7 @@ class AuthorController {
     }
 }
 
-export const Author = {
-    templateUrl: 'demo/authors/author.html',
-    controller: AuthorController
-    // bindings: {
-    //   completedCount: '<',
-    //   activeCount: '<',
-    //   selectedFilter: '<filter',
-    //   onClearCompleted: '&',
-    //   onShow: '&'
-    // }
+export class Author {
+    templateUrl = 'demo/authors/author.html';
+    controller = AuthorController;
 };

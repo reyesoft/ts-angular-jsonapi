@@ -80,8 +80,8 @@ export class CacheStore implements ICacheStore {
         );
     }
 
-    public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): ng.IPromise<object> {
-        var deferred = Core.injectedServices.$q.defer();
+    public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): ng.IPromise<ICollection> {
+        var deferred: ng.IDeferred<ICollection> = Core.injectedServices.$q.defer();
         this.getCollectionFromStore(url, include, collection, deferred);
         return deferred.promise;
     }

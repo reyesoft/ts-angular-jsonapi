@@ -81,7 +81,7 @@
     "ts-loader": "^2.0.0",
     "tslint": "^4.4.2",
     "tslint-loader": "^3.4.2",
-    "typescript": "^2.1.0",
+    "typescript": "^2.4.0",
     "webpack": "^2.2.1",
     "webpack-fail-plugin": "^1.0.5"
   },
