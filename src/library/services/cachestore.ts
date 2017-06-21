@@ -181,9 +181,19 @@ export class CacheStore implements ICacheStore {
             this.setResource(resource);
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
 
-            angular.forEach(include, resource_type => {
-                let ress = <IResource>resource.relationships[resource_type].data;
-                resources_for_save[resource_type + ress.id] = ress;
+            angular.forEach(include, resource_type_alias => {
+                if ('id' in resource.relationships[resource_type_alias].data) {
+                    // hasOne
+                    let ress = <IResource>resource.relationships[resource_type_alias].data;
+                    resources_for_save[resource_type_alias + ress.id] = ress;
+                } else {
+                    // hasMany
+                    let collection = <ICollection>resource.relationships[resource_type_alias].data;
+                    angular.forEach(collection, (inc_resource: IResource) => {
+                        console.log('hasMany ress need save', inc_resource);
+                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
+                    });
+                }
             });
         });
         tmp.page = collection.page;
