@@ -109,11 +109,11 @@ export class Resource extends ParentResourceService implements IResource {
         return ret;
     }
 
-    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
-        return <T>this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
+    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): ng.IPromise<object> {
+        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    protected __exec(exec_params: IExecParams): IResource {
+    protected __exec<T extends IResource>(exec_params: IExecParams): ng.IPromise<object> {
         super.__exec(exec_params);
 
         switch (exec_params.exec_type) {
@@ -122,7 +122,9 @@ export class Resource extends ParentResourceService implements IResource {
         }
     }
 
-    private _save(params: IParamsResource, fc_success: Function, fc_error: Function): IResource {
+    private _save<T extends IResource>(params: IParamsResource, fc_success: Function, fc_error: Function): ng.IPromise<object> {
+        var deferred = Core.injectedServices.$q.defer();
+
         if (this.is_saving || this.is_loading) {
             return ;
         }
@@ -134,8 +136,6 @@ export class Resource extends ParentResourceService implements IResource {
         let path = new PathBuilder();
         path.applyParams(this.getService(), params);
         this.id && path.appendPath(this.id);
-
-        let resource = this.getService().cachememory.getOrCreateResource(this.type, this.id);
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',
@@ -181,15 +181,16 @@ export class Resource extends ParentResourceService implements IResource {
                 }
 
                 this.runFc(fc_success, success);
+                deferred.resolve(success);
             },
             error => {
                 this.is_saving = false;
-
                 this.runFc(fc_error, 'data' in error ? error.data : error);
+                deferred.reject('data' in error ? error.data : error);
             }
         );
 
-        return resource;
+        return deferred.promise;
     }
 
     public addRelationship<T extends IResource>(resource: T, type_alias?: string) {

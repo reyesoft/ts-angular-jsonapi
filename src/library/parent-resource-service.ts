@@ -6,7 +6,7 @@ export class ParentResourceService {
     /**
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(exec_params: IExecParams): IResource | ICollection | void {
+    protected __exec(exec_params: IExecParams): IResource | ICollection | void | ng.IPromise<object> {
         // makes `params` optional
         if (angular.isFunction(exec_params.params)) {
             exec_params.fc_error = exec_params.fc_success;
