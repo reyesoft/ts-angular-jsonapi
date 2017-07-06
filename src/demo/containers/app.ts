@@ -37,7 +37,12 @@ class AppController implements ng.IController {
 }
 
 export class App implements ng.IComponentOptions {
-    public templateUrl: 'demo/containers/app.html';
+    public templateUrl: string;
     public controller: ng.Injectable<ng.IControllerConstructor> = AppController;
-    public transclude: true;
+    public transclude: boolean;
+
+    constructor() {
+        this.templateUrl = 'demo/containers/app.html';
+        this.transclude = true;
+    }
 };

@@ -22,10 +22,10 @@ export class Service extends ParentResourceService implements IService {
     private path: string;   // without slashes
     private smartfiltertype = 'undefined';
 
-    /**
+    /*
     Register schema on Core
     @return true if the resource don't exist and registered ok
-    **/
+    */
     public register(): boolean {
         if (Core.me === null) {
             throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
@@ -69,15 +69,15 @@ export class Service extends ParentResourceService implements IService {
     }
 
     protected __exec(exec_params: IExecParams): IResource | ICollection | void {
-        super.__exec(exec_params);
+        let exec_pp = super.proccess_exec_params(exec_params);
 
-        switch (exec_params.exec_type) {
+        switch (exec_pp.exec_type) {
             case 'get':
-            return this._get(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'delete':
-            return this._delete(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'all':
-            return this._all(exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
         }
     }
 
@@ -151,14 +151,18 @@ export class Service extends ParentResourceService implements IService {
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
         if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
-            this.getService().parseToServer ? this.getService().parseToServer(params.remotefilter) : null;
+            if (this.getService().parseToServer) {
+                this.getService().parseToServer(params.remotefilter);
+            };
             path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
         }
         if (params.page) {
-            params.page.number > 1 ? path.addParam(
-                Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
-            params.page.limit ? path.addParam(
-                Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
+            if (params.page.number > 1) {
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
+            }
+             if (params.page.limit) {
+                 path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit);
+             }
         }
 
         // make request
@@ -298,9 +302,9 @@ export class Service extends ParentResourceService implements IService {
         );
     }
 
-    /**
+    /*
     @return This resource like a service
-    **/
+    */
     public getService<T extends IService>(): T {
         return <T>Converter.getService(this.type);
     }

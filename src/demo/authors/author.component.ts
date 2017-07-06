@@ -35,9 +35,9 @@ class AuthorController implements ng.IController {
 
     }
 
-    /**
+    /*
     Add a new author
-    **/
+    */
     public new() {
         let author = this.AuthorsService.new();
         author.attributes.name = 'Pablo Reyes';
@@ -49,9 +49,9 @@ class AuthorController implements ng.IController {
         // author.save( /* { include: ['book'] } */ );
     }
 
-    /**
+    /*
     Update name for actual author
-    **/
+    */
     public update() {
         this.author.attributes.name += 'o';
         this.author.save(

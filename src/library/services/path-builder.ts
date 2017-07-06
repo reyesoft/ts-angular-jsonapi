@@ -8,9 +8,13 @@ export class PathBuilder {
 
     public applyParams(service: IService, params: IParamsResource | IParamsCollection = {}) {
         this.appendPath(service.getPrePath());
-        params.beforepath ? this.appendPath(params.beforepath) : null;
+        if (params.beforepath) {
+            this.appendPath(params.beforepath);
+        }
         this.appendPath(service.getPath());
-        params.include ? this.setInclude(params.include) : null;
+        if (params.include) {
+            this.setInclude(params.include);
+        }
     }
 
     public appendPath(value: string) {

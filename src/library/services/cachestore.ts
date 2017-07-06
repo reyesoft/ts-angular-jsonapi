@@ -160,7 +160,9 @@ export class CacheStore implements ICacheStore {
         // build collection and resources from store
         Core.injectedServices.$q.all(promises)
         .then(success2 => {
-            datacollection.page ? collection.page = datacollection.page : null;
+            if (datacollection.page) {
+                collection.page = datacollection.page;
+            }
             for (let key in temporalcollection) {
                 let resource: IResource = temporalcollection[key];
                 collection[resource.id] = resource;  // collection from storeservice, resources from memory
