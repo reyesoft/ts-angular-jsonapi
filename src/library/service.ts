@@ -10,8 +10,10 @@ import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
 
-import { IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
-    IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import {
+    IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    IParamsCollection, IParamsResource, IAttributes
+} from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
     public schema: ISchema;
@@ -95,11 +97,13 @@ export class Service extends ParentResourceService implements IService {
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
-            var deferred = Core.injectedServices.$q.defer();
+            let deferred = Core.injectedServices.$q.defer();
             deferred.resolve(fc_success);
             deferred.promise.then(fc_success => {
                 this.runFc(fc_success, 'cachememory');
-            });
+            })
+            // .catch(() => {})
+            ;
             resource.is_loading = false;
             return resource;
         } else {
@@ -130,7 +134,9 @@ export class Service extends ParentResourceService implements IService {
                 this.getService().cachememory.setResource(resource);
                 this.getService().cachestore.setResource(resource);
                 this.runFc(fc_success, success);
-            },
+            }
+        )
+        .catch(
             error => {
                 this.runFc(fc_error, error);
             }
@@ -160,9 +166,9 @@ export class Service extends ParentResourceService implements IService {
             if (params.page.number > 1) {
                 path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
             }
-             if (params.page.limit) {
-                 path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit);
-             }
+            if (params.page.limit) {
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit);
+            }
         }
 
         // make request
@@ -173,9 +179,9 @@ export class Service extends ParentResourceService implements IService {
         let localfilter = new LocalFilter(params.localfilter);
         let cached_collection: ICollection;
         if (params.localfilter && Object.keys(params.localfilter).length > 0) {
-             cached_collection = Base.newCollection();
+            cached_collection = Base.newCollection();
         } else {
-             cached_collection = tempororay_collection;
+            cached_collection = tempororay_collection;
         }
 
         // MEMORY_CACHE
@@ -200,7 +206,9 @@ export class Service extends ParentResourceService implements IService {
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'cachememory');
-                });
+                })
+                .catch(() => {})
+                ;
             } else {
                 this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
             }
@@ -225,7 +233,8 @@ export class Service extends ParentResourceService implements IService {
                     } else {
                         this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
                     }
-                },
+                }
+            ).catch(
                 error => {
                     this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
                 }
@@ -273,7 +282,9 @@ export class Service extends ParentResourceService implements IService {
                 }
 
                 this.runFc(fc_success, success);
-            },
+            }
+        )
+        .catch(
             error => {
                 // do not replace $source, because localstorage don't write if = server
                 // tempororay_collection.$source = 'server';
@@ -295,7 +306,8 @@ export class Service extends ParentResourceService implements IService {
             success => {
                 this.getService().cachememory.removeResource(id);
                 this.runFc(fc_success, success);
-            },
+            }
+        ).catch(
             error => {
                 this.runFc(fc_error, error);
             }

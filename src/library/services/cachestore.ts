@@ -192,7 +192,6 @@ export class CacheStore implements ICacheStore {
                     // hasMany
                     let collection = <ICollection>resource.relationships[resource_type_alias].data;
                     angular.forEach(collection, (inc_resource: IResource) => {
-                        console.log('hasMany ress need save', inc_resource);
                         resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
                 }
