@@ -184,7 +184,8 @@ export class Resource extends ParentResourceService implements IResource {
 
                 this.runFc(fc_success, success);
                 deferred.resolve(success);
-            },
+            }
+        ).catch(
             error => {
                 this.is_saving = false;
                 this.runFc(fc_error, 'data' in error ? error.data : error);

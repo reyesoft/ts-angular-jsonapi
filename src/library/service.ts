@@ -102,7 +102,7 @@ export class Service extends ParentResourceService implements IService {
             deferred.promise.then(fc_success => {
                 this.runFc(fc_success, 'cachememory');
             })
-            // .catch(() => {})
+            .catch(() => {})
             ;
             resource.is_loading = false;
             return resource;

@@ -60,7 +60,8 @@ export class Http {
                     Core.me.refreshLoadings(-1);
                     deferred.resolve(success);
                 }, self.rsJsonapiConfig.delay);
-            },
+            }
+        ).catch(
             error => {
                 Core.me.refreshLoadings(-1);
                 if (error.status <= 0) {

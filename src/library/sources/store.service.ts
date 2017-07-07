@@ -26,6 +26,9 @@ export class StoreService {
             } else {
                 this.globalstore.setItem('_lastclean_time', { time: Date.now() });
             }
+        })
+        .catch(() => {
+            this.globalstore.setItem('_lastclean_time', { time: Date.now() });
         });
     }
 
@@ -39,9 +42,12 @@ export class StoreService {
                         // removemos!!
                         this.allstore.removeItem(key);
                     }
-                });
+                })
+                .catch( () => {} );
+                ;
             });
-        });
+        })
+        .catch( () => {} );
     }
 
     public getObjet(key: string): Promise<object> {
@@ -85,10 +91,14 @@ export class StoreService {
                     this.allstore.getItem(key).then(success2 => {
                         success2['_lastupdate_time'] = 0;
                         this.allstore.setItem(key, success2);
-                    });
+                    })
+                    .catch( () => {} )
+                    ;
                 }
             });
-        });
+        })
+        .catch( () => {} )
+        ;
     }
 }
 
