@@ -18,7 +18,7 @@ export interface IResource {
     addRelationships? (resources: ICollection, type_alias: string): void;
     removeRelationship? (type_alias: string, id: string): boolean;
     addRelationshipsArray <T extends IResource>(resources: Array<T>, type_alias?: string): void;
-    save<T extends IResource>(params?: IParamsResource, fc_success?: Function, fc_error?: Function): T;
+    save<T extends IResource>(params?: IParamsResource, fc_success?: Function, fc_error?: Function): ng.IPromise<object>;
     toObject? (params?: IParamsResource): IDataObject;
     getService(): IService;
 }

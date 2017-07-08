@@ -10,6 +10,7 @@ export interface ICacheMemory extends ICache {
 
     isResourceLive(id: string, ttl: number): boolean;
     getOrCreateResource(type: string, id: string): IResource;
+    setCollection(url: string, collection: ICollection): void;
 
     removeResource(id: string): void;
 }

@@ -1,12 +1,12 @@
 import * as angular from 'angular';
 import { Base } from './services/base';
-import { IResource, ICollection, IExecParams } from './interfaces';
+import { IResource, ICollection, IExecParams, IExecParamsProcessed } from './interfaces';
 
 export class ParentResourceService {
-    /**
+    /*
     This method sort params for all(), get(), delete() and save()
     */
-    protected __exec(exec_params: IExecParams): IResource | ICollection | void {
+    protected proccess_exec_params(exec_params: IExecParams): IExecParamsProcessed {
         // makes `params` optional
         if (angular.isFunction(exec_params.params)) {
             exec_params.fc_error = exec_params.fc_success;
@@ -22,6 +22,8 @@ export class ParentResourceService {
 
         exec_params.fc_success = angular.isFunction(exec_params.fc_success) ? exec_params.fc_success : function() {};
         exec_params.fc_error = angular.isFunction(exec_params.fc_error) ? exec_params.fc_error : undefined;
+
+        return <IExecParamsProcessed>exec_params; // @todo
     }
 
     protected runFc(some_fc, param) {

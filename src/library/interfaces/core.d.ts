@@ -17,5 +17,12 @@ export interface ICore {
 
     // static
     me?: IService;
-    injectedServices?: any;
+
+    // defined on core code too
+    injectedServices?: {
+        $q: ng.IQService,
+        JsonapiStoreService: any,
+        JsonapiHttp: any,
+        rsJsonapiConfig: any
+    };
 }

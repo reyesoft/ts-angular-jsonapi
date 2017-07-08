@@ -52,7 +52,7 @@ export class Resource extends ParentResourceService implements IResource {
 
                 angular.forEach(relationship.data, (resource: IResource) => {
                     let reational_object = { id: resource.id, type: resource.type };
-                    relationships[relation_alias]['data'].push(reational_object);
+                    relationships[relation_alias].data.push(reational_object);
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = resource.type + '_' + resource.id;
@@ -109,20 +109,22 @@ export class Resource extends ParentResourceService implements IResource {
         return ret;
     }
 
-    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): T {
-        return <T>this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
+    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): ng.IPromise<object> {
+        return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    protected __exec(exec_params: IExecParams): IResource {
-        super.__exec(exec_params);
+    protected __exec<T extends IResource>(exec_params: IExecParams): ng.IPromise<object> {
+        let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_params.exec_type) {
             case 'save':
-            return this._save(exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._save(exec_pp.params, exec_params.fc_success, exec_params.fc_error);
         }
     }
 
-    private _save(params: IParamsResource, fc_success: Function, fc_error: Function): IResource {
+    private _save<T extends IResource>(params: IParamsResource, fc_success: Function, fc_error: Function): ng.IPromise<object> {
+        var deferred = Core.injectedServices.$q.defer();
+
         if (this.is_saving || this.is_loading) {
             return ;
         }
@@ -133,9 +135,9 @@ export class Resource extends ParentResourceService implements IResource {
         // http request
         let path = new PathBuilder();
         path.applyParams(this.getService(), params);
-        this.id && path.appendPath(this.id);
-
-        let resource = this.getService().cachememory.getOrCreateResource(this.type, this.id);
+        if (this.id) {
+            path.appendPath(this.id);
+        }
 
         let promise = Core.injectedServices.JsonapiHttp.exec(
             path.get(), this.id ? 'PUT' : 'POST',
@@ -181,15 +183,17 @@ export class Resource extends ParentResourceService implements IResource {
                 }
 
                 this.runFc(fc_success, success);
-            },
+                deferred.resolve(success);
+            }
+        ).catch(
             error => {
                 this.is_saving = false;
-
                 this.runFc(fc_error, 'data' in error ? error.data : error);
+                deferred.reject('data' in error ? error.data : error);
             }
         );
 
-        return resource;
+        return deferred.promise;
     }
 
     public addRelationship<T extends IResource>(resource: T, type_alias?: string) {
@@ -204,9 +208,9 @@ export class Resource extends ParentResourceService implements IResource {
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            this.relationships[type_alias]['data'][object_key] = resource;
+            this.relationships[type_alias].data[object_key] = resource;
         } else {
-            this.relationships[type_alias]['data'] = resource;
+            this.relationships[type_alias].data = resource;
         }
     }
 
@@ -215,15 +219,15 @@ export class Resource extends ParentResourceService implements IResource {
             this.relationships[type_alias] = { data: { } };
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
-            angular.forEach(this.relationships[type_alias]['data'], (resource) => {
+            angular.forEach(this.relationships[type_alias].data, (resource) => {
                 if (!(resource.id in resources)) {
-                    delete this.relationships[type_alias]['data'][resource.id];
+                    delete this.relationships[type_alias].data[resource.id];
                 }
             });
         }
 
         angular.forEach(resources, (resource) => {
-            this.relationships[type_alias]['data'][resource.id] = resource;
+            this.relationships[type_alias].data[resource.id] = resource;
         });
     }
 
@@ -242,19 +246,19 @@ export class Resource extends ParentResourceService implements IResource {
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            if (!(id in this.relationships[type_alias]['data'])) {
+            if (!(id in this.relationships[type_alias].data)) {
                 return false;
             }
-            delete this.relationships[type_alias]['data'][id];
+            delete this.relationships[type_alias].data[id];
         } else {
-            this.relationships[type_alias]['data'] = { };
+            this.relationships[type_alias].data = { };
         }
         return true;
     }
 
-    /**
+    /*
     @return This resource like a service
-    **/
+    */
     public getService(): IService {
         return Converter.getService(this.type);
     }

@@ -3,16 +3,20 @@ import './services/core-services.service';
 import { ICore, IResource, ICollection, IService } from './interfaces';
 
 export class Core implements ICore {
-    private resourceServices: Object = {};
+    public static me: ICore;
+    public static injectedServices: {
+        $q: ng.IQService,
+        JsonapiStoreService: any,
+        JsonapiHttp: any,
+        rsJsonapiConfig: any
+    };
 
+    private resourceServices: Object = {};
     public loadingsCounter: number = 0;
     public loadingsStart = () => {};
     public loadingsDone = () => {};
     public loadingsError = () => {};
     public loadingsOffline = () => {};
-
-    public static me: ICore;
-    public static injectedServices: any;
 
     /** @ngInject */
     public constructor(

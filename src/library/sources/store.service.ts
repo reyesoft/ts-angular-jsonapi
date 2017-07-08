@@ -6,7 +6,8 @@ export class StoreService {
 
     /** @ngInject */
     public constructor(
-        protected $localForage
+        protected $localForage,
+        protected $q
     ) {
         this.globalstore = $localForage.createInstance({ name: 'jsonapiglobal' });
         this.allstore = $localForage.createInstance({ name: 'allstore' });
@@ -15,16 +16,15 @@ export class StoreService {
 
     private checkIfIsTimeToClean() {
         // check if is time to check cachestore
-        this.globalstore.getItem('_lastclean_time').then(success => {
-            if (success) {
-                if (Date.now() >= (success.time + 12 * 3600 * 1000)) {
-                    // is time to check cachestore!
-                    this.globalstore.setItem('_lastclean_time', { time: Date.now() });
-                    this.checkAndDeleteOldElements();
-                }
-            } else {
+        this.globalstore.getItem('_lastclean_time', true).then(success => {
+            if (Date.now() >= (success.time + 12 * 3600 * 1000)) {
+                // is time to check cachestore!
                 this.globalstore.setItem('_lastclean_time', { time: Date.now() });
+                this.checkAndDeleteOldElements();
             }
+        })
+        .catch(() => {
+            this.globalstore.setItem('_lastclean_time', { time: Date.now() });
         });
     }
 
@@ -38,13 +38,25 @@ export class StoreService {
                         // removemos!!
                         this.allstore.removeItem(key);
                     }
-                });
+                })
+                .catch( () => {} );
             });
-        });
+        })
+        .catch( () => {} );
     }
 
     public getObjet(key: string): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + key);
+        let deferred = this.$q.defer();
+
+        this.allstore.getItem('jsonapi.' + key, true)
+        .then (success => {
+            deferred.resolve(success);
+        })
+        .catch(error => {
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
     }
 
     public getObjets(keys: Array<string>): Promise<object> {
@@ -69,10 +81,14 @@ export class StoreService {
                     this.allstore.getItem(key).then(success2 => {
                         success2['_lastupdate_time'] = 0;
                         this.allstore.setItem(key, success2);
-                    });
+                    })
+                    .catch( () => {} )
+                    ;
                 }
             });
-        });
+        })
+        .catch( () => {} )
+        ;
     }
 }
 

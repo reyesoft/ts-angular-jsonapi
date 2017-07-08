@@ -24,7 +24,7 @@ export class Http {
         return this.exec(path, 'get');
     }
 
-    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error:boolean = true): ng.IPromise<IDataObject> {
+    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): ng.IPromise<IDataObject> {
 
         // http request (if we don't have any GET request yet)
         if (method !== 'get' || !this.noDuplicatedHttpCallsService.hasPromises(path)) {
@@ -35,7 +35,9 @@ export class Http {
                     'Content-Type': 'application/vnd.api+json'
                 }
             };
-            data && (req['data'] = data);
+            if (data) {
+                req['data'] = data;
+            }
             var http_promise = this.$http(req);
 
             if (method === 'get') {
@@ -58,7 +60,8 @@ export class Http {
                     Core.me.refreshLoadings(-1);
                     deferred.resolve(success);
                 }, self.rsJsonapiConfig.delay);
-            },
+            }
+        ).catch(
             error => {
                 Core.me.refreshLoadings(-1);
                 if (error.status <= 0) {

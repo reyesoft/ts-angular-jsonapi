@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class NoDuplicatedHttpCallsComponent {
+class NoDuplicatedHttpCallsComponent implements ng.IController {
     public authors: Array<Jsonapi.ICollection> = [];
 
     /** @ngInject */
@@ -19,9 +19,13 @@ class NoDuplicatedHttpCallsComponent {
             );
         }
     }
+
+    public $onInit() {
+
+    }
 }
 
-export const NoDuplicatedHttpCalls = {
-    templateUrl: 'demo/tests/noduplicatedhttpcalls.html',
-    controller: NoDuplicatedHttpCallsComponent
+export class NoDuplicatedHttpCalls {
+    public templateUrl = 'demo/tests/noduplicatedhttpcalls.html';
+    public controller = NoDuplicatedHttpCallsComponent;
 };

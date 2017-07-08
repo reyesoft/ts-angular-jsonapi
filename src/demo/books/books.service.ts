@@ -1,5 +1,3 @@
-/// <reference path="../_all.ts" />
-
 import * as Jsonapi from '../../library/index';
 
 export class BooksService extends Jsonapi.Service {

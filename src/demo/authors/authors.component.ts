@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class AuthorsController {
+class AuthorsController implements ng.IController {
     public authors: Jsonapi.ICollection;
 
     /** @ngInject */
@@ -19,6 +19,10 @@ class AuthorsController {
         );
     }
 
+    public $onInit() {
+
+    }
+
     public delete (author: Jsonapi.IResource) {
         console.log('eliminaremos (no soportado en este ejemplo)', author.toObject());
         this.AuthorsService.delete(
@@ -30,14 +34,7 @@ class AuthorsController {
     }
 }
 
-export const Authors = {
-    templateUrl: 'demo/authors/authors.html',
-    controller: AuthorsController
-    // bindings: {
-    //   completedCount: '<',
-    //   activeCount: '<',
-    //   selectedFilter: '<filter',
-    //   onClearCompleted: '&',
-    //   onShow: '&'
-    // }
+export class Authors {
+    public templateUrl = 'demo/authors/authors.html';
+    public controller = AuthorsController;
 };

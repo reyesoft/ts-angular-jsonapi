@@ -57,6 +57,7 @@ module.exports = {
     //     compress: {unused: true, dead_code: true} // eslint-disable-line camelcase
     // })
   ],
+  bail: true,
   output: {
     // https://webpack.github.io/docs/library-and-externals.html
     path: path.join(process.cwd(), conf.paths.dist),

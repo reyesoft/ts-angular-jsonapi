@@ -33,7 +33,8 @@ export class NoDuplicatedHttpCallsService {
                     }
                     delete this.calls[path];
                 }
-            },
+            }
+        ).catch(
             error => {
                 if (path in this.calls) {
                     for (let deferred of this.calls[path]) {

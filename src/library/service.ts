@@ -10,8 +10,10 @@ import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
 
-import { IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
-    IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import {
+    IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    IParamsCollection, IParamsResource, IAttributes
+} from './interfaces';
 
 export class Service extends ParentResourceService implements IService {
     public schema: ISchema;
@@ -22,10 +24,10 @@ export class Service extends ParentResourceService implements IService {
     private path: string;   // without slashes
     private smartfiltertype = 'undefined';
 
-    /**
+    /*
     Register schema on Core
     @return true if the resource don't exist and registered ok
-    **/
+    */
     public register(): boolean {
         if (Core.me === null) {
             throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
@@ -69,15 +71,15 @@ export class Service extends ParentResourceService implements IService {
     }
 
     protected __exec(exec_params: IExecParams): IResource | ICollection | void {
-        super.__exec(exec_params);
+        let exec_pp = super.proccess_exec_params(exec_params);
 
-        switch (exec_params.exec_type) {
+        switch (exec_pp.exec_type) {
             case 'get':
-            return this._get(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'delete':
-            return this._delete(exec_params.id, exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'all':
-            return this._all(exec_params.params, exec_params.fc_success, exec_params.fc_error);
+            return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
         }
     }
 
@@ -95,29 +97,29 @@ export class Service extends ParentResourceService implements IService {
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
-            var deferred = Core.injectedServices.$q.defer();
+            let deferred = Core.injectedServices.$q.defer();
             deferred.resolve(fc_success);
             deferred.promise.then(fc_success => {
                 this.runFc(fc_success, 'cachememory');
-            });
+            })
+            .catch(() => {})
+            ;
             resource.is_loading = false;
             return resource;
-        }
-
-        // CACHESTORE
-        this.getService().cachestore.getResource(resource)
-        .then(
-            success => {
+        } else {
+            // CACHESTORE
+            this.getService().cachestore.getResource(resource)
+            .then(success => {
                 if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
                     this.runFc(fc_success, { data: success});
                 } else {
                     this.getGetFromServer(path, fc_success, fc_error, resource);
                 }
-            },
-            error => {
+            })
+            .catch(error => {
                 this.getGetFromServer(path, fc_success, fc_error, resource);
-            }
-        );
+            });
+        }
 
         return resource;
     }
@@ -132,7 +134,9 @@ export class Service extends ParentResourceService implements IService {
                 this.getService().cachememory.setResource(resource);
                 this.getService().cachestore.setResource(resource);
                 this.runFc(fc_success, success);
-            },
+            }
+        )
+        .catch(
             error => {
                 this.runFc(fc_error, error);
             }
@@ -153,14 +157,18 @@ export class Service extends ParentResourceService implements IService {
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
         if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
-            this.getService().parseToServer ? this.getService().parseToServer(params.remotefilter) : null;
+            if (this.getService().parseToServer) {
+                this.getService().parseToServer(params.remotefilter);
+            };
             path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
         }
         if (params.page) {
-            params.page.number > 1 ? path.addParam(
-                Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number) : null;
-            params.page.limit ? path.addParam(
-                Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit) : null;
+            if (params.page.number > 1) {
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
+            }
+            if (params.page.limit) {
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit);
+            }
         }
 
         // make request
@@ -171,9 +179,9 @@ export class Service extends ParentResourceService implements IService {
         let localfilter = new LocalFilter(params.localfilter);
         let cached_collection: ICollection;
         if (params.localfilter && Object.keys(params.localfilter).length > 0) {
-             cached_collection = Base.newCollection();
+            cached_collection = Base.newCollection();
         } else {
-             cached_collection = tempororay_collection;
+            cached_collection = tempororay_collection;
         }
 
         // MEMORY_CACHE
@@ -198,14 +206,17 @@ export class Service extends ParentResourceService implements IService {
                 deferred.resolve(fc_success);
                 deferred.promise.then(fc_success => {
                     this.runFc(fc_success, 'cachememory');
-                });
+                })
+                .catch(() => {})
+                ;
             } else {
                 this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
             }
         } else {
             // STORE
             tempororay_collection.$is_loading = true;
-            this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), tempororay_collection)
+
+            this.getService().cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
             .then(
                 success => {
                     tempororay_collection.$source = 'store';
@@ -222,7 +233,8 @@ export class Service extends ParentResourceService implements IService {
                     } else {
                         this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
                     }
-                },
+                }
+            ).catch(
                 error => {
                     this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
                 }
@@ -253,7 +265,7 @@ export class Service extends ParentResourceService implements IService {
                 Converter.build(success.data, tempororay_collection);
 
                 this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection);
+                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
 
                 // localfilter getted data
                 let localfilter = new LocalFilter(params.localfilter);
@@ -270,7 +282,9 @@ export class Service extends ParentResourceService implements IService {
                 }
 
                 this.runFc(fc_success, success);
-            },
+            }
+        )
+        .catch(
             error => {
                 // do not replace $source, because localstorage don't write if = server
                 // tempororay_collection.$source = 'server';
@@ -292,16 +306,17 @@ export class Service extends ParentResourceService implements IService {
             success => {
                 this.getService().cachememory.removeResource(id);
                 this.runFc(fc_success, success);
-            },
+            }
+        ).catch(
             error => {
                 this.runFc(fc_error, error);
             }
         );
     }
 
-    /**
+    /*
     @return This resource like a service
-    **/
+    */
     public getService<T extends IService>(): T {
         return <T>Converter.getService(this.type);
     }

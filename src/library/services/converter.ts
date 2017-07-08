@@ -9,9 +9,9 @@ import { IDataResource } from '../interfaces/data-resource';
 
 export class Converter {
 
-    /**
+    /*
     Convert json arrays (like included) to an Resources arrays without [keys]
-    **/
+    */
     private static json_array2resources_array(
         json_array: Array<IDataResource>,
         destination_array: IResourcesById = {}
@@ -22,9 +22,9 @@ export class Converter {
         }
     }
 
-    /**
+    /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
-    **/
+    */
     static json_array2resources_array_by_type (
         json_array: Array<IDataResource>
     ): IResourcesByType {

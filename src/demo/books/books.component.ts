@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class BooksController {
+class BooksController implements ng.IController {
     public books: Jsonapi.ICollection;
 
     /** @ngInject */
@@ -20,9 +20,9 @@ class BooksController {
         this.books = BooksService.all(
             {
                 localfilter: filter,
-                remotefilter: {
+            remotefilter: {
                     date: {
-                        since:'1983-01-01',
+                        since: '1983-01-01',
                         until: '2010-01-01'
                     }
                 },
@@ -63,12 +63,16 @@ class BooksController {
         );
     }
 
+    public $onInit() {
+
+    }
+
     public delete(book: Jsonapi.IResource) {
         this.BooksService.delete(book.id);
     }
 }
 
-export const Books = {
-    templateUrl: 'demo/books/books.html',
-    controller: BooksController
+export class Books {
+    public templateUrl = 'demo/books/books.html';
+    public controller = BooksController;
 };

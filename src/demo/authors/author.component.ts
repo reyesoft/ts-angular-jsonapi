@@ -2,7 +2,7 @@ import * as angular from 'angular';
 import 'angular-ui-router';
 import * as Jsonapi from '../../library/index';
 
-class AuthorController {
+class AuthorController implements ng.IController {
     public author: Jsonapi.IResource;
     public relatedbooks: Jsonapi.IResource[];
 
@@ -31,9 +31,13 @@ class AuthorController {
         );
     }
 
-    /**
+    public $onInit() {
+
+    }
+
+    /*
     Add a new author
-    **/
+    */
     public new() {
         let author = this.AuthorsService.new();
         author.attributes.name = 'Pablo Reyes';
@@ -45,9 +49,9 @@ class AuthorController {
         // author.save( /* { include: ['book'] } */ );
     }
 
-    /**
+    /*
     Update name for actual author
-    **/
+    */
     public update() {
         this.author.attributes.name += 'o';
         this.author.save(
@@ -64,14 +68,7 @@ class AuthorController {
     }
 }
 
-export const Author = {
-    templateUrl: 'demo/authors/author.html',
-    controller: AuthorController
-    // bindings: {
-    //   completedCount: '<',
-    //   activeCount: '<',
-    //   selectedFilter: '<filter',
-    //   onClearCompleted: '&',
-    //   onShow: '&'
-    // }
+export class Author {
+    templateUrl = 'demo/authors/author.html';
+    controller = AuthorController;
 };
