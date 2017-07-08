@@ -16,15 +16,11 @@ export class StoreService {
 
     private checkIfIsTimeToClean() {
         // check if is time to check cachestore
-        this.globalstore.getItem('_lastclean_time').then(success => {
-            if (success) {
-                if (Date.now() >= (success.time + 12 * 3600 * 1000)) {
-                    // is time to check cachestore!
-                    this.globalstore.setItem('_lastclean_time', { time: Date.now() });
-                    this.checkAndDeleteOldElements();
-                }
-            } else {
+        this.globalstore.getItem('_lastclean_time', true).then(success => {
+            if (Date.now() >= (success.time + 12 * 3600 * 1000)) {
+                // is time to check cachestore!
                 this.globalstore.setItem('_lastclean_time', { time: Date.now() });
+                this.checkAndDeleteOldElements();
             }
         })
         .catch(() => {
@@ -44,7 +40,6 @@ export class StoreService {
                     }
                 })
                 .catch( () => {} );
-                ;
             });
         })
         .catch( () => {} );
@@ -53,14 +48,9 @@ export class StoreService {
     public getObjet(key: string): Promise<object> {
         let deferred = this.$q.defer();
 
-        this.allstore.getItem('jsonapi.' + key)
+        this.allstore.getItem('jsonapi.' + key, true)
         .then (success => {
-            // problem on localForage
-            if (success) {
-                deferred.resolve(success);
-            } else {
-                deferred.reject(success);
-            }
+            deferred.resolve(success);
         })
         .catch(error => {
             deferred.reject(error);
