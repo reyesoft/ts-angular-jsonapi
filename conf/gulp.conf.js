@@ -10,6 +10,7 @@
 
 const path = require('path');
 const gutil = require('gulp-util');
+const argv = require('yargs').argv;
 
 exports.ngModule = 'app';
 
@@ -17,13 +18,16 @@ exports.ngModule = 'app';
  *  The main paths of your project handle these with care
  */
 exports.paths = {
-  src: 'src',
+  src: null,
+  local: 'src/demo-local',
+  online: 'src/demo-online',
   srcdist: 'src/library',
   dist: 'dist',
   tmp: '.tmp',
   e2e: 'e2e',
   tasks: 'gulp_tasks'
 };
+exports.paths.src = exports.paths[argv.env] || exports.paths['local'];
 
 /**
 * used on gulp dist

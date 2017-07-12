@@ -42,7 +42,7 @@ export class App implements ng.IComponentOptions {
     public transclude: boolean;
 
     constructor() {
-        this.templateUrl = 'demo/containers/app.html';
+        this.templateUrl = 'containers/app.html';
         this.transclude = true;
     }
 };

@@ -20,7 +20,7 @@ class BooksController implements ng.IController {
         this.books = BooksService.all(
             {
                 localfilter: filter,
-            remotefilter: {
+                remotefilter: {
                     date: {
                         since: '1983-01-01',
                         until: '2010-01-01'
@@ -73,6 +73,6 @@ class BooksController implements ng.IController {
 }
 
 export class Books {
-    public templateUrl = 'demo/books/books.html';
+    public templateUrl = 'books/books.html';
     public controller = BooksController;
 };

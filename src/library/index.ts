@@ -4,6 +4,7 @@ import 'angular-localforage';
 angular.module('Jsonapi.config', [])
     .constant('rsJsonapiConfig', {
         url: 'http://yourdomain/api/v1/',
+        params_separator: '?',
         delay: 0,
         unify_concurrency: true,
         cache_prerequests: true,

@@ -35,6 +35,6 @@ class AuthorsController implements ng.IController {
 }
 
 export class Authors {
-    public templateUrl = 'demo/authors/authors.html';
+    public templateUrl = 'authors/authors.html';
     public controller = AuthorsController;
 };

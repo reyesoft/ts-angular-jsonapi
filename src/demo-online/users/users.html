@@ -1,0 +1,32 @@
+<div>
+    <input ng-model="filter"></input>
+    <br/>
+    <h3>Users</h3>
+    <p><code>$length={{ $ctrl.users.$length }}. $is_loading={{ $ctrl.users.$is_loading }}. $source={{ $ctrl.users.$source }}.</code></p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Firstname</th>
+                <th>Surname</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr ng-repeat="user in $ctrl.users track by $index">
+            <td ng-bind="user.id"></td>
+            <td>
+                <a ui-sref="user({ userId: user.id })" ng-bind="user.attributes.firstname"></a>
+            </td>
+            <td>
+                <a ui-sref="user({ userId: user.id })" ng-bind="user.attributes.surname"></a>
+            </td>
+            <td><a ng-click="$ctrl.delete(user)" title="not supported by demo server"><small>[DELETE]</small></a></td>
+        </tr>
+    </table>
+
+    <!-- <p>
+        <button ng-click="$ctrl.update()">Update user</button>
+        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>
+    </p> -->
+
+</div>

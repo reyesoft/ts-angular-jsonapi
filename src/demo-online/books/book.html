@@ -1,0 +1,27 @@
+<div>
+    <filter-textbox filter="$ctrl.filter"></filter-textbox>
+    <br/>
+    <h3>Book #{{ $ctrl.book.id }}</h3>
+    <ul>
+        <li>Title: <strong>{{ $ctrl.book.attributes.title }}</strong></li>
+        <li>Date Published: <strong>{{ $ctrl.book.attributes.date_published | date }}</strong></li>
+    </ul>
+
+    <h4>Authors (many)</h4>
+    <p><small>This a relationship with <i>hasMany:true</i></small></p>
+    <ul>
+        <li ng-repeat="author in $ctrl.book.relationships.authors.data">
+            Name: <strong>{{ author.attributes.name }}</strong>
+        </li>
+    </ul>
+
+    <h4>Publisher (one)</h4>
+    <p><small>This a relationship with <i>hasMany:false</i></small></p>
+    <ul>
+        <li>Name: <strong>{{ $ctrl.book.relationships.publisher.data.attributes.name }}</strong></li>
+    </ul>
+
+    <p>
+        <a ui-sref="books({ filter: '' })">Volver</a>
+    </p>
+</div>

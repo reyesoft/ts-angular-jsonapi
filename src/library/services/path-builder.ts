@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import { IService, IParamsCollection, IParamsResource } from '../interfaces';
+import { Core } from '../core';
 
 export class PathBuilder {
     public paths: Array<string> = [];
@@ -44,6 +45,6 @@ export class PathBuilder {
         }
 
         return this.paths.join('/') +
-            (params.length > 0 ? '?' + params.join('&') : '');
+            (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
     }
 }

@@ -1,0 +1,25 @@
+<div>
+    <filter-textbox filter="$ctrl.filter"></filter-textbox>
+    <br/>
+    <h3>Books</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Pages</th>
+                <th>Authors</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tr ng-repeat="book in $ctrl.books">
+            <td>{{ book.id }}</td>
+            <td>
+                <a ui-sref="book({ bookId: book.id })" ng-bind="book.attributes.title"></a>
+            </td>
+            <td ng-bind="book.attributes.pages"></td>
+            <td ng-bind="book.relationships.authors.data.$length"></td>
+            <td><a ng-click="$ctrl.delete(book)" title="not supported by demo server"><small>[DELETE]</small></a></td>
+        </tr>
+    </table>
+</div>

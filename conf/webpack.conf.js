@@ -34,7 +34,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: "file-loader"
+        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: 'file-loader'
       },
       {
         test: /\.ts$/,
@@ -57,8 +57,7 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     FailPlugin,
     new HtmlWebpackPlugin({
-      template: conf.path.src('demo/index.html') // ,
-      // inject: true
+      template: conf.path.src('index.html')
     }),
     new webpack.LoaderOptionsPlugin({
       options: {
@@ -87,5 +86,5 @@ module.exports = {
       '.ts'
     ]
   },
-  entry: `./${conf.path.src('demo/index')}`
+  entry: `./${conf.path.src('index')}`
 };
