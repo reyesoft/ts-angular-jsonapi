@@ -11,6 +11,7 @@ const hub = new HubRegistry([conf.path.tasks('*.js')]);
 gulp.registry(hub);
 
 gulp.task('build', gulp.series(gulp.parallel('other', 'webpack:dist')));
+gulp.task('build:demo', gulp.series(gulp.parallel('other', 'webpack:dist')));
 gulp.task('test', gulp.series('karma:single-run'));
 gulp.task('test:auto', gulp.series('karma:auto-run'));
 gulp.task('serve', gulp.series('webpack:watch', 'watch', 'browsersync'));

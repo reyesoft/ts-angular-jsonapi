@@ -2,12 +2,7 @@ const webpack = require('webpack');
 const conf = require('./gulp.conf');
 const path = require('path');
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FailPlugin = require('webpack-fail-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const pkg = require('../package.json');
-const autoprefixer = require('autoprefixer');
-var DeclarationBundlerPlugin = require('declaration-bundler-webpack-plugin');
 
 module.exports = {
   module: {
