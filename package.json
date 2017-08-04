@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.6.33",
+  "version": "0.6.34",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -103,7 +103,7 @@
     "build": "rm -rf dist/* && gulp build",
     "demoinstall": "npm install && typings install && gulp -v",
     "start": "gulp serve",
-    "prepublish": "gulp build"
+    "prepare": "gulp build"
   },
   "eslintConfig": {
     "globals": {
