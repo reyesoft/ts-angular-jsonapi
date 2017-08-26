@@ -1,6 +1,6 @@
 {
   "name": "ts-angular-jsonapi",
-  "version": "0.6.31",
+  "version": "0.6.34",
   "description": "JSONAPI library developed for AngularJS in Typescript",
   "repository": {
     "type": "git",
@@ -10,8 +10,10 @@
     "url": "https://github.com/reyesoft/ts-angular-jsonapi/issues"
   },
   "dependencies": {
-    "angular": ">=1.4.0",
     "angular-localforage": "1.3.7"
+  },
+  "peerDependencies": {
+    "angular": ">=1.4.0"
   },
   "devDependencies": {
     "@types/angular": "^1.6.4",
@@ -100,7 +102,7 @@
   "scripts": {
     "build": "rm -rf dist/* && gulp build",
     "start": "gulp serve",
-    "prepublish": "gulp build"
+    "prepare": "gulp build"
   },
   "eslintConfig": {
     "globals": {
