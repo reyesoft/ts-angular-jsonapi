@@ -204,7 +204,11 @@ export class CacheStore implements ICacheStore {
         );
 
         angular.forEach(resources_for_save, resource_for_save => {
-            this.setResource(resource_for_save);
+            if ('is_new' in resource_for_save) {
+                this.setResource(resource_for_save);
+            } else {
+                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser IResource.', resource_for_save);
+            }
         });
     }
 
