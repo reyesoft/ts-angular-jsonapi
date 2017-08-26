@@ -16,6 +16,7 @@
     "angular": ">=1.4.0"
   },
   "devDependencies": {
+    "angular": ">=1.4.0",
     "@types/angular": "^1.6.4",
     "@types/angular-localforage": "^1.2.33",
     "@types/angular-mocks": "^1.5.9",
@@ -84,7 +85,7 @@
     "tslint": "5.5.0",
     "tslint-loader": "3.5.3",
     "typescript": "2.4.2",
-    "webpack": "^2.2.1",
+    "webpack": "3.3.0",
     "webpack-fail-plugin": "^1.0.5"
   },
   "files": [

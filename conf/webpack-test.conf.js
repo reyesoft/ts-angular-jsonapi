@@ -41,7 +41,7 @@ module.exports = {
     ]
   },
   ts: {
-    configFileName: 'tsconfig.json'
+    configFile: 'tsconfig.json'
   },
   tslint: {
     configuration: require('../tslint.json')

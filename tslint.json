@@ -2,6 +2,7 @@
     "extends": "tslint:all",
     "rules": {
         "no-empty": false,
+        "max-classes-per-file": [true, 2],
         "linebreak-style": false,
         "no-require-imports": false,
         "no-inferrable-types": false,

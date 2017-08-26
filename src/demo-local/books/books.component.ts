@@ -41,7 +41,7 @@ class BooksController implements ng.IController {
 
                 console.log('BooksRequest#2 requested');
                 let books2 = this.BooksService.all(
-                    success => {
+                    success2 => {
                         console.log('BooksRequest#2 received (author data from cache)',
                             (<Jsonapi.IResource>books2[1].relationships.author.data)
                         );
@@ -51,7 +51,7 @@ class BooksController implements ng.IController {
                 // TEST 2
                 console.log('BookRequest#3 requested');
                 let book1 = this.BooksService.get(1,
-                    success => {
+                    success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
                             (<Jsonapi.IResource>book1.relationships.author.data).attributes
                         );
@@ -75,4 +75,4 @@ class BooksController implements ng.IController {
 export class Books {
     public templateUrl = 'books/books.html';
     public controller = BooksController;
-};
+}

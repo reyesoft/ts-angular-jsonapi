@@ -7,7 +7,6 @@ class AppController implements ng.IController {
         protected PhotosService,
         protected $scope
     ) {
-        let self = this;
         $scope.loading  = false;
 
         console.log('injected JsonapiCore?', JsonapiCore);
@@ -17,17 +16,17 @@ class AppController implements ng.IController {
         BooksService.register();
         PhotosService.register();
 
-        JsonapiCore.loadingsStart = () => {
-            self.$scope.loading = 'LOADING...';
+        JsonapiCore.loadingsStart = (): void => {
+            this.$scope.loading = 'LOADING...';
         };
-        JsonapiCore.loadingsDone = () => {
-            self.$scope.loading = '';
+        JsonapiCore.loadingsDone = (): void => {
+            this.$scope.loading = '';
         };
-        JsonapiCore.loadingsOffline = (error) => {
-            self.$scope.loading = 'No connection!!!';
+        JsonapiCore.loadingsOffline = (error): void => {
+            this.$scope.loading = 'No connection!!!';
         };
-        JsonapiCore.loadingsError = (error) => {
-            self.$scope.loading = 'No connection 2!!!';
+        JsonapiCore.loadingsError = (error): void => {
+            this.$scope.loading = 'No connection 2!!!';
         };
     }
 
@@ -45,4 +44,4 @@ export class App implements ng.IComponentOptions {
         this.templateUrl = 'containers/app.html';
         this.transclude = true;
     }
-};
+}

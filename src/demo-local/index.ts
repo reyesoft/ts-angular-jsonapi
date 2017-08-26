@@ -8,8 +8,8 @@ import routesConfig from './routes';
 
 // Jsonapi
 import '../library/index';
-let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfig) => {
-    angular.extend(rsJsonapiConfig, {
+let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfigParam): void => {
+    angular.extend(rsJsonapiConfigParam, {
         url: 'http://localhost:8080/v1/',
         delay: 800
     });

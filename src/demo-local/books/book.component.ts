@@ -31,4 +31,4 @@ export class BookController implements ng.IController {
 export class Book {
     public templateUrl = 'books/book.html';
     public controller = BookController;
-};
+}

@@ -4,7 +4,7 @@ import * as Jsonapi from '../../library/index';
 
 class AuthorController implements ng.IController {
     public author: Jsonapi.IResource;
-    public relatedbooks: Jsonapi.IResource[];
+    public relatedbooks: Array<Jsonapi.IResource>;
 
     /** @ngInject */
     constructor(
@@ -71,4 +71,4 @@ class AuthorController implements ng.IController {
 export class Author {
     templateUrl = 'authors/author.html';
     controller = AuthorController;
-};
+}

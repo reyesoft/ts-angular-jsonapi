@@ -31,4 +31,4 @@ class PhotosController implements ng.IController {
 export class Photos {
     public templateUrl = 'photos/photos.html';
     public controller = PhotosController;
-};
+}

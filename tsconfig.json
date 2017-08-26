@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
         "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -11,7 +10,6 @@
             "angular-ui-router",
             "angular",
             "angular-mocks",
-            "localforage",
             "jquery",
             "node",
             "jasmine",

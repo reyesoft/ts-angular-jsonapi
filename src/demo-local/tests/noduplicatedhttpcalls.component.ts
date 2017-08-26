@@ -28,4 +28,4 @@ class NoDuplicatedHttpCallsComponent implements ng.IController {
 export class NoDuplicatedHttpCalls {
     public templateUrl = 'tests/noduplicatedhttpcalls.html';
     public controller = NoDuplicatedHttpCallsComponent;
-};
+}
