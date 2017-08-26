@@ -24,6 +24,7 @@ export class LocalFilter {
                 return (resource.attributes[attribute] === localfilter[attribute]);
             }
         }
+
         return false;
     }
 

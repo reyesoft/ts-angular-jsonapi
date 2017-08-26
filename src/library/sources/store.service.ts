@@ -1,8 +1,16 @@
 import * as angular from 'angular';
+import { IStoreObject } from '../interfaces';
+
+// @types/angular-forage is outdated, we need add new parameter documented here
+// https://github.com/ocombe/angular-localForage#functions-
+interface ILocalForageServiceUpdated extends ng.localForage.ILocalForageService {
+    getItem(key: string, rejectIfNull?: boolean): angular.IPromise<any>;
+    getItem(keys: Array<string>, rejectIfNull?: boolean): angular.IPromise<Array<any>>;
+}
 
 export class StoreService {
-    private globalstore;
-    private allstore;
+    private globalstore: ILocalForageServiceUpdated;
+    private allstore: ILocalForageServiceUpdated;
 
     /** @ngInject */
     public constructor(
@@ -39,10 +47,10 @@ export class StoreService {
                         this.allstore.removeItem(key);
                     }
                 })
-                .catch( () => {} );
+                .catch( () => { /* */ } );
             });
         })
-        .catch( () => {} );
+        .catch( () => { /* */ } );
     }
 
     public getObjet(key: string): Promise<object> {
@@ -63,8 +71,8 @@ export class StoreService {
         return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 
-    public saveObject(key: string, value: Object): void {
-        value['_lastupdate_time'] = Date.now();
+    public saveObject(key: string, value: IStoreObject): void {
+        value._lastupdate_time = Date.now();
         this.allstore.setItem('jsonapi.' + key, value);
     }
 
@@ -79,15 +87,15 @@ export class StoreService {
                 if (key.startsWith(key_start_with)) {
                     // key of stored object starts with key_start_with
                     this.allstore.getItem(key).then(success2 => {
-                        success2['_lastupdate_time'] = 0;
+                        success2._lastupdate_time = 0;
                         this.allstore.setItem(key, success2);
                     })
-                    .catch( () => {} )
+                    .catch( () => { /* */ } )
                     ;
                 }
             });
         })
-        .catch( () => {} )
+        .catch( () => { /* */ } )
         ;
     }
 }

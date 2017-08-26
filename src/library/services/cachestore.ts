@@ -81,8 +81,9 @@ export class CacheStore implements ICacheStore {
     }
 
     public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): ng.IPromise<ICollection> {
-        var deferred: ng.IDeferred<ICollection> = Core.injectedServices.$q.defer();
+        let deferred: ng.IDeferred<ICollection> = Core.injectedServices.$q.defer();
         this.getCollectionFromStore(url, include, collection, deferred);
+
         return deferred.promise;
     }
 
@@ -96,15 +97,16 @@ export class CacheStore implements ICacheStore {
                 collection.$source = 'store';  // collection from storeservice, resources from memory
                 collection.$cache_last_update = success._lastupdate_time;
                 job_deferred.resolve(collection);
+
                 return ;
             }
 
-            let promise = this.fillCollectionWithArrrayAndResourcesOnStore(success, include, collection);
-            promise.then(() => {
+            let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(success, include, collection);
+            promise2.then(() => {
                 // just for precaution, we not rewrite server data
                 if (collection.$source !== 'new') {
                     console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
-                    throw '';
+                    throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                 }
                 collection.$source = 'store';  // collection and resources from storeservice
                 collection.$cache_last_update = success._lastupdate_time;
@@ -131,19 +133,21 @@ export class CacheStore implements ICacheStore {
             }
             collection[dataresource.id] = resource;
         }
+
         return all_ok;
     }
 
     private getResourceFromMemory(dataresource: IDataResource): IResource {
         let cachememory = Converter.getService(dataresource.type).cachememory;
         let resource = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+
         return resource;
     }
 
     private fillCollectionWithArrrayAndResourcesOnStore(
         datacollection: IDataCollection, include: Array<string>, collection: ICollection
     ): ng.IPromise<object> {
-        var deferred: ng.IDeferred<object> = Core.injectedServices.$q.defer();
+        let deferred: ng.IDeferred<object> = Core.injectedServices.$q.defer();
 
         // request resources from store
         let temporalcollection = {};
@@ -190,8 +194,8 @@ export class CacheStore implements ICacheStore {
                     resources_for_save[resource_type_alias + ress.id] = ress;
                 } else {
                     // hasMany
-                    let collection = <ICollection>resource.relationships[resource_type_alias].data;
-                    angular.forEach(collection, (inc_resource: IResource) => {
+                    let collection2 = <ICollection>resource.relationships[resource_type_alias].data;
+                    angular.forEach(collection2, (inc_resource: IResource) => {
                         resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
                 }
@@ -216,6 +220,7 @@ export class CacheStore implements ICacheStore {
         Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey(
             'collection.' + path_start_with
         );
+
         return true;
     }
 }

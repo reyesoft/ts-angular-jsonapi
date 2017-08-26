@@ -11,6 +11,7 @@ export class UrlParamsBuilder {
         } else {
             ret += add + '=' + params;
         }
+
         return ret;
     }
 
@@ -19,6 +20,7 @@ export class UrlParamsBuilder {
         angular.forEach(params, (value, key) => {
             ret += this.toparamsarray(value, '&' + key);
         });
+
         return ret.slice(1);
     }
 }

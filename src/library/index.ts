@@ -10,8 +10,8 @@ angular.module('Jsonapi.config', [])
         cache_prerequests: true,
         parameters: {
             page: {
-                'number': 'page[number]',
-                'limit': 'page[limit]'
+                number: 'page[number]',
+                limit: 'page[limit]'
             }
         }
     });

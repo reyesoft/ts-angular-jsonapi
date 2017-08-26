@@ -37,7 +37,7 @@ export class PathBuilder {
     }
 
     public get(): string {
-        var params = [];
+        let params = [];
         angular.copy(this.get_params, params);
 
         if (this.includes.length > 0) {

@@ -21,6 +21,7 @@ export class NoDuplicatedHttpCallsService {
 
         let deferred = this.$q.defer();
         this.calls[path].push(deferred);
+
         return deferred.promise;
     }
 

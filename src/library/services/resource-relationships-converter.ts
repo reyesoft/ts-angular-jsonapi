@@ -105,6 +105,7 @@ export class ResourceRelationshipsConverter {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_data_key].data = {};
+
             return;
         }
 
@@ -142,6 +143,7 @@ export class ResourceRelationshipsConverter {
                 if (service) {
                     service.cachestore.getResource(resource_data_from);
                 }
+
                 return resource_data_from;
             }
         }

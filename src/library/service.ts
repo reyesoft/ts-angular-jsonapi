@@ -30,17 +30,19 @@ export class Service extends ParentResourceService implements IService {
     */
     public register(): boolean {
         if (Core.me === null) {
-            throw 'Error: you are trying register --> ' + this.type + ' <-- before inject JsonapiCore somewhere, almost one time.';
+            throw new Error('Error: you are trying register `' + this.type + '` before inject JsonapiCore somewhere, almost one time.');
         }
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
         this.cachestore = new CacheStore();
         this.schema = angular.extend({}, Base.Schema, this.schema);
+
         return Core.me._register(this);
     }
 
     public newResource(): IResource {
         let resource: IResource = new Resource();
+
         return resource;
     }
 
@@ -48,6 +50,7 @@ export class Service extends ParentResourceService implements IService {
         let resource = this.newResource();
         resource.type = this.type;
         resource.reset();
+
         return <T>resource;
     }
 
@@ -99,12 +102,13 @@ export class Service extends ParentResourceService implements IService {
             // run success client function
             let deferred = Core.injectedServices.$q.defer();
             deferred.resolve(fc_success);
-            deferred.promise.then(fc_success => {
-                this.runFc(fc_success, 'cachememory');
+            deferred.promise.then(fc_success2 => {
+                this.runFc(fc_success2, 'cachememory');
             })
             .catch(() => {})
             ;
             resource.is_loading = false;
+
             return resource;
         } else {
             // CACHESTORE
@@ -159,7 +163,7 @@ export class Service extends ParentResourceService implements IService {
         if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
             if (this.getService().parseToServer) {
                 this.getService().parseToServer(params.remotefilter);
-            };
+            }
             path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
         }
         if (params.page) {
@@ -202,10 +206,10 @@ export class Service extends ParentResourceService implements IService {
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
-                var deferred = Core.injectedServices.$q.defer();
+                let deferred = Core.injectedServices.$q.defer();
                 deferred.resolve(fc_success);
-                deferred.promise.then(fc_success => {
-                    this.runFc(fc_success, 'cachememory');
+                deferred.promise.then(fc_success2 => {
+                    this.runFc(fc_success2, 'cachememory');
                 })
                 .catch(() => {})
                 ;
@@ -324,6 +328,7 @@ export class Service extends ParentResourceService implements IService {
     public clearCacheMemory(): boolean {
         let path = new PathBuilder();
         path.applyParams(this);
+
         return this.getService().cachememory.deprecateCollections(path.getForCache()) &&
             this.getService().cachestore.deprecateCollections(path.getForCache());
     }

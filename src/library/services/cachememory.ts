@@ -27,6 +27,7 @@ export class CacheMemory implements ICacheMemory {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';
         }
+
         return this.collections[url];
     }
 
@@ -37,7 +38,7 @@ export class CacheMemory implements ICacheMemory {
             this.collections[url][resource_id] = resource;
             this.setResource(resource);
         });
-        this.collections[url]['page'] = collection.page;
+        this.collections[url].page = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }
 
@@ -49,6 +50,7 @@ export class CacheMemory implements ICacheMemory {
             resource.id = id;
             // needed for a lot of request (all and get, tested on multinexo.com)
             this.setResource(resource, false);
+
             return resource;
         }
     }
@@ -70,6 +72,7 @@ export class CacheMemory implements ICacheMemory {
                 this.collections_lastupdate[key] = 0;
             // }
         });
+
         return true;
     }
 
