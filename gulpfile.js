@@ -10,13 +10,12 @@ const hub = new HubRegistry([conf.path.tasks('*.js')]);
 // Tell gulp to use the tasks just loaded
 gulp.registry(hub);
 
-gulp.task('build', gulp.series(gulp.parallel('other', 'webpack:dist')));
-gulp.task('build:demo', gulp.series(gulp.parallel('other', 'webpack:dist')));
+gulp.task('build', gulp.parallel('build:demo', 'build:library'));
+gulp.task('build:library', gulp.series('clean:library', gulp.parallel('other', 'webpack:library', 'library:dts')));
+gulp.task('build:demo', gulp.series('clean:demo', 'partials', gulp.parallel('other', 'webpack:demo')));
 gulp.task('test', gulp.series('karma:single-run'));
-gulp.task('test:auto', gulp.series('karma:auto-run'));
 gulp.task('serve', gulp.series('webpack:watch', 'watch', 'browsersync'));
-gulp.task('serve:dist', gulp.series('default', 'browsersync:dist'));
-gulp.task('default', gulp.series('clean', 'build'));
+gulp.task('default', gulp.series('build:library'));
 gulp.task('watch', watch);
 
 function reloadBrowserSync(cb) {

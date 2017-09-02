@@ -4,8 +4,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './index.scss';
 import routesConfig from './routes';
 
-// import '../library/index2';
-
 // Jsonapi
 import '../library/index';
 let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfigParam): void => {
