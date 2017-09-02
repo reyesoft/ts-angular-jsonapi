@@ -4,7 +4,7 @@ JsonApi client library for AngularJS + Typescript.
 
 ## Online demo
 
-You can test library on this online example 👌 <http://laravel-jsonapi.dev/>
+You can test library on this online example 👌 <http://reyesoft.github.io/ts-angular-jsonapi/>
 
 Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
@@ -46,13 +46,13 @@ import 'ts-angular-jsonapi';
 var app = angular.module('yourAppName', ['rsJsonapi']);
 
 app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
-    angular.extend(rsJsonapiConfig, {
-        url: '//jsonapiplayground.reyesoft.com/v2/'
-    });
+  angular.extend(rsJsonapiConfig, {
+    url: '//jsonapiplayground.reyesoft.com/v2/'
+  });
 }]);
 
 var MyController = function(JsonapiCore) {
-    // ...
+  // ...
 }
 MyController.$inject = ['JsonapiCore'];
 ```
@@ -67,20 +67,20 @@ Like you know, the better way is with examples. Based on [endpoints example libr
 
 ```typescript
 class AuthorsService extends Jsonapi.Resource {
-    type = 'authors';
-    public schema: Jsonapi.ISchema = {
-        attributes: {
-            name: { presence: true, length: { maximum: 96 } },
-            date_of_birth: {},
-            date_of_death: {},
-            created_at: {},
-            updated_at: {}
-        },
-        relationships: {
-            books: {},
-            photos: {}
-        }
-    };
+  type = 'authors';
+  public schema: Jsonapi.ISchema = {
+    attributes: {
+      name: { presence: true, length: { maximum: 96 } },
+      date_of_birth: {},
+      date_of_death: {},
+      created_at: {},
+      updated_at: {}
+    },
+    relationships: {
+      books: {},
+      photos: {}
+    }
+  };
 }
 angular.module('demoApp').service('AuthorsService', AuthorsService);
 ```
@@ -91,12 +91,12 @@ angular.module('demoApp').service('AuthorsService', AuthorsService);
 
 ```javascript
 class AuthorsController {
-    public authors: any = null;
+  public authors: any = null;
 
-    /** @ngInject */
-    constructor(AuthorsService) {
-        this.authors = AuthorsService.all();
-    }
+  /** @ngInject */
+  constructor(AuthorsService) {
+    this.authors = AuthorsService.all();
+  }
 }
 ```
 
@@ -104,9 +104,9 @@ class AuthorsController {
 
 ```html
 <p ng-repeat="author in vm.authors">
-    id: {{ author.id }} <br />
-    name: {{ author.attributes.name }} <br />
-    birth date: {{ author.attributes.date_of_birth | date }}
+  id: {{ author.id }} <br />
+  name: {{ author.attributes.name }} <br />
+  birth date: {{ author.attributes.date_of_birth | date }}
 </p>
 ```
 
@@ -116,10 +116,10 @@ Filter resources with `attribute: value` values. Filters are used as 'exact matc
 
 ```javascript
 let authors = AuthorsService.all(
-    {
-        localfilter: { name: 'xx' },            // request all data and next filter locally
-        remotefilter: { country: 'Argentina' }  // request data with filter url parameter
-    }
+  {
+    localfilter: { name: 'xx' },            // request all data and next filter locally
+    remotefilter: { country: 'Argentina' }  // request data with filter url parameter
+  }
 );
 ```
 
@@ -135,14 +135,14 @@ let author = AuthorsService.get('some_author_id');
 
 ```javascript
 let author = AuthorsService.get(
-    'some_author_id',
-    { include: ['books', 'photos'] },
-    success => {
-        console.log('Author loaded.', success);
-    },
-    error => {
-        console.log('Author don`t loaded. Error.', error);
-    }
+  'some_author_id',
+  { include: ['books', 'photos'] },
+  success => {
+    console.log('Author loaded.', success);
+  },
+  error => {
+    console.log('Author don`t loaded. Error.', error);
+  }
 );
 ```
 
@@ -183,8 +183,8 @@ let relatedbooks = BooksService.all( { beforepath: 'authors/1' } );
 
 // you need get a cached object? you can force ttl on get
 let author = AuthorsService.get(
-    'some_author_id',
-    { ttl: 60 } // ttl on seconds (default: 0)
+  'some_author_id',
+  { ttl: 60 } // ttl on seconds (default: 0)
 );
 ```
 
@@ -194,18 +194,18 @@ let author = AuthorsService.get(
 let author = AuthorsService.get('some_author_id');
 this.author.attributes.name += 'New Name';
 this.author.save(success => {
-    console.log('author saved!');
-    });
+  console.log('author saved!');
+});
 ```
 
 ### Pagination
 
 ```javascript
 let authors = AuthorsService.all(
-    {
-        // get page 2 of authors collection, with a limit per page of 50
-        page: { number: 2 ;  limit: 50 }   
-    }
+  {
+    // get page 2 of authors collection, with a limit per page of 50
+    page: { number: 2 ;  limit: 50 }   
+  }
 );
 ```
 
@@ -217,15 +217,17 @@ let authors = AuthorsService.all(
 
 ## Local Demo App
 
-We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
+You can run [JsonApi Demo App](http://reyesoft.github.io/ts-angular-jsonapi/) locally following the next steps:
 
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
 cd ts-angular-jsonapi
 npm install -g gulp   # if you are on linux, you need do this with sudo
 npm install
-gulp serve --env=local
+gulp serve
 ```
+
+We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
 ## Colaborate
 
