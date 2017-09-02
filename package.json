@@ -52,6 +52,7 @@
     "gulp-clean": "^0.3.2",
     "gulp-delete-lines": "0.0.7",
     "gulp-filter": "^5.0.1",
+    "gulp-gh-pages": "^0.5.4",
     "gulp-htmlmin": "^3.0.0",
     "gulp-hub": "github:frankwallis/gulp-hub#d461b9c700df9010d0a8694e4af1fb96d9f38bf4",
     "gulp-inject-string": "^1.1.0",

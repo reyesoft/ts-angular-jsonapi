@@ -13,6 +13,7 @@ gulp.registry(hub);
 gulp.task('build', gulp.parallel('build:demo', 'build:library'));
 gulp.task('build:library', gulp.series('clean:library', gulp.parallel('other', 'webpack:library', 'library:dts')));
 gulp.task('build:demo', gulp.series('clean:demo', 'partials', gulp.parallel('other', 'webpack:demo')));
+gulp.task('deploy', gulp.series('build', 'ghpages'));
 gulp.task('test', gulp.series('karma:single-run'));
 gulp.task('serve', gulp.series('webpack:watch', 'watch', 'browsersync'));
 gulp.task('default', gulp.series('build:library'));

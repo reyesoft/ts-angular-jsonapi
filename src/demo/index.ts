@@ -9,7 +9,7 @@ import '../library/index';
 let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfigParam): void => {
     angular.extend(rsJsonapiConfigParam, {
         // url: 'http://laravel-jsonapi.dev/v2/',
-        url: 'http://jsonapiplayground.reyesoft.com/v2/',
+        url: '//jsonapiplayground.reyesoft.com/v2/',
         delay: 800
     });
 }];
