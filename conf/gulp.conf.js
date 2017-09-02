@@ -19,8 +19,7 @@ exports.ngModule = 'app';
  */
 exports.paths = {
   src: null,
-  local: 'src/demo-local',
-  online: 'src/demo-online',
+  local: 'src/demo',
   srcdist: 'src/library',
   dist: 'dist',
   tmp: '.tmp',

@@ -218,38 +218,9 @@ let authors = AuthorsService.all(
 
 ### Include anothers resources (is comming)
 
-## Demo local with a remote server
+## Demo App
 
-Your remote server is here: <http://xxxxxx/>
-
-### Run TS Angular Jsonapi Demo App (with remote server)
-
-```bash
-git clone git@github.com:reyesoft/ts-angular-jsonapi.git
-cd ts-angular-jsonapi
-npm install -g gulp   # if you are on linux, you need do this with sudo
-npm install
-gulp serve --env=remote
-```
-
-## Demo local
-
-For demo purposes you can run local server and test this library:
-
-### Run jsonapi endpoints example server
-
-```bash
-git clone git@github.com:endpoints/endpoints-example.git
-cd endpoints-example
-npm install
-npm start
-```
-
-More information in <https://github.com/endpoints/endpoints-example>.
-
-Now, you have jsonapi endpoints like `http://localhost:8080/v1/authors`.
-
-### Run TS Angular Jsonapi Demo App (with local server)
+We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/)
 
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
