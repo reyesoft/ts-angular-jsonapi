@@ -7,18 +7,31 @@ Jsonapi client library developed for AngularJS based on typescript.
 - [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
 - [x] Get a simple resource or a collection of resources
 - [x] [Include support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
-- [X] Two+ equal calls, only one HTTP request.
-- [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
-- [x] Cache (on memory): TTL of collections
-- [X] Cache (on memory): TTL of resources
-- [x] Equal requests, return a same ResourceObject
-- [X] Long time cache (localstorage) (BETA)
+- [x] Two+ equal resource request, only one HTTP call.
+- [x] Cache on memory
+
+  - [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
+  - [x] Cache (on memory): TTL for collections and resources
+
+- [x] Cache on localstorage
+
+- [x] Equal requests, return a same ResourceObject on memory
+
 - [ ] Sorting
-- [X] Pagination
-- [X] Filtering by attributes through a string or a regular expression
-- [X] Filtering by regular expression
+
+- [x] Pagination
+
+- [x] Pagination
+
+- [x] Filtering
+
+  - [x] by attributes through a string or a regular expression
+  - [x] by regular expression
+
 - [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
+
 - [x] Default values for a new resource
+
 - [x] [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
@@ -46,7 +59,7 @@ var app = angular.module('yourAppName', ['rsJsonapi']);
 
 app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
     angular.extend(rsJsonapiConfig, {
-        url: 'http://localhost:8080/v1/'
+        url: 'http://jsonapiplayground.reyesoft.com/v2/'
     });
 }]);
 
@@ -197,8 +210,6 @@ this.author.save(success => {
     });
 ```
 
-### Handling errors
-
 ### Pagination
 
 ```javascript
@@ -218,31 +229,16 @@ let authors = AuthorsService.all(
 
 ### Include anothers resources (is comming)
 
-## Demo local
+## Demo App
 
-For demo purposes you can run local server and test this library:
-
-### Run jsonapi endpoints example server
-
-```bash
-git clone git@github.com:endpoints/endpoints-example.git
-cd endpoints-example
-npm install
-npm start
-```
-
-More information in <https://github.com/endpoints/endpoints-example>.
-
-Now, you have jsonapi endpoints like `http://localhost:8080/v1/authors`.
-
-### Run TS Angular Jsonapi Demo App
+We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/)
 
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
 cd ts-angular-jsonapi
-npm install -g gulp typings
-npm run demoinstall
-gulp serve
+npm install -g gulp   # if you are on linux, you need do this with sudo
+npm install
+gulp serve --env=local
 ```
 
 ## Colaborate

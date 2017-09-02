@@ -3,7 +3,7 @@ import { IDocument } from '../interfaces/document';
 import { IPage } from './page';
 
 interface IDataCollection extends IDocument {
-    data: IDataResource[];
+    data: Array<IDataResource>;
     page?: IPage;
     _lastupdate_time?: number;   // used when come from Store
 }

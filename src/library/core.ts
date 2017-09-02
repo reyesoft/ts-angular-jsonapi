@@ -5,18 +5,18 @@ import { ICore, IResource, ICollection, IService } from './interfaces';
 export class Core implements ICore {
     public static me: ICore;
     public static injectedServices: {
-        $q: ng.IQService,
-        JsonapiStoreService: any,
-        JsonapiHttp: any,
-        rsJsonapiConfig: any
+        $q: ng.IQService;
+        JsonapiStoreService: any;
+        JsonapiHttp: any;
+        rsJsonapiConfig: any;
     };
 
     private resourceServices: Object = {};
     public loadingsCounter: number = 0;
-    public loadingsStart = () => {};
-    public loadingsDone = () => {};
-    public loadingsError = () => {};
-    public loadingsOffline = () => {};
+    public loadingsStart: Function = (): void => {};
+    public loadingsDone: Function = (): void => {};
+    public loadingsError: Function = (): void => {};
+    public loadingsOffline = (): void => {};
 
     /** @ngInject */
     public constructor(
@@ -32,6 +32,7 @@ export class Core implements ICore {
             return false;
         }
         this.resourceServices[clase.type] = clase;
+
         return true;
     }
 
@@ -50,6 +51,7 @@ export class Core implements ICore {
 
     public clearCache(): boolean {
         Core.injectedServices.JsonapiStoreService.clearCache();
+
         return true;
     }
 
@@ -77,6 +79,7 @@ export class Core implements ICore {
                 }
             }
         });
+
         return newresource;
     }
 }

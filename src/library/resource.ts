@@ -20,17 +20,17 @@ export class Resource extends ParentResourceService implements IResource {
     public relationships: IRelationships = {};
 
     public reset(): void {
-        let self = this;
         this.id = '';
         this.attributes = {};
         angular.forEach(this.getService().schema.attributes, (value, key) => {
-            self.attributes[key] = ('default' in value) ? value.default : undefined;
+            this.attributes[key] = ('default' in value) ? value.default : undefined;
         });
         this.relationships = {};
         angular.forEach(this.getService().schema.relationships, (value, key) => {
-            self.relationships[key] = <IRelationship>{ data: {} };
+            let relation: IRelationship = { data: {} };
+            this.relationships[key] = relation;
             if (this.getService().schema.relationships[key].hasMany) {
-                self.relationships[key].data = Base.newCollection();
+                this.relationships[key].data = Base.newCollection();
             }
         });
         this.is_new = true;
@@ -123,7 +123,7 @@ export class Resource extends ParentResourceService implements IResource {
     }
 
     private _save<T extends IResource>(params: IParamsResource, fc_success: Function, fc_error: Function): ng.IPromise<object> {
-        var deferred = Core.injectedServices.$q.defer();
+        let deferred = Core.injectedServices.$q.defer();
 
         if (this.is_saving || this.is_loading) {
             return ;
@@ -253,6 +253,7 @@ export class Resource extends ParentResourceService implements IResource {
         } else {
             this.relationships[type_alias].data = { };
         }
+
         return true;
     }
 

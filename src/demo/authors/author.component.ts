@@ -4,7 +4,7 @@ import * as Jsonapi from '../../library/index';
 
 class AuthorController implements ng.IController {
     public author: Jsonapi.IResource;
-    public relatedbooks: Jsonapi.IResource[];
+    public relatedbooks: Array<Jsonapi.IResource>;
 
     /** @ngInject */
     constructor(
@@ -16,17 +16,17 @@ class AuthorController implements ng.IController {
             $stateParams.authorId,
             { include: ['books', 'photos'] },
             success => {
-                console.log('success authors controller', success);
+                console.info('success authors controller', success);
             },
             error => {
-                console.log('error authors controller', error);
+                console.error('error authors controller', error);
             }
         );
 
         this.relatedbooks = BooksService.all(
             { beforepath: 'authors/' + $stateParams.authorId },
             () => {
-                console.log('Books from authors relationship', this.relatedbooks);
+                console.info('Books from authors relationship', this.relatedbooks);
             }
         );
     }
@@ -69,6 +69,6 @@ class AuthorController implements ng.IController {
 }
 
 export class Author {
-    templateUrl = 'demo/authors/author.html';
+    templateUrl = 'authors/author.html';
     controller = AuthorController;
-};
+}

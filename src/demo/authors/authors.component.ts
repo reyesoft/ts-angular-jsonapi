@@ -23,7 +23,7 @@ class AuthorsController implements ng.IController {
 
     }
 
-    public delete (author: Jsonapi.IResource) {
+    public delete(author: Jsonapi.IResource) {
         console.log('eliminaremos (no soportado en este ejemplo)', author.toObject());
         this.AuthorsService.delete(
             author.id,
@@ -35,6 +35,6 @@ class AuthorsController implements ng.IController {
 }
 
 export class Authors {
-    public templateUrl = 'demo/authors/authors.html';
+    public templateUrl = 'authors/authors.html';
     public controller = AuthorsController;
-};
+}

@@ -7,7 +7,7 @@ export class Http {
 
     /** @ngInject */
     public constructor(
-        protected $http,
+        protected $http: ng.IHttpService,
         protected $timeout,
         protected rsJsonapiConfig,
         protected noDuplicatedHttpCallsService,
@@ -26,9 +26,11 @@ export class Http {
 
     protected exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): ng.IPromise<IDataObject> {
 
+        let fakeHttpPromise = null;
+
         // http request (if we don't have any GET request yet)
         if (method !== 'get' || !this.noDuplicatedHttpCallsService.hasPromises(path)) {
-            let req = {
+            let req: ng.IRequestConfig = {
                 method: method,
                 url: this.rsJsonapiConfig.url + path,
                 headers: {
@@ -36,30 +38,29 @@ export class Http {
                 }
             };
             if (data) {
-                req['data'] = data;
+                req.data = data;
             }
-            var http_promise = this.$http(req);
+            let http_promise = this.$http(req);
 
             if (method === 'get') {
                 this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_promise);
             } else {
-                var fakeHttpPromise = http_promise;
+                fakeHttpPromise = http_promise;
             }
         }
         if (method === 'get') {
-            var fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
+            fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
         }
 
         let deferred = this.$q.defer();
-        let self = this;
         Core.me.refreshLoadings(1);
         fakeHttpPromise.then(
             success => {
                 // timeout just for develop environment
-                self.$timeout( () => {
+                this.$timeout( () => {
                     Core.me.refreshLoadings(-1);
                     deferred.resolve(success);
-                }, self.rsJsonapiConfig.delay);
+                }, this.rsJsonapiConfig.delay);
             }
         ).catch(
             error => {
@@ -77,6 +78,7 @@ export class Http {
                 deferred.reject(error);
             }
         );
+
         return deferred.promise;
     }
 }

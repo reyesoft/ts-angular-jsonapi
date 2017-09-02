@@ -8,9 +8,10 @@ import routesConfig from './routes';
 
 // Jsonapi
 import '../library/index';
-let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfig) => {
-    angular.extend(rsJsonapiConfig, {
-        url: 'http://localhost:8080/v1/',
+let rsJsonapiConfig = ['rsJsonapiConfig', (rsJsonapiConfigParam): void => {
+    angular.extend(rsJsonapiConfigParam, {
+        // url: 'http://laravel-jsonapi.dev/v2/',
+        url: 'http://jsonapiplayground.reyesoft.com/v2/',
         delay: 800
     });
 }];

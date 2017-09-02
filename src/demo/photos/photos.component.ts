@@ -29,6 +29,6 @@ class PhotosController implements ng.IController {
 }
 
 export class Photos {
-    public templateUrl = 'demo/photos/photos.html';
+    public templateUrl = 'photos/photos.html';
     public controller = PhotosController;
-};
+}

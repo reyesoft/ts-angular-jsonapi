@@ -20,7 +20,7 @@ export class ParentResourceService {
             }
         }
 
-        exec_params.fc_success = angular.isFunction(exec_params.fc_success) ? exec_params.fc_success : function() {};
+        exec_params.fc_success = angular.isFunction(exec_params.fc_success) ? exec_params.fc_success : function() { /* */ };
         exec_params.fc_error = angular.isFunction(exec_params.fc_error) ? exec_params.fc_error : undefined;
 
         return <IExecParamsProcessed>exec_params; // @todo

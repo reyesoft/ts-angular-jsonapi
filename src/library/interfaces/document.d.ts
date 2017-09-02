@@ -8,5 +8,5 @@ interface IDocument {
     jsonapi?: string;
     links?: ILinks;
     included?: Array<IDataResource>;
-    meta?: Object;
+    meta?: { [key: string]: any };
 }

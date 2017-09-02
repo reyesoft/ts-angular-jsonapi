@@ -25,7 +25,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    static json_array2resources_array_by_type (
+    static json_array2resources_array_by_type(
         json_array: Array<IDataResource>
     ): IResourcesByType {
         let all_resources: IResourcesById = {};
@@ -38,6 +38,7 @@ export class Converter {
             }
             resources_by_type[resource.type][resource.id] = resource;
         });
+
         return resources_by_type;
     }
 
@@ -51,6 +52,7 @@ export class Converter {
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;
+
             return temp;
         }
     }
@@ -60,6 +62,7 @@ export class Converter {
         if (angular.isUndefined(resource_service)) {
             // console.warn('`' + type + '`', 'service not found on getService()');
         }
+
         return resource_service;
     }
 
@@ -78,6 +81,7 @@ export class Converter {
 
         resource.attributes = data.attributes || {};
         resource.is_new = false;
+
         return resource;
     }
 
@@ -104,10 +108,10 @@ export class Converter {
         included_resources: IResourcesByType
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
-        if (collection_dest.page && collection_data_from['meta']) {
-            collection_dest.page.number = collection_data_from['meta']['page'] || 1;
-            collection_dest.page.resources_per_page = collection_data_from['meta']['resources_per_page'] || null;
-            collection_dest.page.total_resources = collection_data_from['meta']['total_resources'] || null;
+        if (collection_dest.page && collection_data_from.meta) {
+            collection_dest.page.number = collection_data_from.meta.page || 1;
+            collection_dest.page.resources_per_page = collection_data_from.meta.resources_per_page || null;
+            collection_dest.page.total_resources = collection_data_from.meta.total_resources || null;
         }
 
         // convert and add new dataresoures to final collection

@@ -19,4 +19,16 @@ export class BooksService extends Jsonapi.Service {
         },
         ttl: 10
     };
+
+    // executed before get data from server
+    public parseFromServer(attributes): void {
+        attributes.title = '📖 ' + attributes.title;
+    }
+
+    // executed before send to server
+    public parseToServer(attributes): void {
+        if ('title' in attributes) {
+            attributes.title = attributes.title.replace('📖 ', '');
+        }
+    }
 }

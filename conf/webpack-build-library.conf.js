@@ -2,9 +2,7 @@ const webpack = require('webpack');
 const conf = require('./gulp.conf');
 const path = require('path');
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FailPlugin = require('webpack-fail-plugin');
-const autoprefixer = require('autoprefixer');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   module: {
@@ -26,15 +24,10 @@ module.exports = {
       },
       {
         test: /\.(css|scss)$/,
-        loaders: [
-          'style-loader',
-          'css-loader',
-          'sass-loader',
-          'postcss-loader'
-        ]
-      },
-      {
-        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/, loader: 'file-loader'
+        loaders: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'css-loader?minimize!sass-loader!postcss-loader'
+        })
       },
       {
         test: /\.ts$/,
@@ -54,29 +47,21 @@ module.exports = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    FailPlugin,
-    new HtmlWebpackPlugin({
-      template: conf.path.src('index.html')
-    }),
-    new webpack.LoaderOptionsPlugin({
-      options: {
-        postcss: () => [autoprefixer],
-        resolve: {},
-        ts: {
-          configFile: 'tsconfig.json'
-        },
-        tslint: {
-          configuration: require('../tslint.json')
-        }
-      },
-      debug: true
-    })
+    new webpack.NoEmitOnErrorsPlugin()
+    // new webpack.optimize.UglifyJsPlugin({
+    //     compress: {unused: true, dead_code: true} // eslint-disable-line camelcase
+    // })
   ],
-  devtool: 'source-map',
+  bail: true,
   output: {
-    path: path.join(process.cwd(), conf.paths.tmp),
-    filename: 'index.js'
+    // https://webpack.github.io/docs/library-and-externals.html
+    path: path.join(process.cwd(), conf.paths.dist),
+    library: 'Jsonapi',
+    libraryTarget: 'commonjs',
+    filename: 'ts-angular-jsonapi.js'
+  },
+  externals: {
+    'angular': 'angular'
   },
   resolve: {
     extensions: [
@@ -86,5 +71,5 @@ module.exports = {
       '.ts'
     ]
   },
-  entry: `./${conf.path.src('index')}`
+  entry: `./${conf.path.srcdist('index.ts')}`
 };
