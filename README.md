@@ -4,35 +4,17 @@ Jsonapi client library developed for AngularJS based on typescript.
 
 ## Supported features
 
-- [x] TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
-- [x] Get a simple resource or a collection of resources
-- [x] [Include support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
-- [x] Two+ equal resource request, only one HTTP call.
-- [x] Cache on memory
-
-  - [x] Cache (on memory): Before a HTTP request objects are setted with cached data.
-  - [x] Cache (on memory): TTL for collections and resources
-
-- [x] Cache on localstorage
-
-- [x] Equal requests, return a same ResourceObject on memory
-
-- [ ] Sorting
-
-- [x] Pagination
-
-- [x] Pagination
-
-- [x] Filtering
-
-  - [x] by attributes through a string or a regular expression
-  - [x] by regular expression
-
-- [x] Get a relationship from a URL (url like attributes->relationships->resource->links->self)
-
-- [x] Default values for a new resource
-
-- [x] [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
+- Cache (on memory): Before a HTTP request objects are setted with cached data.
+- Cache (on memory): TTL for collections and resources
+- Cache on localstorage
+- Pagination
+- Filtering by attributes through a string or a regular expression
+- TS Definitions for strong typing and autocomplete ([See example image](https://github.com/reyesoft/ts-angular-jsonapi/wiki/Autocomplete))
+- [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
+- Two+ equal resource request, only one HTTP call.
+- Equal requests, return a same ResourceObject on memory
+- Default values for a new resource
+- [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
@@ -226,8 +208,6 @@ let authors = AuthorsService.all(
 - number: number of the current page
 - limit: limit of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
 - information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
-
-### Include anothers resources (is comming)
 
 ## Demo App
 
