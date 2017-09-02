@@ -1,6 +1,12 @@
 # ts-angular-jsonapi
 
-Jsonapi client library developed for AngularJS based on typescript.
+JsonApi client library for AngularJS + Typescript.
+
+## Online demo
+
+You can test library on this online example 👌 <http://laravel-jsonapi.dev/>
+
+Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
 ## Supported features
 
@@ -41,7 +47,7 @@ var app = angular.module('yourAppName', ['rsJsonapi']);
 
 app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
     angular.extend(rsJsonapiConfig, {
-        url: 'http://jsonapiplayground.reyesoft.com/v2/'
+        url: '//jsonapiplayground.reyesoft.com/v2/'
     });
 }]);
 
@@ -209,9 +215,9 @@ let authors = AuthorsService.all(
 - limit: limit of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
 - information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
 
-## Demo App
+## Local Demo App
 
-We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/)
+We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
 ```bash
 git clone git@github.com:reyesoft/ts-angular-jsonapi.git
