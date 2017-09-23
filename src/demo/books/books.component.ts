@@ -8,26 +8,28 @@ class BooksController implements ng.IController {
         protected BooksService: Jsonapi.IService,
         protected $stateParams
     ) {
+        this.getAll({});
+    }
 
-        // make filter (this is optional)
-        let filter = {};
-        if (this.$stateParams.filter.length > 0) {
-            filter = { title : this.$stateParams.filter };
-            // maybe you need a regular expresion ;)
-            // filter = { title : /R.*/ };
-        }
+    public $onInit() {
 
-        this.books = BooksService.all(
+    }
+
+    public getAll(remotefilter) {
+
+        // we add some remote filter
+        remotefilter.date_published = {
+            since: '1983-01-01',
+            until: '2010-01-01'
+        };
+
+        this.books = this.BooksService.all(
             {
-                localfilter: filter,
-                remotefilter: {
-                    date_published: {
-                        since: '1983-01-01',
-                        until: '2010-01-01'
-                    }
+                localfilter: {
+                    // name: 'Some name'
                 },
-                page: { number: 2 },
-                // storage_ttl: 15,
+                remotefilter: remotefilter,
+                page: { number: 1 },
                 include: ['author', 'photos']
             },
             success => {
@@ -63,10 +65,6 @@ class BooksController implements ng.IController {
                 console.log('error books controller', error);
             }
         );
-    }
-
-    public $onInit() {
-
     }
 
     public delete(book: Jsonapi.IResource) {
