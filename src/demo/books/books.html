@@ -1,16 +1,19 @@
 <div>
-    <filter-textbox filter="$ctrl.filter"></filter-textbox>
+    <label>
+        Search books with:
+        <input
+            ng-model="filter_text"
+            ng-change="$ctrl.getAll({ title: filter_text});"
+            ng-model-options="{ debounce: 200 }"
+        ></input>
+    </label>
     <br/>
     <h3>Books</h3>
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>
-                    Title
-                    <a ui-sref="books({ filter: 'The Two Towers' })"><small>Filter1</small></a>
-                    <a ui-sref="books({ filter: 'Return of the King' })"><small>Filter2</small></a>
-                </th>
+                <th>Title</th>
                 <th>Date Published</th>
                 <th>Author</th>
                 <th>Photos</th>
