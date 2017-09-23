@@ -9422,8 +9422,8 @@ var routes_1 = __webpack_require__(100);
 __webpack_require__(25);
 var rsJsonapiConfig = ['rsJsonapiConfig', function (rsJsonapiConfigParam) {
         angular.extend(rsJsonapiConfigParam, {
-            // url: 'http://laravel-jsonapi.dev/v2/',
-            url: 'http://jsonapiplayground.reyesoft.com/v2/',
+            // url: 'http://jsonapi-playground.dev/v2/',
+            url: '//jsonapiplayground.reyesoft.com/v2/',
             delay: 800
         });
     }];
@@ -12909,6 +12909,8 @@ var AuthorController = (function () {
         this.BooksService = BooksService;
         this.$stateParams = $stateParams;
         this.author = AuthorsService.get($stateParams.authorId, { include: ['books', 'photos'] }, function (success) {
+            _this.author.attributes.name = _this.author.attributes.name + 'x';
+            _this.author.save();
             console.info('success authors controller', success);
         }, function (error) {
             console.error('error authors controller', error);
@@ -13098,26 +13100,23 @@ var BooksController = (function () {
     /** @ngInject */
     BooksController.$inject = ["BooksService", "$stateParams"];
     function BooksController(BooksService, $stateParams) {
-        var _this = this;
         this.BooksService = BooksService;
         this.$stateParams = $stateParams;
-        // make filter (this is optional)
-        var filter = {};
-        if (this.$stateParams.filter.length > 0) {
-            filter = { title: this.$stateParams.filter };
-            // maybe you need a regular expresion ;)
-            // filter = { title : /R.*/ };
-        }
-        this.books = BooksService.all({
-            localfilter: filter,
-            remotefilter: {
-                date_published: {
-                    since: '1983-01-01',
-                    until: '2010-01-01'
-                }
-            },
-            page: { number: 2 },
-            // storage_ttl: 15,
+        this.getAll({});
+    }
+    BooksController.prototype.$onInit = function () {
+    };
+    BooksController.prototype.getAll = function (remotefilter) {
+        var _this = this;
+        // we add some remote filter
+        remotefilter.date_published = {
+            since: '1983-01-01',
+            until: '2010-01-01'
+        };
+        this.books = this.BooksService.all({
+            localfilter: {},
+            remotefilter: remotefilter,
+            page: { number: 1 },
             include: ['author', 'photos']
         }, function (success) {
             console.log('success books controller', success, _this.books);
@@ -13137,8 +13136,6 @@ var BooksController = (function () {
         }, function (error) {
             console.log('error books controller', error);
         });
-    }
-    BooksController.prototype.$onInit = function () {
     };
     BooksController.prototype["delete"] = function (book) {
         this.BooksService["delete"](book.id);
@@ -13341,11 +13338,11 @@ exports.__esModule = true;
 var angular = __webpack_require__(3);
 angular.module('app').run(['$templateCache', function ($templateCache) {
         $templateCache.put('index.html', '<!--\nTS Angular Jsonapi Example\nPablo Reyes\n\n@pablorsk\nhttp://github.com/pablorsk\n\nStructure generated with "Fountain Webapp Generator"\nhttps://github.com/FountainJS/generator-fountain-webapp\n-->\n<!doctype html>\n<html>\n  <head>\n    <meta charset="utf-8">\n    <title>TS Angular Jsonapi Example</title>\n    <meta name="description" content="">\n    <meta name="viewport" content="width=device-width">\n  </head>\n\n  <body ng-app="app" class="container">\n      <app>\n          <ui-view></ui-view>\n      </app>\n  </body>\n</html>\n');
-        $templateCache.put('authors/author.html', '<div>\n    <h3>Author, with </h3>\n    <pre>authors.get(\'{{$ctrl.author.id}}\', { include: [\'books\', \'photos\'] });</pre>\n    <ul>\n        <li>Name: <strong>{{ $ctrl.author.attributes.name }}</strong></li>\n        <li>Date of birth: <strong>{{ $ctrl.author.attributes.date_of_birth | date }}</strong></li>\n        <li>Date of dead: <strong>{{ $ctrl.author.attributes.date_of_death | date }}</strong></li>\n    </ul>\n    <p>\n        <button ng-click="$ctrl.new()">New author</button>\n        <button ng-click="$ctrl.update()">Update author</button>\n        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>\n    </p>\n\n    <h4>Photos</h4>\n    <img ng-repeat="photo in $ctrl.author.relationships.photos.data" ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em" title="Book id #{{ photo.id }}">\n\n    <h4>Books</h4>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>Date Published</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.author.relationships.books.data">\n            <td>{{ book.id }}</td>\n            <td>\n                <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n        </tr>\n    </table>\n\n    <h3>Related Books by URL</h3>\n    <pre>BooksService.all( { beforepath: \'authors/{{$ctrl.author.id}}\' } );</pre>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>Date Published</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.relatedbooks">\n            <td>{{ book.id }}</td>\n            <td>\n                <a href="/books/book/{{ book.id }}">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n        </tr>\n    </table>\n\n    <p>\n        <a ui-sref="authors">Volver</a>\n    </p>\n</div>\n');
-        $templateCache.put('authors/authors.html', '<div>\n    <input ng-model="filter">\n    <br>\n    <h3>Authors</h3>\n    <p><code>$length={{ $ctrl.authors.$length }}. $is_loading={{ $ctrl.authors.$is_loading }}. $source={{ $ctrl.authors.$source }}.</code></p>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Name</th>\n                <th>Date of birth</th>\n                <th>Date of dead</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="author in $ctrl.authors track by $index">\n            <td>{{ author.id }}</td>\n            <td>\n                <a ui-sref="author({ authorId: author.id })">{{ author.attributes.name  }}</a>\n            </td>\n            <td>{{ author.attributes.date_of_birth | date }}</td>\n            <td>{{ author.attributes.date_of_death | date }}</td>\n            <td><button ng-click="$ctrl.delete(author)">Delete</button></td>\n        </tr>\n    </table>\n\n    <!-- <p>\n        <button ng-click="$ctrl.update()">Update author</button>\n        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>\n    </p> -->\n\n</div>\n');
-        $templateCache.put('books/book.html', '<div>\n    <filter-textbox filter="$ctrl.filter"></filter-textbox>\n    <br>\n    <h3>Book #{{ $ctrl.book.id }}</h3>\n    <ul>\n        <li>Title: <strong>{{ $ctrl.book.attributes.title }}</strong></li>\n        <li>Date Published: <strong>{{ $ctrl.book.attributes.date_published | date }}</strong></li>\n    </ul>\n\n    <h4>Author (one)</h4>\n    <p><small>This a relationship with <i>hasMany:false</i></small></p>\n    <ul>\n        <li>Name: <strong>{{ $ctrl.book.relationships.author.data.attributes.name }}</strong></li>\n    </ul>\n\n    <h4>Photos (many)</h4>\n    <p><small>This a relationship with <i>hasMany:true</i></small></p>\n    <ul>\n        <li ng-repeat="photo in $ctrl.book.relationships.photos.data">\n            URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>\n        </li>\n    </ul>\n\n    <p>\n        <a ui-sref="books">Volver</a>\n    </p>\n</div>\n');
-        $templateCache.put('books/books.html', '<div>\n    <filter-textbox filter="$ctrl.filter"></filter-textbox>\n    <br>\n    <h3>Books</h3>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>\n                    Title\n                    <a ui-sref="books({ filter: \'The Two Towers\' })"><small>Filter1</small></a>\n                    <a ui-sref="books({ filter: \'Return of the King\' })"><small>Filter2</small></a>\n                </th>\n                <th>Date Published</th>\n                <th>Author</th>\n                <th>Photos</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.books">\n            <td>{{ book.id }}</td>\n            <td>\n                <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n            <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>\n            <td><span ng-repeat="photo in book.relationships.photos.data">{{ photo.id }} </span></td>\n            <td><a ng-click="$ctrl.delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>\n        </tr>\n    </table>\n</div>\n');
+        $templateCache.put('authors/author.html', '<div>\n    <h3>Author, with </h3>\n    <pre>authors.get(\'{{$ctrl.author.id}}\', { include: [\'books\', \'photos\'] });</pre>\n    <ul>\n        <li>Name: <strong>{{ $ctrl.author.attributes.name }}</strong></li>\n        <li>Date of birth: <strong>{{ $ctrl.author.attributes.date_of_birth | date }}</strong></li>\n        <li>Date of dead: <strong>{{ $ctrl.author.attributes.date_of_death | date }}</strong></li>\n    </ul>\n    <p>\n        <button ng-click="$ctrl.new()">New author</button>\n        <button ng-click="$ctrl.update()">Update author</button>\n        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>\n    </p>\n\n    <h4>Photos</h4>\n    <img ng-repeat="photo in $ctrl.author.relationships.photos.data" ng-src="{{ photo.attributes.uri }}" height="150" style="padding-right: 1em" title="Book id #{{ photo.id }}">\n\n    <h4>Books</h4>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>Date Published</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.author.relationships.books.data">\n            <td>{{ book.id }}</td>\n            <td>\n                <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n        </tr>\n    </table>\n\n    <h3>Related Books by URL</h3>\n    <pre>BooksService.all( { beforepath: \'authors/{{$ctrl.author.id}}\' } );</pre>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>Date Published</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.relatedbooks">\n            <td>{{ book.id }}</td>\n            <td>\n                <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n        </tr>\n    </table>\n\n    <p>\n        <a ui-sref="authors">Volver</a>\n    </p>\n</div>\n');
+        $templateCache.put('authors/authors.html', '<div>\n    <h3>Authors</h3>\n    <p><code>$length={{ $ctrl.authors.$length }}. $is_loading={{ $ctrl.authors.$is_loading }}. $source={{ $ctrl.authors.$source }}.</code></p>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Name</th>\n                <th>Date of birth</th>\n                <th>Date of dead</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="author in $ctrl.authors track by $index">\n            <td>{{ author.id }}</td>\n            <td>\n                <a ui-sref="author({ authorId: author.id })">{{ author.attributes.name  }}</a>\n            </td>\n            <td>{{ author.attributes.date_of_birth | date }}</td>\n            <td>{{ author.attributes.date_of_death | date }}</td>\n            <td><button ng-click="$ctrl.delete(author)">Delete</button></td>\n        </tr>\n    </table>\n\n    <!-- <p>\n        <button ng-click="$ctrl.update()">Update author</button>\n        <button ng-click="$ctrl.removeRelationship()">Remove relationship</button>\n    </p> -->\n\n</div>\n');
         $templateCache.put('containers/app.html', '  <h1>\n      TS Angular Jsonapi Example\n      <small class="bg-primary" ng-if="loading">{{ $ctrl.loading }} <img src="http://s.ytimg.com/yt/img/loader-vflff1Mjj.gif"></small>\n  </h1>\n\n  <nav>\n      <ul class="nav nav-pills pull-xs-right">\n          <li class="nav-item">\n              <a class="nav-link" ui-sref="authors">Authors</a>\n          </li>\n          <li class="nav-item">\n              <a class="nav-link" ui-sref="books({ filter: null })">Books</a>\n          </li>\n      </ul>\n  </nav>\n\n  <ng-transclude></ng-transclude>\n');
+        $templateCache.put('books/book.html', '<div>\n    <filter-textbox filter="$ctrl.filter"></filter-textbox>\n    <br>\n    <h3>Book #{{ $ctrl.book.id }}</h3>\n    <ul>\n        <li>Title: <strong>{{ $ctrl.book.attributes.title }}</strong></li>\n        <li>Date Published: <strong>{{ $ctrl.book.attributes.date_published | date }}</strong></li>\n    </ul>\n\n    <h4>Author (one)</h4>\n    <p><small>This a relationship with <i>hasMany:false</i></small></p>\n    <ul>\n        <li>Name: <strong>{{ $ctrl.book.relationships.author.data.attributes.name }}</strong></li>\n    </ul>\n\n    <h4>Photos (many)</h4>\n    <p><small>This a relationship with <i>hasMany:true</i></small></p>\n    <ul>\n        <li ng-repeat="photo in $ctrl.book.relationships.photos.data">\n            URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>\n        </li>\n    </ul>\n\n    <p>\n        <a ui-sref="books">Volver</a>\n    </p>\n</div>\n');
+        $templateCache.put('books/books.html', '<div>\n    <label>\n        Search books with:\n        <input ng-model="filter_text" ng-change="$ctrl.getAll({ title: filter_text});" ng-model-options="{ debounce: 200 }">\n    </label>\n    <br>\n    <h3>Books</h3>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>Date Published</th>\n                <th>Author</th>\n                <th>Photos</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="book in $ctrl.books">\n            <td>{{ book.id }}</td>\n            <td>\n                <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>\n            </td>\n            <td>{{ book.attributes.date_published | date }}</td>\n            <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>\n            <td><span ng-repeat="photo in book.relationships.photos.data">{{ photo.id }} </span></td>\n            <td><a ng-click="$ctrl.delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>\n        </tr>\n    </table>\n</div>\n');
         $templateCache.put('photos/photos.html', '<div>\n    <h3>photos</h3>\n    <table class="table table-striped">\n        <thead>\n            <tr>\n                <th>ID</th>\n                <th>Title</th>\n                <th>URI</th>\n            </tr>\n        </thead>\n        <tr ng-repeat="photo in $ctrl.photos">\n            <td>{{ photo.id }}</td>\n            <td>{{ photo.attributes.title  }}</td>\n            <td>{{ photo.attributes.uri }}</td>\n        </tr>\n    </table>\n</div>\n');
         $templateCache.put('tests/noduplicatedhttpcalls.html', '<p>\n    Testing library with 3 equal HTTP request. Library only call to server only one time but resolve all promises individually.\n</p>\n<p>\n    Check console and network activity.\n</p>\n');
     }]);
