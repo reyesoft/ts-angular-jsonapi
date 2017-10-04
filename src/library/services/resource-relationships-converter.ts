@@ -43,7 +43,10 @@ export class ResourceRelationshipsConverter {
 
             if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
                 // hasMany
-                if (relation_from_value.data.length < 1) {
+                if (relation_from_value.data.length === 0) {
+                    // from data is an empty array, remove all data on relationship
+                    this.relationships_dest[relation_key] = { data: Base.newCollection() };
+
                     return ;
                 }
                 this.__buildRelationshipHasMany(
