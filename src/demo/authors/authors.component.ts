@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class AuthorsController implements ng.IController {
+export class AuthorsController implements ng.IController {
     public authors: Jsonapi.ICollection;
 
     /** @ngInject */

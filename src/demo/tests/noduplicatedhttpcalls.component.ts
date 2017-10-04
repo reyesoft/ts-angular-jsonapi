@@ -1,10 +1,10 @@
 import * as Jsonapi from '../../library/index';
 
-class NoDuplicatedHttpCallsComponent implements ng.IController {
+export class NoDuplicatedHttpCallsComponent implements ng.IController {
     public authors: Array<Jsonapi.ICollection> = [];
 
     /** @ngInject */
-    constructor(
+    public constructor(
         protected JsonapiCore,
         protected AuthorsService: Jsonapi.IService
     ) {

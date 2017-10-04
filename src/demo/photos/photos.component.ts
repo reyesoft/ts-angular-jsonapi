@@ -1,6 +1,6 @@
 import * as Jsonapi from '../../library/index';
 
-class PhotosController implements ng.IController {
+export class PhotosController implements ng.IController {
     public photos: Jsonapi.ICollection;
 
     /** @ngInject */

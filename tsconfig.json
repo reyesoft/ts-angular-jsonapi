@@ -5,6 +5,7 @@
         "experimentalDecorators": true,
         "removeComments": false,
         "noImplicitAny": false,
+        "declaration": true,
         "typeRoots": ["node_modules/@types/"],
         "types": [
             "angular-ui-router",

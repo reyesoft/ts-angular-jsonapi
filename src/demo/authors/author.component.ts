@@ -2,7 +2,7 @@ import * as angular from 'angular';
 import 'angular-ui-router';
 import * as Jsonapi from '../../library/index';
 
-class AuthorController implements ng.IController {
+export class AuthorController implements ng.IController {
     public author: Jsonapi.IResource;
     public relatedbooks: Array<Jsonapi.IResource>;
 
@@ -16,6 +16,8 @@ class AuthorController implements ng.IController {
             $stateParams.authorId,
             { include: ['books', 'photos'] },
             success => {
+                this.author.attributes.name = this.author.attributes.name + 'x';
+                this.author.save();
                 console.info('success authors controller', success);
             },
             error => {
