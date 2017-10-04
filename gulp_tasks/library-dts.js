@@ -15,7 +15,7 @@ gulp.task('library:dts', done => {
 });
 
 function makeLibraryDTs() {
-  var tsProjectDts = ts.createProject('');
+  var tsProjectDts = ts.createProject('conf/tsconfig.build.json');
   var tsResult = gulp.src('src/library/**.ts')
     .pipe(tsProjectDts());
   tsResult.dts
