@@ -23,10 +23,8 @@ export class Base {
             },
             $toArray: {
                 get: function() {
-                    return Object.keys(this).map(function(key) {
+                    return Object.keys(this).map((key) => {
                         return this[key];
-                        // var value = self[key];
-                        // return Object.defineProperty(value, '$key', { enumerable: false, value: key + 5});
                     });
                 },
                 enumerable: false
