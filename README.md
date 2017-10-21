@@ -1,3 +1,7 @@
+# For the latest Angular, use [ngx-jsonapi 🚀](//github.com/reyesoft/ngx-jsonapi)
+
+We are ready for Angular 2 or above versions on [ngx-jsonapi](//github.com/reyesoft/ngx-jsonapi).
+
 # ts-angular-jsonapi
 
 JsonApi client library for AngularJS + Typescript.
